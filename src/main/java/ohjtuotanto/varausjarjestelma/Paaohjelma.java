@@ -1,0 +1,51 @@
+package ohjtuotanto.varausjarjestelma;
+
+import javafx.application.Application;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+
+public class Paaohjelma extends Application {
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    @Override
+    public void start(Stage primaryStage) {
+
+        Scene paavalikko = new Scene(new VBox(), 600, 400);
+
+
+        TextField kayttajatunnustf = new TextField();
+        TextField salasanatf = new TextField();
+        Button kirjaudu = new Button("Kirjaudu");
+        kayttajatunnustf.setMaxWidth(100);
+        salasanatf.setMaxWidth(100);
+
+        VBox kirjautumisetvbox  = new VBox(15);
+        kirjautumisetvbox.getChildren().addAll(kayttajatunnustf,salasanatf,kirjaudu);
+
+        kirjautumisetvbox.setAlignment(Pos.CENTER);
+
+
+        kirjaudu.setOnAction(e->{
+            if (kayttajatunnustf.getText().equals("testi")&& salasanatf.getText().equals("123")){
+                primaryStage.setScene(paavalikko);
+            }
+            else{
+                System.out.println("Salasana väärin");
+            }
+        });
+
+
+        Scene kirjautuminen = new Scene(kirjautumisetvbox,500,500);
+        primaryStage.setTitle("Mökkivarausjärjestelmä");
+        primaryStage.setScene(kirjautuminen);
+        primaryStage.show();
+
+    }
+}
