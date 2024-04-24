@@ -1,9 +1,13 @@
 package ohjtuotanto.varausjarjestelma;
 
 import javafx.application.Application;
+import javafx.beans.Observable;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -17,7 +21,18 @@ public class Paaohjelma extends Application {
     @Override
     public void start(Stage primaryStage) {
 
-        Scene paavalikko = new Scene(new VBox(), 600, 400);
+        ObservableList<String>alueidenlista = FXCollections.observableArrayList();
+        alueidenlista.add("Tahko");
+        alueidenlista.add("Siilinjärvi");
+
+        ComboBox alueet = new ComboBox(FXCollections.observableArrayList(alueidenlista));
+
+
+
+        VBox alueetVbox = new VBox();
+        alueetVbox.getChildren().addAll(alueet);
+
+        Scene paavalikko = new Scene(alueetVbox, 600, 400);
 
 
         TextField kayttajatunnustf = new TextField();
@@ -28,8 +43,9 @@ public class Paaohjelma extends Application {
 
         VBox kirjautumisetvbox  = new VBox(15);
         kirjautumisetvbox.getChildren().addAll(kayttajatunnustf,salasanatf,kirjaudu);
-
         kirjautumisetvbox.setAlignment(Pos.CENTER);
+
+
 
 
         kirjaudu.setOnAction(e->{
