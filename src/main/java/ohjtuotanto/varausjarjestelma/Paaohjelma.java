@@ -19,9 +19,9 @@ public class Paaohjelma extends Application {
 
         Scene paavalikko = new Scene(new VBox(), 600, 400);
 
-
         TextField kayttajatunnustf = new TextField();
         TextField salasanatf = new TextField();
+
         Button kirjaudu = new Button("Kirjaudu");
         kayttajatunnustf.setMaxWidth(100);
         salasanatf.setMaxWidth(100);
@@ -33,7 +33,7 @@ public class Paaohjelma extends Application {
 
 
         kirjaudu.setOnAction(e->{
-            if (kayttajatunnustf.getText().equals("testi")&& salasanatf.getText().equals("123")){
+            if (kayttajatunnustf.getText().equals("testi") && salasanatf.getText().equals("123")){
                 primaryStage.setScene(paavalikko);
             }
             else{
