@@ -1,7 +1,6 @@
 package ohjtuotanto.varausjarjestelma;
 
 import javafx.application.Application;
-import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
@@ -21,9 +20,11 @@ public class Paaohjelma extends Application {
     @Override
     public void start(Stage primaryStage) {
 
+
+
         ObservableList<String>alueidenlista = FXCollections.observableArrayList();
-        alueidenlista.add("Tahko");
-        alueidenlista.add("Siilinjärvi");
+        alueidenlista.addAll("Tahko","Ruka", "Ylläs","Levi", "Sappee", "Saariselkä", "Koli", "Pyhätunturi");
+
 
         ComboBox alueet = new ComboBox(FXCollections.observableArrayList(alueidenlista));
 

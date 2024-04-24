@@ -11,7 +11,7 @@ public class testicommit {
             Connection connection = DriverManager.getConnection(
                     "jdbc:mysql://127.0.0.1:3306/vn",
                     "root",
-                    "Yksitoista123"
+                    "po9wuono"
             );
 
             Statement statement = connection.createStatement();
@@ -20,6 +20,7 @@ public class testicommit {
             while(set.next()){
                 System.out.println(set.getInt("alue_id"));
                 System.out.println(set.getString("nimi"));
+
             }
         }catch(SQLException e){
             System.out.println(e.getErrorCode());
