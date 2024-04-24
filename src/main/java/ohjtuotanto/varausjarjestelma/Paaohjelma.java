@@ -11,6 +11,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.sql.SQLException;
+
 public class Paaohjelma extends Application {
 
     public static void main(String[] args) {
@@ -18,14 +20,13 @@ public class Paaohjelma extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) {
+    public void start(Stage primaryStage) throws SQLException {
 
+        SqlKomennot komennot = new SqlKomennot();
 
 
         ObservableList<String>alueidenlista = FXCollections.observableArrayList();
-        alueidenlista.addAll("Tahko","Ruka", "Ylläs","Levi", "Sappee", "Saariselkä", "Koli", "Pyhätunturi");
-
-
+        alueidenlista = komennot.valitseKaikkiAlueet();
         ComboBox alueet = new ComboBox(FXCollections.observableArrayList(alueidenlista));
 
 
