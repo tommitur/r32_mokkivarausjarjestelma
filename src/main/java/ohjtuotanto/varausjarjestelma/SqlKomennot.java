@@ -17,12 +17,32 @@ public class SqlKomennot {
         );
         statement = connection.createStatement();
     }
+
     public ObservableList<String> valitseKaikkiAlueet() throws SQLException {
-        ObservableList<String>lista = FXCollections.observableArrayList();
+        ObservableList<String> lista = FXCollections.observableArrayList();
         ResultSet set = statement.executeQuery("select nimi from alue");
         while (set.next()) {
             lista.add(set.getString(1));
         }
         return lista;
+    }
+
+    public ObservableList<String> valitseKaikkiAsiakkaat() throws SQLException {
+        ObservableList<String> lista = FXCollections.observableArrayList();
+        ResultSet set = statement.executeQuery("select asiakas_id from asiakas");
+        while (set.next()) {
+            lista.add(set.getString(1));
+        }
+        return lista;
+    }
+
+    public ObservableList<String> valitseKaikkiPalvelut() throws SQLException {
+        ObservableList<String> lista = FXCollections.observableArrayList();
+        ResultSet set = statement.executeQuery("select palvelu_id from asiakas");
+        while (set.next()) {
+            lista.add(set.getString(1));
+        }
+        return lista;
+
     }
 }

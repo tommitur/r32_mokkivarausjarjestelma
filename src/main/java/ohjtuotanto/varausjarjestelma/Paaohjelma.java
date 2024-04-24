@@ -62,7 +62,7 @@ public class Paaohjelma extends Application {
 
         Scene kirjautuminen = new Scene(kirjautumisetvbox,500,500);
         primaryStage.setTitle("Mökkivarausjärjestelmä");
-        primaryStage.setScene(kirjautuminen);
+        primaryStage.setScene(paavalikko);
         primaryStage.show();
 
     }
