@@ -3,12 +3,12 @@ package ohjtuotanto.varausjarjestelma;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
 import java.sql.SQLException;
@@ -24,17 +24,35 @@ public class Paaohjelma extends Application {
 
         SqlKomennot komennot = new SqlKomennot();
 
+        HBox valinnoille = new HBox(10);
+        valinnoille.setPadding(new Insets(10,10,10,10));
+
+        Label paikkakunta = new Label();
+        paikkakunta.setText("Paikkakunta: ");
 
         ObservableList<String>alueidenlista = FXCollections.observableArrayList();
         alueidenlista = komennot.valitseKaikkiAlueet();
         ComboBox alueet = new ComboBox(FXCollections.observableArrayList(alueidenlista));
 
+        Label hinta = new Label();
+        hinta.setText("hinta €");
+
+        Slider hinnansaato = new Slider(0,1000,0);
+        hinnansaato.setOrientation(Orientation.HORIZONTAL);
+        hinnansaato.setShowTickLabels(true);
+        hinnansaato.setShowTickMarks(true);
+        hinnansaato.setMajorTickUnit(50);
+        hinnansaato.setBlockIncrement(50);
+
+        Button hae = new Button("Hae");
+
+        valinnoille.getChildren().addAll(paikkakunta, alueet, hinta, hinnansaato, hae);
+        valinnoille.setAlignment(Pos.TOP_LEFT);
 
 
-        VBox alueetVbox = new VBox();
-        alueetVbox.getChildren().addAll(alueet);
 
-        Scene paavalikko = new Scene(alueetVbox, 600, 400);
+
+        Scene paavalikko = new Scene(valinnoille, 600, 400);
 
         TextField kayttajatunnustf = new TextField();
         TextField salasanatf = new TextField();
