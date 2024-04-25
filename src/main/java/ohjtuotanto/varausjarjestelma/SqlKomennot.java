@@ -45,4 +45,8 @@ public class SqlKomennot {
         return lista;
 
     }
+
+    public void mokinArvo() throws SQLException {
+        ResultSet set = statement.executeQuery("select hinta from mokki");
+    }
 }

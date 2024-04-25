@@ -30,7 +30,6 @@ public class Paaohjelma extends Application {
         ComboBox alueet = new ComboBox(FXCollections.observableArrayList(alueidenlista));
 
 
-
         VBox alueetVbox = new VBox();
         alueetVbox.getChildren().addAll(alueet);
 
@@ -61,6 +60,7 @@ public class Paaohjelma extends Application {
 
 
         Scene kirjautuminen = new Scene(kirjautumisetvbox,500,500);
+
         primaryStage.setTitle("Mökkivarausjärjestelmä");
         primaryStage.setScene(paavalikko);
         primaryStage.show();
