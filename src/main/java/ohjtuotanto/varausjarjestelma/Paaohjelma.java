@@ -272,7 +272,7 @@ public class Paaohjelma extends Application {
 
 
         primaryStage.setTitle("Mökkivarausjärjestelmä");
-        primaryStage.setScene(paavalikko);
+        primaryStage.setScene(mokinLisausValikko);
         primaryStage.show();
 
     }
