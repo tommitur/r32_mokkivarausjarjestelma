@@ -1,3 +1,4 @@
+
 package ohjtuotanto.varausjarjestelma;
 
 import javafx.application.Application;
@@ -17,7 +18,7 @@ import java.sql.SQLException;
 public class Paaohjelma extends Application {
 
     public static void main(String[] args) {
-        launch(args);
+        Application.launch(args);
     }
 
     @Override
@@ -78,6 +79,7 @@ public class Paaohjelma extends Application {
             }
         });
 
+
         Scene kirjautuminen = new Scene(kirjautumisetvbox,500,500);
 
         Button lisaaAlue = new Button("Lisää uusi alue");
@@ -85,15 +87,15 @@ public class Paaohjelma extends Application {
         Button lisaaPalvelu = new Button("Lisää uusi palvelu");
         Button lisaaAsiakas = new Button("Lisää uusi asiakas");
 
-        Button muokkaaAlue = new Button("Muokkaa aluetta");
-        Button muokkaaMokki = new Button("Muokkaa mökkiä");
-        Button muokkaaPalvelu = new Button("Muokkaa palvelua");
-        Button muokkaaAsiakas = new Button("Muokkaa asiakastietoa");
+        Button takaisinAlue = new Button("Takaisin");
+        Button takaisinMokki = new Button("Takaisin");
+        Button takaisinPalvelu = new Button("Takaisin");
+        Button takaisinAsiakas = new Button("Takaisin");
 
-        Button poistaAlue = new Button("Poista alue");
-        Button poistaMokki = new Button("Poista mökki");
-        Button poistaPalvelu = new Button("Poista palvelu");
-        Button poistaAsiakas = new Button("Poista asiakastieto");
+        Button muokkaaAlue = new Button("Muokkaa/poista\n      alueita");
+        Button muokkaaMokki = new Button("Muokkaa/poista\n     mökkejä");
+        Button muokkaaPalvelu = new Button("Muokkaa/poista\n     palveluita");
+        Button muokkaaAsiakas = new Button("Muokkaa/poista\n    asiakastietoja");
 
         lisaaAsiakas.setStyle("-fx-border-color: Green");
         lisaaMokki.setStyle("-fx-border-color: Green");
@@ -105,11 +107,6 @@ public class Paaohjelma extends Application {
         muokkaaAsiakas.setStyle("-fx-border-color: Blue");
         muokkaaPalvelu.setStyle("-fx-border-color: Blue");
 
-        poistaAlue.setStyle("-fx-border-color: Red");
-        poistaPalvelu.setStyle("-fx-border-color: Red");
-        poistaAsiakas.setStyle("-fx-border-color: Red");
-        poistaMokki.setStyle("-fx-border-color: Red");
-
         lisaaAlue.setPrefSize(140,100);
         lisaaMokki.setPrefSize(140,100);
         lisaaPalvelu.setPrefSize(140,100);
@@ -118,11 +115,6 @@ public class Paaohjelma extends Application {
         muokkaaMokki.setPrefSize(140,100);
         muokkaaPalvelu.setPrefSize(140,100);
         muokkaaAsiakas.setPrefSize(140,100);
-        poistaAlue.setPrefSize(140,100);
-        poistaMokki.setPrefSize(140,100);
-        poistaPalvelu.setPrefSize(140,100);;
-        poistaAsiakas.setPrefSize(140,100);
-
 
         GridPane kaikkiMuokattavat = new GridPane(15,15);
 
@@ -136,19 +128,36 @@ public class Paaohjelma extends Application {
         kaikkiMuokattavat.add(muokkaaPalvelu,2,1);
         kaikkiMuokattavat.add(muokkaaAsiakas,3,1);
 
-        kaikkiMuokattavat.add(poistaAlue,0,2);
-        kaikkiMuokattavat.add(poistaMokki,1,2);
-        kaikkiMuokattavat.add(poistaPalvelu,2,2);
-        kaikkiMuokattavat.add(poistaAsiakas,3,2);
-
+        // Alueen lisäys
         Label alueennimilb = new Label("Alueen nimi");
         TextField alueennimitf = new TextField();
         Button lisaaAluebt = new Button("Lisää");
         GridPane aluidentiedotGP = new GridPane(15,15);
+        BorderPane alueBP = new BorderPane();
+
+        //Alueen muokkaus
+        Button muokkaabt = new Button("Muokkaa");
+        muokkaabt.setVisible(false);
+        Button poistabt = new Button("Poista");
+        poistabt.setVisible(false);
+        ObservableList<String> listaAlueista = komennot.valitseKaikkiAlueet();
+        ComboBox alueMuokkauscb = new ComboBox(FXCollections.observableArrayList(listaAlueista));
+        alueMuokkauscb.setMinWidth(100);
+        alueMuokkauscb.setVisible(false);
+        HBox alueHBox = new HBox(150);
+        alueHBox.setPadding(new Insets(5, 5, 5, 5));
+        alueHBox.getChildren().addAll(takaisinAlue, alueMuokkauscb);
+        HBox alueButtonit = new HBox(15);
+        alueButtonit.getChildren().addAll(lisaaAluebt, muokkaabt, poistabt);
+        Label aluemuokkausohje = new Label("Valitse alue ylhäältä\nja voit joko muokata sen nimeä\ntai poistaa sen");
+        aluemuokkausohje.setVisible(false);
 
         aluidentiedotGP.add(alueennimilb,0,0);
         aluidentiedotGP.add(alueennimitf,1,0);
-        aluidentiedotGP.add(lisaaAluebt,1,1);
+        aluidentiedotGP.add(alueButtonit,1,1);
+        aluidentiedotGP.add(aluemuokkausohje, 1, 2);
+        alueBP.setCenter(aluidentiedotGP);
+        alueBP.setTop(alueHBox);
 
         Button lisaaPalvelubt = new Button("Lisää");
         Label palvelunNimilb = new Label("Palvelun nimi");
@@ -166,6 +175,21 @@ public class Paaohjelma extends Application {
         palvelunkuvaustf.setWrapText(true);
         integerinTarkistus(palvelunhintatf);
         integerinTarkistus(palvelunAlvtf);
+        BorderPane palveluBP = new BorderPane();
+
+        //Palvelun muokkaamis scenen honmia
+        ObservableList<String> palvelutlista = komennot.valitseKaikkiPalvelut();
+        ComboBox muokkaaPalveluitacb = new ComboBox(FXCollections.observableArrayList(palvelutlista));
+        muokkaaPalveluitacb.setVisible(false);
+        muokkaaPalveluitacb.setMinWidth(100);
+        HBox palvelutHBox = new HBox(15);
+        Button palveluMuokkaabt = new Button("Muokkaa");
+        palveluMuokkaabt.setVisible(false);
+        Button palveluPoistabt = new Button("Poista");
+        palveluPoistabt.setVisible(false);
+        Label palvelunmuokkausohje = new Label("Valitse palvelu ylhäältä\nja voit muokata sen tietoja\ntai poistaa sen");
+        palvelunmuokkausohje.setVisible(false);
+        palvelutHBox.getChildren().addAll(lisaaPalvelubt, palveluMuokkaabt, palveluPoistabt);
 
         GridPane palveluidentiedotGP = new GridPane(15,15);
         palveluidentiedotGP.add(palvelunNimilb,0,0);
@@ -178,7 +202,11 @@ public class Paaohjelma extends Application {
         palveluidentiedotGP.add(palvelunAlvtf,1,3);
         palveluidentiedotGP.add(palvelunAlueenlb,0,4);
         palveluidentiedotGP.add(palvelunAlueencb,1,4);
-        palveluidentiedotGP.add(lisaaPalvelubt,1,5);
+        palveluidentiedotGP.add(palvelutHBox,1,5);
+        palveluidentiedotGP.add(muokkaaPalveluitacb, 2, 0);
+        palveluidentiedotGP.add(palvelunmuokkausohje, 2, 1);
+        palveluBP.setCenter(palveluidentiedotGP);
+        palveluBP.setTop(takaisinPalvelu);
 
 
         Button lisaaAsiakasbt = new Button("Lisää");
@@ -197,6 +225,21 @@ public class Paaohjelma extends Application {
         integerinTarkistus(asiakaanPostinumerotf);
         postiNroTarkistus(asiakaanPostinumerotf);
         integerinTarkistus(asiakaanPuhelinnrotf);
+        BorderPane asiakasBP = new BorderPane();
+
+        //Asiakkaan muokkaus
+        ObservableList<Integer> asiakkaanID = komennot.valitseKaikkiAsiakkaat();
+        ComboBox asiakkaanMuokkauscb = new ComboBox(FXCollections.observableArrayList(asiakkaanID));
+        asiakkaanMuokkauscb.setVisible(false);
+        asiakkaanMuokkauscb.setMinWidth(100);
+        HBox asiakasHBox = new HBox(15);
+        Button asiakasMuokkaabt = new Button("Muokkaa");
+        asiakasMuokkaabt.setVisible(false);
+        Button asiakasPoistabt = new Button("Poista");
+        asiakasPoistabt.setVisible(false);
+        asiakasHBox.getChildren().addAll(lisaaAsiakasbt, asiakasMuokkaabt, asiakasPoistabt);
+        Label asiakkaanmuokkausohje = new Label("Valitse asiakas ylhäältä\nja voit muokata heidän tietoja\ntai poistaa heidät");
+        asiakkaanmuokkausohje.setVisible(false);
 
         GridPane asiakaantiedotGP = new GridPane(15,15);
         asiakaantiedotGP.add(asiakaanNimilb,0,0);
@@ -211,7 +254,11 @@ public class Paaohjelma extends Application {
         asiakaantiedotGP.add(asiakaanSahkopostitf,1,4);
         asiakaantiedotGP.add(asiakaanPuhelinnrolb,0,5);
         asiakaantiedotGP.add(asiakaanPuhelinnrotf,1,5);
-        asiakaantiedotGP.add(lisaaAsiakasbt,0,6);
+        asiakaantiedotGP.add(asiakasHBox,1,6);
+        asiakaantiedotGP.add(asiakkaanMuokkauscb, 2, 0);
+        asiakaantiedotGP.add(asiakkaanmuokkausohje,2,1);
+        asiakasBP.setCenter(asiakaantiedotGP);
+        asiakasBP.setTop(takaisinAsiakas);
 
         Button lisaaMokkibt = new Button("Lisää");
         Label mokinNimilb = new Label("Mökin nimi");
@@ -232,8 +279,21 @@ public class Paaohjelma extends Application {
         mokinVaruselutf.setPrefSize(100,80);
         mokinKuvaustf.setWrapText(true);
         mokinVaruselutf.setWrapText(true);
+        BorderPane mokkiBP = new BorderPane();
 
-
+        //Mökkien muokkaus scene honma jutu
+        ObservableList<String> mokit = komennot.valitseKaikkiMokit();
+        ComboBox mokkienMuokkauscb = new ComboBox(FXCollections.observableArrayList(mokit));
+        mokkienMuokkauscb.setMinWidth(100);
+        mokkienMuokkauscb.setVisible(false);
+        Button mokkiMuokkaabt = new Button("Muokkaa");
+        Button mokkiPoistabt = new Button("Poista");
+        HBox mokkiHBox = new HBox(15);
+        mokkiHBox.getChildren().addAll(lisaaMokkibt, mokkiMuokkaabt, mokkiPoistabt);
+        mokkiMuokkaabt.setVisible(false);
+        mokkiPoistabt.setVisible(false);
+        Label mokkienmuokkausohje = new Label("Valitse mökki ylhäältä\nja voit muokata sen tietoja\ntai poistaa sen");
+        mokkienmuokkausohje.setVisible(false);
 
 
         GridPane mokintiedotGP = new GridPane(15,15);
@@ -249,20 +309,23 @@ public class Paaohjelma extends Application {
         mokintiedotGP.add(mokinHenkilomaaratf,1,4);
         mokintiedotGP.add(mokinVaruselulb,0,5);
         mokintiedotGP.add(mokinVaruselutf,1,5);
-        mokintiedotGP.add(lisaaMokkibt,1,6);
+        mokintiedotGP.add(mokkiHBox,1,6);
+        mokintiedotGP.add(mokkienMuokkauscb, 2, 0);
+        mokintiedotGP.add(mokkienmuokkausohje,2, 1);
+        mokkiBP.setCenter(mokintiedotGP);
+        mokkiBP.setTop(takaisinMokki);
 
 
-
-        Scene mokinLisausValikko = new Scene(mokintiedotGP,500,500);
+        Scene mokinLisausValikko = new Scene(mokkiBP,550,550);
         mokintiedotGP.setAlignment(Pos.CENTER);
 
-        Scene asiakaanLisausValikko = new Scene(asiakaantiedotGP,500,500);
+        Scene asiakaanLisausValikko = new Scene(asiakasBP,500,500);
         asiakaantiedotGP.setAlignment(Pos.CENTER);
 
-        Scene alueenLisausValikko = new Scene(aluidentiedotGP,500,500);
+        Scene alueenLisausValikko = new Scene(alueBP,500,500);
         aluidentiedotGP.setAlignment(Pos.CENTER);
 
-        Scene palveluidenLisausValikko = new Scene(palveluidentiedotGP,500,500);
+        Scene palveluidenLisausValikko = new Scene(palveluBP,550,550);
         palveluidentiedotGP.setAlignment(Pos.CENTER);
 
         BorderPane pane = new BorderPane(kaikkiMuokattavat);
@@ -270,10 +333,101 @@ public class Paaohjelma extends Application {
 
         Scene muokkaausvalikko = new Scene(pane,640,400);
 
-
         primaryStage.setTitle("Mökkivarausjärjestelmä");
-        primaryStage.setScene(paavalikko);
+        primaryStage.setScene(muokkaausvalikko);
         primaryStage.show();
+
+        //Alkuvalikon lisäysnapit
+        lisaaAlue.setOnAction(e -> {
+            primaryStage.setScene(alueenLisausValikko);
+        });
+        lisaaMokki.setOnAction(e -> {
+            primaryStage.setScene(mokinLisausValikko);
+        });
+        lisaaPalvelu.setOnAction(e -> {
+            primaryStage.setScene(palveluidenLisausValikko);
+        });
+        lisaaAsiakas.setOnAction(e -> {
+            primaryStage.setScene(asiakaanLisausValikko);
+        });
+
+        //Alkuvalikon muokkausnapit
+        muokkaaAlue.setOnAction(e -> {
+            primaryStage.setScene(alueenLisausValikko);
+            alueMuokkauscb.setVisible(true);
+            lisaaAluebt.setVisible(false);
+            muokkaabt.setVisible(true);
+            poistabt.setVisible(true);
+            aluemuokkausohje.setVisible(true);
+        });
+        muokkaaMokki.setOnAction(e -> {
+            primaryStage.setScene(mokinLisausValikko);
+            mokkienMuokkauscb.setVisible(true);
+            lisaaMokkibt.setVisible(false);
+            mokkiMuokkaabt.setVisible(true);
+            mokkiPoistabt.setVisible(true);
+            mokkienmuokkausohje.setVisible(true);
+        });
+        muokkaaPalvelu.setOnAction(e -> {
+            primaryStage.setScene(palveluidenLisausValikko);
+            muokkaaPalveluitacb.setVisible(true);
+            lisaaPalvelubt.setVisible(false);
+            palveluMuokkaabt.setVisible(true);
+            palveluPoistabt.setVisible(true);
+            palvelunmuokkausohje.setVisible(true);
+        });
+        muokkaaAsiakas.setOnAction(e -> {
+            primaryStage.setScene(asiakaanLisausValikko);
+            asiakkaanMuokkauscb.setVisible(true);
+            lisaaAsiakasbt.setVisible(false);
+            asiakasMuokkaabt.setVisible(true);
+            asiakasPoistabt.setVisible(true);
+            asiakkaanmuokkausohje.setVisible(true);
+        });
+
+        //Takaisin napit
+        takaisinMokki.setOnAction(e -> {
+            primaryStage.setScene(muokkaausvalikko);
+            if(mokkienMuokkauscb.isVisible()){
+                mokkienMuokkauscb.setVisible(false);
+                lisaaMokkibt.setVisible(true);
+                mokkiMuokkaabt.setVisible(false);
+                mokkiPoistabt.setVisible(false);
+                mokkienmuokkausohje.setVisible(false);
+            }
+        });
+        takaisinAlue.setOnAction(e -> {
+            primaryStage.setScene(muokkaausvalikko);
+            alueMuokkauscb.setValue(null);
+            if(alueMuokkauscb.isVisible()){
+                alueMuokkauscb.setVisible(false);
+                lisaaAluebt.setVisible(true);
+                muokkaabt.setVisible(false);
+                poistabt.setVisible(false);
+                aluemuokkausohje.setVisible(false);
+            }
+        });
+        takaisinAsiakas.setOnAction(e -> {
+            primaryStage.setScene(muokkaausvalikko);
+            asiakkaanMuokkauscb.setValue(null);
+            if(asiakkaanMuokkauscb.isVisible()){
+                asiakkaanMuokkauscb.setVisible(false);
+                lisaaAsiakasbt.setVisible(true);
+                asiakasMuokkaabt.setVisible(false);
+                asiakasPoistabt.setVisible(false);
+                asiakkaanmuokkausohje.setVisible(false);
+            }
+        });
+        takaisinPalvelu.setOnAction(e -> {
+            primaryStage.setScene(muokkaausvalikko);
+            if(muokkaaPalveluitacb.isVisible()){
+                muokkaaPalveluitacb.setVisible(false);
+                lisaaPalvelubt.setVisible(true);
+                palveluMuokkaabt.setVisible(false);
+                palveluPoistabt.setVisible(false);
+                palvelunmuokkausohje.setVisible(false);
+            }
+        });
 
     }
     private void integerinTarkistus (TextField textField) {
