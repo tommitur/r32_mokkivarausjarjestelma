@@ -20,6 +20,9 @@ public class Paaohjelma extends Application {
         Application.launch(args);
     }
 
+    public ObservableList<String> listaAlueista;
+    public ComboBox alueMuokkauscb;
+
     @Override
     public void start(Stage primaryStage) throws SQLException {
 
@@ -139,8 +142,8 @@ public class Paaohjelma extends Application {
         muokkaabt.setVisible(false);
         Button poistabt = new Button("Poista");
         poistabt.setVisible(false);
-        ObservableList<String> listaAlueista = komennot.valitseKaikkiAlueet();
-        ComboBox alueMuokkauscb = new ComboBox(FXCollections.observableArrayList(listaAlueista));
+        listaAlueista = komennot.valitseKaikkiAlueet();
+        alueMuokkauscb = new ComboBox(FXCollections.observableArrayList(listaAlueista));
         alueMuokkauscb.setMinWidth(100);
         alueMuokkauscb.setVisible(false);
         HBox alueHBox = new HBox(150);
@@ -426,6 +429,20 @@ public class Paaohjelma extends Application {
                 palveluPoistabt.setVisible(false);
                 palvelunmuokkausohje.setVisible(false);
             }
+        });
+
+        lisaaAluebt.setOnAction(e -> {
+            try {
+                if(!alueennimitf.getText().isEmpty()){
+                    komennot.updateQuery("insert into alue (nimi) values ('"+ alueennimitf.getText() +  "')");
+                    listaAlueista = komennot.valitseKaikkiAlueet();
+                    alueMuokkauscb.setItems(FXCollections.observableArrayList(listaAlueista));
+                }
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+            primaryStage.setScene(muokkaausvalikko);
+            alueennimitf.clear();
         });
 
     }
