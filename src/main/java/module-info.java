@@ -6,4 +6,5 @@ module ohjtuotanto.varausjarjestelma {
 
     opens ohjtuotanto.varausjarjestelma to javafx.fxml;
     exports ohjtuotanto.varausjarjestelma;
+
 }
