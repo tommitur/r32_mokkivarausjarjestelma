@@ -7,9 +7,9 @@ public class testicommit {
 
         try{
             Connection connection = DriverManager.getConnection(
-                    "jdbc:mysql://127.0.0.1:3306/vn",
+                    "jdbc:mysql://127.0.0.1:3307/vn",
                     "root",
-                    "Kukkakaali50"
+                    "root"
             );
 
             Statement statement = connection.createStatement();
