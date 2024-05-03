@@ -9,9 +9,10 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
-
 import java.sql.SQLException;
+
 
 public class Paaohjelma extends Application {
 
@@ -24,35 +25,48 @@ public class Paaohjelma extends Application {
 
         SqlKomennot komennot = new SqlKomennot();
 
-        HBox valinnoille = new HBox(10);
-        valinnoille.setPadding(new Insets(10,10,10,10));
+        Pane asettelu = new Pane();
 
-        Label paikkakunta = new Label();
-        paikkakunta.setText("Paikkakunta: ");
+        HBox suodattimet = new HBox(25);
+        suodattimet.setPadding(new Insets(15,10,10,15));
+
+        VBox hinta = new VBox();
+
+        HBox slider = new HBox(5);
 
         ObservableList<String>alueidenlista = FXCollections.observableArrayList();
         alueidenlista = komennot.valitseKaikkiAlueet();
         ComboBox alueet = new ComboBox(FXCollections.observableArrayList(alueidenlista));
+        alueet.setPromptText("Paikkakunta");
 
-        Label hinta = new Label();
-        hinta.setText("hinta €");
+        Text hinta0 = new Text("0€");
+        Text rahanArvo = new Text("0€");
+        Text hinta1000 = new Text("1000€");
 
         Slider hinnansaato = new Slider(0,1000,0);
         hinnansaato.setOrientation(Orientation.HORIZONTAL);
-        hinnansaato.setShowTickLabels(true);
-        hinnansaato.setShowTickMarks(true);
-        hinnansaato.setMajorTickUnit(50);
         hinnansaato.setBlockIncrement(50);
+        //hinnansaato.setShowTickLabels(true);
+        hinnansaato.setShowTickMarks(true);
+        hinnansaato.setMajorTickUnit(250);
+
+        hinnansaato.valueProperty().addListener((o, oldValue, newValue) -> {
+            int newHinta = newValue.intValue();
+            rahanArvo.setText("0-" + newHinta + "€");
+        });
 
         Button hae = new Button("Hae");
+        hae.setMinWidth(50);
 
-        valinnoille.getChildren().addAll(paikkakunta, alueet, hinta, hinnansaato, hae);
-        valinnoille.setAlignment(Pos.TOP_LEFT);
+        hinta.getChildren().addAll(hinnansaato, rahanArvo);
+        hinta.setAlignment(Pos.TOP_CENTER);
 
+        slider.getChildren().addAll(hinta0, hinta, hinta1000);
 
+        suodattimet.getChildren().addAll(alueet, slider, hae);
+        asettelu.getChildren().add(suodattimet);
 
-
-        Scene paavalikko = new Scene(valinnoille, 600, 400);
+        Scene paavalikko = new Scene(asettelu, 600, 400);
 
         TextField kayttajatunnustf = new TextField();
         TextField salasanatf = new TextField();
