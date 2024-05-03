@@ -10,7 +10,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.sql.SQLException;
@@ -337,7 +336,7 @@ public class Paaohjelma extends Application {
         Scene muokkaausvalikko = new Scene(pane,640,400);
 
         primaryStage.setTitle("Mökkivarausjärjestelmä");
-        primaryStage.setScene(muokkaausvalikko);
+        primaryStage.setScene(paavalikko);
         primaryStage.show();
 
         //Alkuvalikon lisäysnapit
