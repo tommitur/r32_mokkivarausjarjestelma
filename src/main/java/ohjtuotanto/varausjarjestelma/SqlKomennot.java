@@ -10,31 +10,30 @@ public class SqlKomennot {
 
     public SqlKomennot() throws SQLException {
         Connection connection = DriverManager.getConnection(
-                "jdbc:mysql://127.0.0.1:3307/vn",
+                "jdbc:mysql://127.0.0.1:3306/vn",
                 "root",
-                "root"
+                "salis123"
 
         );
         statement = connection.createStatement();
     }
-
-    public ObservableList<String> valitseKaikkiAlueet() throws SQLException {
+    private ObservableList<String> executeQuery(String query) throws SQLException {
         ObservableList<String> lista = FXCollections.observableArrayList();
-        ResultSet set = statement.executeQuery("select nimi from alue");
+        ResultSet set = statement.executeQuery(query);
         while (set.next()) {
             lista.add(set.getString(1));
         }
         return lista;
+    }
+
+    public ObservableList<String> valitseKaikkiAlueet() throws SQLException {
+        return executeQuery("select nimi from alue");
     }
 
     public ObservableList<String> valitseKaikkiAsiakkaat() throws SQLException {
-        ObservableList<String> lista = FXCollections.observableArrayList();
-        ResultSet set = statement.executeQuery("select asiakas_id from asiakas");
-        while (set.next()) {
-            lista.add(set.getString(1));
-        }
-        return lista;
+        return executeQuery("select asiakas_id from asiakas");
     }
+
 
     public ObservableList<String> valitseKaikkiPalvelut() throws SQLException {
         ObservableList<String> lista = FXCollections.observableArrayList();
@@ -44,5 +43,9 @@ public class SqlKomennot {
         }
         return lista;
 
+    }
+
+    public void mokinArvo() throws SQLException {
+        ResultSet set = statement.executeQuery("select hinta from mokki");
     }
 }
