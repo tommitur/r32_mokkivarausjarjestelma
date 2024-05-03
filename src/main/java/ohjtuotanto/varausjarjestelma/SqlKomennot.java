@@ -7,12 +7,13 @@ import java.sql.*;
 
 public class SqlKomennot {
     Statement statement;
+    Connection connection;
 
     public SqlKomennot() throws SQLException {
-        Connection connection = DriverManager.getConnection(
+        connection = DriverManager.getConnection(
                 "jdbc:mysql://127.0.0.1:3306/vn",
                 "root",
-                "Kukkakaali50"
+                "Yksitoista123"
 
         );
         statement = connection.createStatement();
@@ -45,4 +46,5 @@ public class SqlKomennot {
         return lista;
 
     }
+
 }
