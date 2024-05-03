@@ -1,4 +1,3 @@
-
 package ohjtuotanto.varausjarjestelma;
 
 import javafx.application.Application;
@@ -10,8 +9,9 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
-
 import java.sql.SQLException;
 
 public class Paaohjelma extends Application {
@@ -28,35 +28,68 @@ public class Paaohjelma extends Application {
 
         SqlKomennot komennot = new SqlKomennot();
 
-        HBox valinnoille = new HBox(10);
-        valinnoille.setPadding(new Insets(10,10,10,10));
+        BorderPane asettelu = new BorderPane();
 
-        Label paikkakunta = new Label();
-        paikkakunta.setText("Paikkakunta: ");
+        HBox kaikille = new HBox(30);
+        kaikille.setPadding(new Insets(15,10,15,10));
+        kaikille.setStyle("-fx-border-color: black; -fx-border-width: 2px;");
+        //kaikille.setStyle("-fx-background-color: gray");
+
+        HBox alueelle = new HBox(5);
+        HBox sliderille = new HBox(5);
+        VBox hinnalle = new VBox();
+
+        Text paikkakunta = new Text("Paikkakunta:");
 
         ObservableList<String>alueidenlista = FXCollections.observableArrayList();
         alueidenlista = komennot.valitseKaikkiAlueet();
         ComboBox alueet = new ComboBox(FXCollections.observableArrayList(alueidenlista));
+        alueet.setPromptText("Valitse");
 
-        Label hinta = new Label();
-        hinta.setText("hinta €");
+        Text hinta0 = new Text("hinta/yö 0€");
+        Text rahanArvo = new Text("0€");
+        Text hinta1000 = new Text("1000€");
 
         Slider hinnansaato = new Slider(0,1000,0);
         hinnansaato.setOrientation(Orientation.HORIZONTAL);
-        hinnansaato.setShowTickLabels(true);
+        hinnansaato.setBlockIncrement(100);
         hinnansaato.setShowTickMarks(true);
-        hinnansaato.setMajorTickUnit(50);
-        hinnansaato.setBlockIncrement(50);
+        hinnansaato.setMajorTickUnit(250);
+
+        final double raja = 100.0; //finaali
+
+        hinnansaato.setOnMouseDragged(event -> {
+            double newValue = Math.round(hinnansaato.getValue() / raja) * raja; // Pyöristetään sadan välein
+            hinnansaato.setValue(newValue);
+        });
+
+        hinnansaato.valueProperty().addListener((o, oldValue, newValue) -> {
+            int newHinta = newValue.intValue();
+            rahanArvo.setText("0-" + newHinta + "€");
+        });
+
+
+        ComboBox<Integer> vieraat = new ComboBox<>();
+        vieraat.setPromptText("vieraiden lkm");
+        vieraat.setItems(FXCollections.observableArrayList(
+                1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12
+        ));
 
         Button hae = new Button("Hae");
+        hae.setMinWidth(50);
 
-        valinnoille.getChildren().addAll(paikkakunta, alueet, hinta, hinnansaato, hae);
-        valinnoille.setAlignment(Pos.TOP_LEFT);
+        alueelle.getChildren().addAll(paikkakunta, alueet);
 
+        hinnalle.getChildren().addAll(hinnansaato, rahanArvo);
+        hinnalle.setAlignment(Pos.CENTER);
 
+        sliderille.getChildren().addAll(hinta0, hinnalle, hinta1000);
 
+        kaikille.getChildren().addAll(alueelle, sliderille, vieraat, hae);
+        asettelu.setTop(kaikille);
 
-        Scene paavalikko = new Scene(valinnoille, 600, 400);
+        Scene paavalikko = new Scene(asettelu, 700, 400);
+
 
         TextField kayttajatunnustf = new TextField();
         TextField salasanatf = new TextField();
@@ -336,7 +369,7 @@ public class Paaohjelma extends Application {
         Scene muokkaausvalikko = new Scene(pane,640,400);
 
         primaryStage.setTitle("Mökkivarausjärjestelmä");
-        primaryStage.setScene(paavalikko);
+        primaryStage.setScene(muokkaausvalikko);
         primaryStage.show();
 
         //Alkuvalikon lisäysnapit
