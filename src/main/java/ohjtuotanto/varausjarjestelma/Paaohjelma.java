@@ -56,7 +56,7 @@ public class Paaohjelma extends Application {
         hinnansaato.setShowTickMarks(true);
         hinnansaato.setMajorTickUnit(250);
 
-        final double raja = 100.0;
+        final double raja = 100.0; //finaali
 
         hinnansaato.setOnMouseDragged(event -> {
             double newValue = Math.round(hinnansaato.getValue() / raja) * raja; // Pyöristetään sadan välein
