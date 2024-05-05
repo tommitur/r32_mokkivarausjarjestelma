@@ -9,7 +9,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import java.sql.SQLException;
@@ -88,7 +87,7 @@ public class Paaohjelma extends Application {
         kaikille.getChildren().addAll(alueelle, sliderille, vieraat, hae);
         asettelu.setTop(kaikille);
 
-        Scene paavalikko = new Scene(asettelu, 700, 400);
+        Scene paavalikko = new Scene(asettelu, 900, 600);
 
 
         TextField kayttajatunnustf = new TextField();
@@ -434,6 +433,7 @@ public class Paaohjelma extends Application {
         takaisinAlue.setOnAction(e -> {
             primaryStage.setScene(muokkaausvalikko);
             alueMuokkauscb.setValue(null);
+            alueennimitf.clear();
             if(alueMuokkauscb.isVisible()){
                 alueMuokkauscb.setVisible(false);
                 lisaaAluebt.setVisible(true);
