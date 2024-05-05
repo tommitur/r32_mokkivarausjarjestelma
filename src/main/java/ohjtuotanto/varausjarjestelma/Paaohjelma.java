@@ -199,13 +199,17 @@ public class Paaohjelma extends Application {
         Label palvelunHintalb = new Label("Palvelun hinta");
         Label palvelunAlvlb = new Label("Palvelun alv");
         Label palvelunAlueenlb = new Label("Palvelun alueen nimi");
+        Label palvelunIDlb = new Label("Palvelun id");
         TextField palvelunnimitf = new TextField();
         TextArea palvelunkuvaustf = new TextArea();
         TextField palvelunhintatf = new TextField();
         TextField palvelunAlvtf = new TextField();
-        ComboBox palvelunAlueencb = new ComboBox();
+        TextField palvelunIDtf = new TextField();
+        ObservableList<String> listaAlueistaPalveluille = komennot.valitseKaikkiAlueet();
+        ComboBox palvelunAlueencb = new ComboBox(FXCollections.observableArrayList(listaAlueistaPalveluille));
         palvelunAlueencb.setPrefSize(100,10);
         palvelunkuvaustf.setPrefSize(100,80);
+        integerinTarkistus(palvelunIDtf);
         palvelunkuvaustf.setWrapText(true);
         integerinTarkistus(palvelunhintatf);
         integerinTarkistus(palvelunAlvtf);
@@ -234,9 +238,11 @@ public class Paaohjelma extends Application {
         palveluidentiedotGP.add(palvelunhintatf,1,2);
         palveluidentiedotGP.add(palvelunAlvlb,0,3);
         palveluidentiedotGP.add(palvelunAlvtf,1,3);
-        palveluidentiedotGP.add(palvelunAlueenlb,0,4);
-        palveluidentiedotGP.add(palvelunAlueencb,1,4);
-        palveluidentiedotGP.add(palvelutHBox,1,5);
+        palveluidentiedotGP.add(palvelunIDlb, 0, 4);
+        palveluidentiedotGP.add(palvelunIDtf, 1, 4);
+        palveluidentiedotGP.add(palvelunAlueenlb,0,5);
+        palveluidentiedotGP.add(palvelunAlueencb,1,5);
+        palveluidentiedotGP.add(palvelutHBox,1,6);
         palveluidentiedotGP.add(muokkaaPalveluitacb, 2, 0);
         palveluidentiedotGP.add(palvelunmuokkausohje, 2, 1);
         palveluBP.setCenter(palveluidentiedotGP);
@@ -250,12 +256,14 @@ public class Paaohjelma extends Application {
         Label asiakaanPostinumerolb = new Label("Postinumero");
         Label asiakaanSahkopostilb = new Label("Sähköposti");
         Label asiakaanPuhelinnrolb = new Label("Puhelinnumero");
+        Label asiakkaanPostitoimipaikkalb = new Label("Postitoimipaikka");
         TextField asiakaanNimitf = new TextField();
         TextField asiakaanSukunimitf = new TextField();
         TextField asiakaanOsoitetf = new TextField();
         TextField asiakaanPostinumerotf = new TextField();
         TextField asiakaanSahkopostitf = new TextField();
         TextField asiakaanPuhelinnrotf = new TextField();
+        TextField asiakkaanPostitoimipaikkatf = new TextField();
         integerinTarkistus(asiakaanPostinumerotf);
         postiNroTarkistus(asiakaanPostinumerotf);
         integerinTarkistus(asiakaanPuhelinnrotf);
@@ -284,11 +292,13 @@ public class Paaohjelma extends Application {
         asiakaantiedotGP.add(asiakaanOsoitetf,1,2);
         asiakaantiedotGP.add(asiakaanPostinumerolb,0,3);
         asiakaantiedotGP.add(asiakaanPostinumerotf,1,3);
-        asiakaantiedotGP.add(asiakaanSahkopostilb,0,4);
-        asiakaantiedotGP.add(asiakaanSahkopostitf,1,4);
-        asiakaantiedotGP.add(asiakaanPuhelinnrolb,0,5);
-        asiakaantiedotGP.add(asiakaanPuhelinnrotf,1,5);
-        asiakaantiedotGP.add(asiakasHBox,1,6);
+        asiakaantiedotGP.add(asiakkaanPostitoimipaikkalb, 0, 4);
+        asiakaantiedotGP.add(asiakkaanPostitoimipaikkatf, 1, 4);
+        asiakaantiedotGP.add(asiakaanSahkopostilb,0,5);
+        asiakaantiedotGP.add(asiakaanSahkopostitf,1,5);
+        asiakaantiedotGP.add(asiakaanPuhelinnrolb,0,6);
+        asiakaantiedotGP.add(asiakaanPuhelinnrotf,1,6);
+        asiakaantiedotGP.add(asiakasHBox,1,7);
         asiakaantiedotGP.add(asiakkaanMuokkauscb, 2, 0);
         asiakaantiedotGP.add(asiakkaanmuokkausohje,2,1);
         asiakasBP.setCenter(asiakaantiedotGP);
@@ -301,12 +311,18 @@ public class Paaohjelma extends Application {
         Label mokinKuvaslb = new Label("Mökin kuvaus");
         Label mokinHenkilomaaralb = new Label("Mökin henkilömäärä");
         Label mokinVaruselulb = new Label("Mökinvarustelu");
+        Label mokinPostinrolb = new Label("Mökin postinumero");
+        Label mokinAluelb = new Label("Mökin alue");
+        ObservableList<String> mokinAlueet = komennot.valitseKaikkiAlueet();
+        ComboBox mokinalueetcb = new ComboBox(FXCollections.observableArrayList(mokinAlueet));
         TextField mokinNimitf = new TextField();
         TextField mokinOsoitetf = new TextField();
         TextField mokinHintatf = new TextField();
         TextArea mokinKuvaustf = new TextArea();
         TextField mokinHenkilomaaratf = new TextField();
         TextArea mokinVaruselutf = new TextArea();
+        TextField mokinPostinrotf = new TextField();
+        postiNroTarkistus(mokinPostinrotf);
         integerinTarkistus(mokinHintatf);
         integerinTarkistus(mokinHenkilomaaratf);
         mokinKuvaustf.setPrefSize(100,80);
@@ -343,14 +359,18 @@ public class Paaohjelma extends Application {
         mokintiedotGP.add(mokinHenkilomaaratf,1,4);
         mokintiedotGP.add(mokinVaruselulb,0,5);
         mokintiedotGP.add(mokinVaruselutf,1,5);
-        mokintiedotGP.add(mokkiHBox,1,6);
+        mokintiedotGP.add(mokinPostinrolb, 0, 6);
+        mokintiedotGP.add(mokinPostinrotf, 1, 6);
+        mokintiedotGP.add(mokinAluelb, 0, 7);
+        mokintiedotGP.add(mokinalueetcb, 1, 7);
+        mokintiedotGP.add(mokkiHBox,1,8);
         mokintiedotGP.add(mokkienMuokkauscb, 2, 0);
         mokintiedotGP.add(mokkienmuokkausohje,2, 1);
         mokkiBP.setCenter(mokintiedotGP);
         mokkiBP.setTop(takaisinMokki);
 
 
-        Scene mokinLisausValikko = new Scene(mokkiBP,550,550);
+        Scene mokinLisausValikko = new Scene(mokkiBP,550,600);
         mokintiedotGP.setAlignment(Pos.CENTER);
 
         Scene asiakaanLisausValikko = new Scene(asiakasBP,500,500);
@@ -478,6 +498,112 @@ public class Paaohjelma extends Application {
             alueennimitf.clear();
         });
 
+        lisaaMokkibt.setOnAction(e -> {
+            try{
+                if(mokinNimitf.getText().isEmpty() || mokinOsoitetf.getText().isEmpty() || mokinHintatf.getText().isEmpty() || mokinKuvaustf.getText().isEmpty() ||
+                        mokinHenkilomaaratf.getText().isEmpty() || mokinVaruselutf.getText().isEmpty() || mokinPostinrotf.getText().isEmpty() || mokinalueetcb.getValue() == null){
+                    //tietoja puuttuu, vois vaikka virhetekstin pistää
+
+                }else{
+                    String id = String.valueOf(komennot.haeAlueenID(String.valueOf(mokinalueetcb.getValue())));
+                    id = id.replaceAll("[\\[\\](){}]","");
+                    if(komennot.haePostriNrot().contains(Integer.valueOf(mokinPostinrotf.getText()))){
+                        komennot.updateQuery("insert into mokki (alue_id, postinro, mokkinimi, katuosoite, hinta, kuvaus, henkilomaara, varustelu) " +
+                                "values ('" + id + "','" + mokinPostinrotf.getText() + "','" + mokinNimitf.getText() + "','" + mokinOsoitetf.getText() + "','"
+                                + mokinHintatf.getText() + "','" + mokinKuvaustf.getText() + "','" + mokinHenkilomaaratf.getText() + "','" + mokinVaruselutf.getText() + "')");
+                        mokinNimitf.clear();
+                        mokinOsoitetf.clear();
+                        mokinHintatf.clear();
+                        mokinKuvaustf.clear();
+                        mokinHenkilomaaratf.clear();
+                        mokinVaruselutf.clear();
+                        mokinPostinrotf.clear();
+                        mokinalueetcb.setValue(null);
+                        primaryStage.setScene(muokkaausvalikko);
+                    }else{
+                        komennot.updateQuery("insert into posti (postinro, toimipaikka) values ('" + Integer.valueOf(mokinPostinrotf.getText()) + "','" + mokinalueetcb.getValue() +"')");
+                        komennot.updateQuery("insert into mokki (alue_id, postinro, mokkinimi, katuosoite, hinta, kuvaus, henkilomaara, varustelu) " +
+                                "values ('" + id + "','" + mokinPostinrotf.getText() + "','" + mokinNimitf.getText() + "','" + mokinOsoitetf.getText() + "','"
+                                + mokinHintatf.getText() + "','" + mokinKuvaustf.getText() + "','" + mokinHenkilomaaratf.getText() + "','" + mokinVaruselutf.getText() + "')");
+                        mokinNimitf.clear();
+                        mokinOsoitetf.clear();
+                        mokinHintatf.clear();
+                        mokinKuvaustf.clear();
+                        mokinHenkilomaaratf.clear();
+                        mokinVaruselutf.clear();
+                        mokinPostinrotf.clear();
+                        mokinalueetcb.setValue(null);
+                        primaryStage.setScene(muokkaausvalikko);
+                    }
+                }
+            }catch (SQLException ex){
+                throw new RuntimeException(ex);
+            }
+        });
+
+        lisaaPalvelubt.setOnAction(e -> {
+            try{
+                if(palvelunnimitf.getText().isEmpty() || palvelunkuvaustf.getText().isEmpty() || palvelunhintatf.getText().isEmpty() ||
+                        palvelunAlvtf.getText().isEmpty() || palvelunIDtf.getText().isEmpty() || palvelunAlueencb.getValue() == null){
+                    //Tietoja puuttuu
+                }else{
+                    String alueid = String.valueOf(komennot.haeAlueenID(String.valueOf(palvelunAlueencb.getValue())));
+                    alueid = alueid.replaceAll("[\\[\\](){}]","");
+                    komennot.updateQuery("insert into palvelu (palvelu_id, alue_id, nimi, kuvaus, hinta, alv) values ('" + palvelunIDtf.getText()
+                            + "','" + alueid + "','" + palvelunnimitf.getText() + "','" + palvelunkuvaustf.getText() + "','" + palvelunhintatf.getText() + "','" + palvelunAlvtf.getText() + "')");
+                    palvelunnimitf.clear();
+                    palvelunkuvaustf.clear();
+                    palvelunhintatf.clear();
+                    palvelunAlvtf.clear();
+                    palvelunIDtf.clear();
+                    palvelunAlueencb.setValue(null);
+                    primaryStage.setScene(muokkaausvalikko);
+                }
+
+            }catch (SQLException ex){
+                throw new RuntimeException(ex);
+            }
+        });
+
+        lisaaAsiakasbt.setOnAction(e -> {
+            try{
+                if(asiakaanNimitf.getText().isEmpty() || asiakaanSukunimitf.getText().isEmpty() || asiakaanOsoitetf.getText().isEmpty() ||
+                        asiakaanPostinumerotf.getText().isEmpty() || asiakkaanPostitoimipaikkatf.getText().isEmpty() || asiakaanSahkopostitf.getText().isEmpty() || asiakaanPuhelinnrotf.getText().isEmpty()){
+                    //Tietoja puuttuu
+                }else{
+                    if(komennot.haePostriNrot().contains(Integer.valueOf(asiakaanPostinumerotf.getText()))){
+                        komennot.updateQuery("insert into asiakas (postinro, etunimi, sukunimi, lahiosoite, email, puhelinnro) values ('" + asiakaanPostinumerotf.getText()
+                                + "','" + asiakaanNimitf.getText() + "','" + asiakaanSukunimitf.getText() + "','" + asiakaanOsoitetf.getText() + "','" +
+                                asiakaanSahkopostitf.getText() + "','" + asiakaanPuhelinnrotf.getText() + "')");
+                        asiakaanNimitf.clear();
+                        asiakaanSukunimitf.clear();
+                        asiakaanOsoitetf.clear();
+                        asiakaanPostinumerotf.clear();
+                        asiakkaanPostitoimipaikkatf.clear();
+                        asiakaanSahkopostitf.clear();
+                        asiakaanPuhelinnrotf.clear();
+                        primaryStage.setScene(muokkaausvalikko);
+                    }else{
+                        komennot.updateQuery("insert into posti (postinro, toimipaikka) values ('" + Integer.valueOf(asiakaanPostinumerotf.getText()) + "','" + asiakkaanPostitoimipaikkatf.getText() +"')");
+                        komennot.updateQuery("insert into asiakas (postinro, etunimi, sukunimi, lahiosoite, email, puhelinnro) values ('" + asiakaanPostinumerotf.getText()
+                                + "','" + asiakaanNimitf.getText() + "','" + asiakaanSukunimitf.getText() + "','" + asiakaanOsoitetf.getText() + "','" +
+                                asiakaanSahkopostitf.getText() + "','" + asiakaanPuhelinnrotf.getText() + "')");
+                        asiakaanNimitf.clear();
+                        asiakaanSukunimitf.clear();
+                        asiakaanOsoitetf.clear();
+                        asiakaanPostinumerotf.clear();
+                        asiakkaanPostitoimipaikkatf.clear();
+                        asiakaanSahkopostitf.clear();
+                        asiakaanPostinumerotf.clear();
+                        primaryStage.setScene(muokkaausvalikko);
+                    }
+                }
+            }catch (SQLException ex){
+                throw new RuntimeException(ex);
+            }
+        });
+
+
     }
     private void integerinTarkistus (TextField textField) {
         textField.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -493,5 +619,7 @@ public class Paaohjelma extends Application {
             }
         });
     }
+
+
 
 }

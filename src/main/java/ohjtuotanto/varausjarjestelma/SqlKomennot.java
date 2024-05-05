@@ -61,6 +61,14 @@ public class SqlKomennot {
 
     }
 
+    public ObservableList<String> haeAlueenID(String alue) throws SQLException{
+        return executeQuery("select alue_id from alue where nimi = '" + alue + "'");
+    }
+
+    public ObservableList<Integer> haePostriNrot() throws SQLException{
+        return executeQueryINT("select postinro from posti");
+    }
+
     public void mokinArvo() throws SQLException {
         ResultSet set = statement.executeQuery("select hinta from mokki");
     }
