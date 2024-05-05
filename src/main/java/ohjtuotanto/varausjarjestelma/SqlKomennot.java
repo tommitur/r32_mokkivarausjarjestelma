@@ -10,7 +10,7 @@ public class SqlKomennot {
     Connection connection;
 
     public SqlKomennot() throws SQLException {
-        Connection connection = DriverManager.getConnection(
+        connection = DriverManager.getConnection(
                 "jdbc:mysql://127.0.0.1:3306/vn",
                 "root",
                 "Yksitoista123"
@@ -59,6 +59,14 @@ public class SqlKomennot {
     public ObservableList<String> valitseKaikkiPalvelut() throws SQLException {
         return executeQuery("select nimi from palvelu");
 
+    }
+
+    public ObservableList<String> haeAlueenID(String alue) throws SQLException{
+        return executeQuery("select alue_id from alue where nimi = '" + alue + "'");
+    }
+
+    public ObservableList<Integer> haePostriNrot() throws SQLException{
+        return executeQueryINT("select postinro from posti");
     }
 
     public void mokinArvo() throws SQLException {
