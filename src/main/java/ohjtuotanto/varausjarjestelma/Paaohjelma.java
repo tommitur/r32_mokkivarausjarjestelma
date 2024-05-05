@@ -445,6 +445,8 @@ public class Paaohjelma extends Application {
             alueennimitf.clear();
         });
 
+        
+
     }
     private void integerinTarkistus (TextField textField) {
         textField.textProperty().addListener((observable, oldValue, newValue) -> {
