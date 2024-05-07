@@ -209,10 +209,10 @@ public class Paaohjelma extends Application {
         ComboBox palvelunAlueencb = new ComboBox(FXCollections.observableArrayList(listaAlueistaPalveluille));
         palvelunAlueencb.setPrefSize(100,10);
         palvelunkuvaustf.setPrefSize(100,80);
-        integerinTarkistus(palvelunIDtf);
+        numeronTarkistus(palvelunIDtf);
         palvelunkuvaustf.setWrapText(true);
-        integerinTarkistus(palvelunhintatf);
-        integerinTarkistus(palvelunAlvtf);
+        numeronTarkistus(palvelunhintatf);
+        numeronTarkistus(palvelunAlvtf);
         BorderPane palveluBP = new BorderPane();
 
         //Palvelun muokkaamis scenen honmia
@@ -264,9 +264,9 @@ public class Paaohjelma extends Application {
         TextField asiakaanSahkopostitf = new TextField();
         TextField asiakaanPuhelinnrotf = new TextField();
         TextField asiakkaanPostitoimipaikkatf = new TextField();
-        integerinTarkistus(asiakaanPostinumerotf);
+        numeronTarkistus(asiakaanPostinumerotf);
         postiNroTarkistus(asiakaanPostinumerotf);
-        integerinTarkistus(asiakaanPuhelinnrotf);
+        numeronTarkistus(asiakaanPuhelinnrotf);
         BorderPane asiakasBP = new BorderPane();
 
         //Asiakkaan muokkaus
@@ -323,8 +323,8 @@ public class Paaohjelma extends Application {
         TextArea mokinVaruselutf = new TextArea();
         TextField mokinPostinrotf = new TextField();
         postiNroTarkistus(mokinPostinrotf);
-        integerinTarkistus(mokinHintatf);
-        integerinTarkistus(mokinHenkilomaaratf);
+        numeronTarkistus(mokinHintatf);
+        numeronTarkistus(mokinHenkilomaaratf);
         mokinKuvaustf.setPrefSize(100,80);
         mokinVaruselutf.setPrefSize(100,80);
         mokinKuvaustf.setWrapText(true);
@@ -370,6 +370,7 @@ public class Paaohjelma extends Application {
         mokkiBP.setTop(takaisinMokki);
 
 
+
         Scene mokinLisausValikko = new Scene(mokkiBP,550,600);
         mokintiedotGP.setAlignment(Pos.CENTER);
 
@@ -407,6 +408,12 @@ public class Paaohjelma extends Application {
 
         //Alkuvalikon muokkausnapit
         muokkaaAlue.setOnAction(e -> {
+            try {
+                listaAlueista = komennot.valitseKaikkiAlueet();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+            alueMuokkauscb.setItems(FXCollections.observableArrayList(listaAlueista));
             primaryStage.setScene(alueenLisausValikko);
             alueMuokkauscb.setVisible(true);
             lisaaAluebt.setVisible(false);
@@ -484,6 +491,62 @@ public class Paaohjelma extends Application {
             }
         });
 
+        alueMuokkauscb.setOnAction(e -> {
+            Object selectedItem = alueMuokkauscb.getSelectionModel().getSelectedItem();
+            if (selectedItem != null) {
+                String data = selectedItem.toString();
+                alueennimitf.setText(data);
+                System.out.println(alueMuokkauscb.getSelectionModel().getSelectedIndex());
+            }
+        });
+
+        muokkaabt.setOnAction(e -> {
+            try{
+                if(!alueennimitf.getText().isEmpty()){
+                    komennot.updateQuery("update alue set nimi ='"+ alueennimitf.getText() +  "' where nimi = '"+
+                            alueMuokkauscb.getValue()+"'");
+                }
+
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+            primaryStage.setScene(muokkaausvalikko);
+            alueennimitf.clear();
+            alueMuokkauscb.setValue(null);
+        });
+
+        muokkaaPalveluitacb.setOnAction(e ->{
+            Object selectedItem = muokkaaPalveluitacb.getSelectionModel().getSelectedItem();
+            if (selectedItem != null) {
+                String data = selectedItem.toString();
+                int id = SqlKomennot.fetchPalveluId(data);
+                SqlKomennot.Palvelu palvelu = SqlKomennot.fetchPalvelu(id);
+                palvelunnimitf.setText(palvelu.nimi);
+                palvelunkuvaustf.setText(palvelu.kuvaus);
+                palvelunhintatf.setText(palvelu.hinta.toString());
+                palvelunAlvtf.setText(palvelu.alv.toString());
+                palvelunIDtf.setText(String.valueOf(palvelu.palveluId));
+                String alueenimi = SqlKomennot.fetchAlueNimi(palvelu.alueId);
+                palvelunAlueencb.setValue(alueenimi);
+
+            }
+        });
+
+        /*palveluMuokkaabt.setOnAction(e ->{
+            try{
+                if(!palvelunnimitf.getText().isEmpty()){
+                    komennot.yksittainenKysely("select * from palvelu where nimi = '"+ muokkaaPalveluitacb.getValue() + "'");
+                    komennot.updateQuery("update alue set nimi ='"+ alueennimitf.getText() +  "' where nimi = '"+
+                            muokkaaPalveluitacb.getValue()+"'");
+                    System.out.println(komennot.fetchPalvelu(muokkaaPalveluitacb;
+                }
+
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+
+        });
+*/
         lisaaAluebt.setOnAction(e -> {
             try {
                 if(!alueennimitf.getText().isEmpty()){
@@ -605,21 +668,18 @@ public class Paaohjelma extends Application {
 
 
     }
-    private void integerinTarkistus (TextField textField) {
+    private void numeronTarkistus(TextField textField) {
         textField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.matches("\\d*")) {
-                textField.setText(newValue.replaceAll("[^\\d]", ""));
+            if (!newValue.matches("\\d*.?\\d+")) {
+                textField.setText(newValue.replaceAll("[^\\d.]", ""));
             }
         });
     }
     private void postiNroTarkistus(TextField textField) {
         textField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.matches("\\d{0,5}")) {
+            if (!newValue.matches("0*\\d{0,5}")) {
                 textField.setText(oldValue);
             }
         });
     }
-
-
-
 }
