@@ -10,10 +10,10 @@ public class SqlKomennot {
     Connection connection;
 
     public SqlKomennot() throws SQLException {
-        Connection connection = DriverManager.getConnection(
+        connection = DriverManager.getConnection(
                 "jdbc:mysql://127.0.0.1:3306/vn",
                 "root",
-                "Yksitoista123"
+                "Kukkakaali50"
 
         );
         statement = connection.createStatement();
