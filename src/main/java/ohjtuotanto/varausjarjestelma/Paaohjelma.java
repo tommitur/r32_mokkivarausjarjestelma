@@ -25,13 +25,17 @@ public class Paaohjelma extends Application {
 
         SqlKomennot komennot = new SqlKomennot();
 
+        // Päävalikon luominen ja alustaminen
+        BorderPane paavalikko = new BorderPane();
+        Scene paavalikkoScene = new Scene(paavalikko, 600, 400);
+
         HBox valinnoille = new HBox(10);
         valinnoille.setPadding(new Insets(10,10,10,10));
 
         Label paikkakunta = new Label();
         paikkakunta.setText("Paikkakunta: ");
 
-        ObservableList<String>alueidenlista = FXCollections.observableArrayList();
+        ObservableList<String> alueidenlista = FXCollections.observableArrayList();
         alueidenlista = komennot.valitseKaikkiAlueet();
         ComboBox alueet = new ComboBox(FXCollections.observableArrayList(alueidenlista));
 
@@ -50,11 +54,9 @@ public class Paaohjelma extends Application {
         valinnoille.getChildren().addAll(paikkakunta, alueet, hinta, hinnansaato, hae);
         valinnoille.setAlignment(Pos.TOP_LEFT);
 
+        paavalikko.setCenter(valinnoille);
 
-
-
-        Scene paavalikko = new Scene(valinnoille, 600, 400);
-
+        // Kirjautumissivun luominen
         TextField kayttajatunnustf = new TextField();
         TextField salasanatf = new TextField();
 
@@ -66,12 +68,11 @@ public class Paaohjelma extends Application {
         kirjautumisetvbox.getChildren().addAll(kayttajatunnustf,salasanatf,kirjaudu);
         kirjautumisetvbox.setAlignment(Pos.CENTER);
 
-
-
+        Scene kirjautuminen = new Scene(kirjautumisetvbox,500,500);
 
         kirjaudu.setOnAction(e->{
             if (kayttajatunnustf.getText().equals("testi") && salasanatf.getText().equals("123")){
-                primaryStage.setScene(paavalikko);
+                primaryStage.setScene(paavalikkoScene); // Siirrytään päävalikkoon
             }
             else{
                 System.out.println("Salasana väärin");
@@ -79,7 +80,6 @@ public class Paaohjelma extends Application {
         });
 
 
-        Scene kirjautuminen = new Scene(kirjautumisetvbox,500,500);
 
         Button lisaaAlue = new Button("Lisää uusi alue");
         Button lisaaMokki = new Button("Lisää uusi mökki");
@@ -427,6 +427,8 @@ public class Paaohjelma extends Application {
                 palvelunmuokkausohje.setVisible(false);
             }
         });
+
+
 
     }
     private void integerinTarkistus (TextField textField) {
