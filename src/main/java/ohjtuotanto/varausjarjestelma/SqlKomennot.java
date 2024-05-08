@@ -2,7 +2,10 @@ package ohjtuotanto.varausjarjestelma;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class SqlKomennot {
@@ -23,7 +26,7 @@ public class SqlKomennot {
         statement = connection.createStatement();
     }
 
-    ObservableList<String> testi (String query) throws SQLException {
+    ObservableList<String> testi(String query) throws SQLException {
 
         ObservableList<String> lista = FXCollections.observableArrayList();
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
@@ -50,6 +53,7 @@ public class SqlKomennot {
         }
         return lista;
     }
+
     //Integer query
     private ObservableList<Integer> executeQueryINT(String query) throws SQLException {
         ObservableList<Integer> lista = FXCollections.observableArrayList();
@@ -61,7 +65,7 @@ public class SqlKomennot {
     }
 
 
-    public void updateQuery(String query) throws SQLException{
+    public void updateQuery(String query) throws SQLException {
         Statement stmt = connection.createStatement();
         stmt.executeUpdate(query);
     }
@@ -81,25 +85,25 @@ public class SqlKomennot {
     public ObservableList<String> valitseKaikkiPalvelut() throws SQLException {
         return executeQuery("SELECT nimi FROM palvelu");
     }
-    public void  yksittainenKysely(String kysely) throws SQLException {
+
+    public void yksittainenKysely(String kysely) throws SQLException {
         System.out.println(executeQuery(kysely).getLast());
     }
     /*public ObservableList<String> yksittainenKysely(String kysely) throws SQLException {
         return executeQuery(kysely);
     }*/
 
-    public ObservableList<String> haeAlueenID(String alue) throws SQLException{
+    public ObservableList<String> haeAlueenID(String alue) throws SQLException {
         return executeQuery("SELECT alue_id FROM alue WHERE nimi = '" + alue + "'");
     }
 
-    public ObservableList<Integer> haePostriNrot() throws SQLException{
+    public ObservableList<Integer> haePostriNrot() throws SQLException {
         return executeQueryINT("SELECT postinro FROM posti");
     }
 
     public void mokinArvo() throws SQLException {
         ResultSet set = statement.executeQuery("SELECT hinta FROM mokki");
     }
-
 
 
     static class Palvelu {
@@ -146,7 +150,8 @@ public class SqlKomennot {
 
 
     }
-    public static int fetchPalveluId (String palvelunNimi){
+
+    public static int fetchPalveluId(String palvelunNimi) {
         String sql = "SELECT palvelu_id FROM palvelu WHERE nimi = ?";
 
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
@@ -174,7 +179,7 @@ public class SqlKomennot {
         String email;
         int puhelinumero;
 
-        public Asiakas(int asiakasId, int postiNro, String etunimi, String sukunimi, String lahiosoite, String email,int puhelinumero) {
+        public Asiakas(int asiakasId, int postiNro, String etunimi, String sukunimi, String lahiosoite, String email, int puhelinumero) {
             this.asiakasId = asiakasId;
             this.postiNro = postiNro;
             this.etunimi = etunimi;
@@ -184,23 +189,23 @@ public class SqlKomennot {
             this.puhelinumero = puhelinumero;
         }
     }
+
     public static Asiakas fetchAsiakas(int asiakasId) {
         Asiakas asiakas = null;
-        String sql = "SELECT * FROM asiakas WHERE nimi = ?";
+        String sql = "SELECT * FROM asiakas WHERE asiakas_id = ?";
 
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, asiakasId);
             ResultSet rs = statement.executeQuery();
-
             if (rs.next()) {
-                int postiNro = rs.getInt("posti_nro");
+                int postiNro = rs.getInt("postinro");
                 String etunimi = rs.getString("etunimi");
                 String sukunimi = rs.getString("sukunimi");
                 String lahiosoite = rs.getString("lahiosoite");
                 String email = rs.getString("email");
-                int puhelinumero = rs.getInt("puhelinumero");
+                int puhelinumero = rs.getInt("puhelinnro");
 
 
                 asiakas = new Asiakas(asiakasId, postiNro, etunimi, sukunimi, lahiosoite, email, puhelinumero);
@@ -209,6 +214,25 @@ public class SqlKomennot {
             e.printStackTrace();
         }
         return asiakas;
+
+    }
+
+    public static String fetchAsiakaanPosti(String postiPaikka) {
+        String sql = "SELECT toimipaikka FROM posti WHERE postinro = ?";
+
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, postiPaikka);
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                return rs.getString("toimipaikka");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 
 
@@ -236,16 +260,16 @@ public class SqlKomennot {
             this.varustelu = varustelu;
         }
     }
+
     public static Mokki fetchMokki(int mokkiId) {
         Mokki mokki = null;
-        String sql = "SELECT * FROM mokki WHERE nimi = ?";
+        String sql = "SELECT * FROM mokki WHERE mokki_id = ?";
 
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, mokkiId);
             ResultSet rs = statement.executeQuery();
-
             if (rs.next()) {
                 int alueId = rs.getInt("alue_id");
                 int postiNro = rs.getInt("postinro");
@@ -264,7 +288,62 @@ public class SqlKomennot {
         }
         return mokki;
     }
-    public static String fetchAlueNimi (int alueId){
+
+    public static int fetchMokkiId(String mokinNimi) {
+        String sql = "SELECT mokki_id FROM mokki WHERE mokkinimi = ?";
+
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, mokinNimi);
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("mokki_id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+
+    public static List<Mokki> fetchMokkiAll(int alueId, double hinta, int henkilomaara) {
+        String sql = "SELECT * FROM mokki WHERE alue_id = ? AND hinta <= ? AND henkilomaara >= ?";
+
+        List<Mokki> mokkiList = new ArrayList<Mokki>();
+
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setInt(1, alueId);
+            statement.setDouble(2, hinta);
+            statement.setInt(3, henkilomaara);
+            ResultSet rs = statement.executeQuery();
+
+            while (rs.next()) {
+                int mokkiId = rs.getInt("mokki_id");
+                int mokkialueId = rs.getInt("alue_id");
+                int postiNro = rs.getInt("postinro");
+                String mokkiNimi = rs.getString("mokkinimi");
+                String katuOsoite = rs.getString("katuosoite");
+                double mokkihinta = rs.getDouble("hinta");
+                String kuvaus = rs.getString("kuvaus");
+                int mokkihenkilomaara = rs.getInt("henkilomaara");
+                String varustelu = rs.getString("varustelu");
+
+
+                Mokki mokki = new Mokki(mokkiId, mokkialueId, postiNro, mokkiNimi, katuOsoite, mokkihinta, kuvaus, mokkihenkilomaara, varustelu);
+                mokkiList.add(mokki);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return mokkiList;
+    }
+
+
+    public static String fetchAlueNimi(int alueId) {
         String sql = "SELECT nimi FROM alue WHERE alue_id = ?";
 
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);

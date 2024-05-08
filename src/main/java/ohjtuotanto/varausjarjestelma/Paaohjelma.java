@@ -11,6 +11,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+
 import java.sql.SQLException;
 
 public class Paaohjelma extends Application {
@@ -30,7 +31,7 @@ public class Paaohjelma extends Application {
         BorderPane asettelu = new BorderPane();
 
         HBox kaikille = new HBox(30);
-        kaikille.setPadding(new Insets(15,10,15,10));
+        kaikille.setPadding(new Insets(15, 10, 15, 10));
         kaikille.setStyle("-fx-border-color: black; -fx-border-width: 2px;");
         //kaikille.setStyle("-fx-background-color: gray");
 
@@ -40,7 +41,7 @@ public class Paaohjelma extends Application {
 
         Text paikkakunta = new Text("Paikkakunta:");
 
-        ObservableList<String>alueidenlista = FXCollections.observableArrayList();
+        ObservableList<String> alueidenlista = FXCollections.observableArrayList();
         alueidenlista = komennot.valitseKaikkiAlueet();
         ComboBox alueet = new ComboBox(FXCollections.observableArrayList(alueidenlista));
         alueet.setPromptText("Valitse");
@@ -49,7 +50,7 @@ public class Paaohjelma extends Application {
         Text rahanArvo = new Text("0€");
         Text hinta1000 = new Text("1000€");
 
-        Slider hinnansaato = new Slider(0,1000,0);
+        Slider hinnansaato = new Slider(0, 1000, 0);
         hinnansaato.setOrientation(Orientation.HORIZONTAL);
         hinnansaato.setBlockIncrement(100);
         hinnansaato.setShowTickMarks(true);
@@ -74,8 +75,8 @@ public class Paaohjelma extends Application {
                 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12
         ));
 
-        Button hae = new Button("Hae");
-        hae.setMinWidth(50);
+        Button haebt = new Button("Hae");
+        haebt.setMinWidth(50);
 
         alueelle.getChildren().addAll(paikkakunta, alueet);
 
@@ -84,7 +85,7 @@ public class Paaohjelma extends Application {
 
         sliderille.getChildren().addAll(hinta0, hinnalle, hinta1000);
 
-        kaikille.getChildren().addAll(alueelle, sliderille, vieraat, hae);
+        kaikille.getChildren().addAll(alueelle, sliderille, vieraat, haebt);
         asettelu.setTop(kaikille);
 
         Scene paavalikko = new Scene(asettelu, 900, 600);
@@ -97,24 +98,26 @@ public class Paaohjelma extends Application {
         kayttajatunnustf.setMaxWidth(100);
         salasanatf.setMaxWidth(100);
 
-        VBox kirjautumisetvbox  = new VBox(15);
-        kirjautumisetvbox.getChildren().addAll(kayttajatunnustf,salasanatf,kirjaudu);
+        VBox kirjautumisetvbox = new VBox(15);
+        kirjautumisetvbox.getChildren().addAll(kayttajatunnustf, salasanatf, kirjaudu);
         kirjautumisetvbox.setAlignment(Pos.CENTER);
 
 
+        haebt.setOnAction(e -> {
+            System.out.println(SqlKomennot.fetchMokkiAll(5, 2, 1));
+        });
 
 
-        kirjaudu.setOnAction(e->{
-            if (kayttajatunnustf.getText().equals("testi") && salasanatf.getText().equals("123")){
+        kirjaudu.setOnAction(e -> {
+            if (kayttajatunnustf.getText().equals("testi") && salasanatf.getText().equals("123")) {
                 primaryStage.setScene(paavalikko);
-            }
-            else{
+            } else {
                 System.out.println("Salasana väärin");
             }
         });
 
 
-        Scene kirjautuminen = new Scene(kirjautumisetvbox,500,500);
+        Scene kirjautuminen = new Scene(kirjautumisetvbox, 500, 500);
 
         Button lisaaAlue = new Button("Lisää uusi alue");
         Button lisaaMokki = new Button("Lisää uusi mökki");
@@ -141,32 +144,32 @@ public class Paaohjelma extends Application {
         muokkaaAsiakas.setStyle("-fx-border-color: Blue");
         muokkaaPalvelu.setStyle("-fx-border-color: Blue");
 
-        lisaaAlue.setPrefSize(140,100);
-        lisaaMokki.setPrefSize(140,100);
-        lisaaPalvelu.setPrefSize(140,100);
-        lisaaAsiakas.setPrefSize(140,100);
-        muokkaaAlue.setPrefSize(140,100);
-        muokkaaMokki.setPrefSize(140,100);
-        muokkaaPalvelu.setPrefSize(140,100);
-        muokkaaAsiakas.setPrefSize(140,100);
+        lisaaAlue.setPrefSize(140, 100);
+        lisaaMokki.setPrefSize(140, 100);
+        lisaaPalvelu.setPrefSize(140, 100);
+        lisaaAsiakas.setPrefSize(140, 100);
+        muokkaaAlue.setPrefSize(140, 100);
+        muokkaaMokki.setPrefSize(140, 100);
+        muokkaaPalvelu.setPrefSize(140, 100);
+        muokkaaAsiakas.setPrefSize(140, 100);
 
-        GridPane kaikkiMuokattavat = new GridPane(15,15);
+        GridPane kaikkiMuokattavat = new GridPane(15, 15);
 
-        kaikkiMuokattavat.add(lisaaAlue,0,0);
-        kaikkiMuokattavat.add(lisaaMokki,1,0);
-        kaikkiMuokattavat.add(lisaaPalvelu,2,0);
-        kaikkiMuokattavat.add(lisaaAsiakas,3,0);
+        kaikkiMuokattavat.add(lisaaAlue, 0, 0);
+        kaikkiMuokattavat.add(lisaaMokki, 1, 0);
+        kaikkiMuokattavat.add(lisaaPalvelu, 2, 0);
+        kaikkiMuokattavat.add(lisaaAsiakas, 3, 0);
 
-        kaikkiMuokattavat.add(muokkaaAlue,0,1);
-        kaikkiMuokattavat.add(muokkaaMokki,1,1);
-        kaikkiMuokattavat.add(muokkaaPalvelu,2,1);
-        kaikkiMuokattavat.add(muokkaaAsiakas,3,1);
+        kaikkiMuokattavat.add(muokkaaAlue, 0, 1);
+        kaikkiMuokattavat.add(muokkaaMokki, 1, 1);
+        kaikkiMuokattavat.add(muokkaaPalvelu, 2, 1);
+        kaikkiMuokattavat.add(muokkaaAsiakas, 3, 1);
 
         // Alueen lisäys
         Label alueennimilb = new Label("Alueen nimi");
         TextField alueennimitf = new TextField();
         Button lisaaAluebt = new Button("Lisää");
-        GridPane aluidentiedotGP = new GridPane(15,15);
+        GridPane aluidentiedotGP = new GridPane(15, 15);
         BorderPane alueBP = new BorderPane();
 
         //Alueen muokkaus
@@ -186,9 +189,9 @@ public class Paaohjelma extends Application {
         Label aluemuokkausohje = new Label("Valitse alue ylhäältä\nja voit joko muokata sen nimeä\ntai poistaa sen");
         aluemuokkausohje.setVisible(false);
 
-        aluidentiedotGP.add(alueennimilb,0,0);
-        aluidentiedotGP.add(alueennimitf,1,0);
-        aluidentiedotGP.add(alueButtonit,1,1);
+        aluidentiedotGP.add(alueennimilb, 0, 0);
+        aluidentiedotGP.add(alueennimitf, 1, 0);
+        aluidentiedotGP.add(alueButtonit, 1, 1);
         aluidentiedotGP.add(aluemuokkausohje, 1, 2);
         alueBP.setCenter(aluidentiedotGP);
         alueBP.setTop(alueHBox);
@@ -207,8 +210,8 @@ public class Paaohjelma extends Application {
         TextField palvelunIDtf = new TextField();
         ObservableList<String> listaAlueistaPalveluille = komennot.valitseKaikkiAlueet();
         ComboBox palvelunAlueencb = new ComboBox(FXCollections.observableArrayList(listaAlueistaPalveluille));
-        palvelunAlueencb.setPrefSize(100,10);
-        palvelunkuvaustf.setPrefSize(100,80);
+        palvelunAlueencb.setPrefSize(100, 10);
+        palvelunkuvaustf.setPrefSize(100, 80);
         numeronTarkistus(palvelunIDtf);
         palvelunkuvaustf.setWrapText(true);
         numeronTarkistus(palvelunhintatf);
@@ -229,20 +232,20 @@ public class Paaohjelma extends Application {
         palvelunmuokkausohje.setVisible(false);
         palvelutHBox.getChildren().addAll(lisaaPalvelubt, palveluMuokkaabt, palveluPoistabt);
 
-        GridPane palveluidentiedotGP = new GridPane(15,15);
-        palveluidentiedotGP.add(palvelunNimilb,0,0);
-        palveluidentiedotGP.add(palvelunnimitf,1,0);
-        palveluidentiedotGP.add(palvelunKuvauslb,0,1);
-        palveluidentiedotGP.add(palvelunkuvaustf,1,1);
-        palveluidentiedotGP.add(palvelunHintalb,0,2);
-        palveluidentiedotGP.add(palvelunhintatf,1,2);
-        palveluidentiedotGP.add(palvelunAlvlb,0,3);
-        palveluidentiedotGP.add(palvelunAlvtf,1,3);
+        GridPane palveluidentiedotGP = new GridPane(15, 15);
+        palveluidentiedotGP.add(palvelunNimilb, 0, 0);
+        palveluidentiedotGP.add(palvelunnimitf, 1, 0);
+        palveluidentiedotGP.add(palvelunKuvauslb, 0, 1);
+        palveluidentiedotGP.add(palvelunkuvaustf, 1, 1);
+        palveluidentiedotGP.add(palvelunHintalb, 0, 2);
+        palveluidentiedotGP.add(palvelunhintatf, 1, 2);
+        palveluidentiedotGP.add(palvelunAlvlb, 0, 3);
+        palveluidentiedotGP.add(palvelunAlvtf, 1, 3);
         palveluidentiedotGP.add(palvelunIDlb, 0, 4);
         palveluidentiedotGP.add(palvelunIDtf, 1, 4);
-        palveluidentiedotGP.add(palvelunAlueenlb,0,5);
-        palveluidentiedotGP.add(palvelunAlueencb,1,5);
-        palveluidentiedotGP.add(palvelutHBox,1,6);
+        palveluidentiedotGP.add(palvelunAlueenlb, 0, 5);
+        palveluidentiedotGP.add(palvelunAlueencb, 1, 5);
+        palveluidentiedotGP.add(palvelutHBox, 1, 6);
         palveluidentiedotGP.add(muokkaaPalveluitacb, 2, 0);
         palveluidentiedotGP.add(palvelunmuokkausohje, 2, 1);
         palveluBP.setCenter(palveluidentiedotGP);
@@ -266,7 +269,7 @@ public class Paaohjelma extends Application {
         TextField asiakkaanPostitoimipaikkatf = new TextField();
         numeronTarkistus(asiakaanPostinumerotf);
         postiNroTarkistus(asiakaanPostinumerotf);
-        numeronTarkistus(asiakaanPuhelinnrotf);
+        puhulinNroTarkistus(asiakaanPuhelinnrotf);
         BorderPane asiakasBP = new BorderPane();
 
         //Asiakkaan muokkaus
@@ -283,24 +286,24 @@ public class Paaohjelma extends Application {
         Label asiakkaanmuokkausohje = new Label("Valitse asiakas ylhäältä\nja voit muokata heidän tietoja\ntai poistaa heidät");
         asiakkaanmuokkausohje.setVisible(false);
 
-        GridPane asiakaantiedotGP = new GridPane(15,15);
-        asiakaantiedotGP.add(asiakaanNimilb,0,0);
-        asiakaantiedotGP.add(asiakaanNimitf,1,0);
-        asiakaantiedotGP.add(asiakaanSukunimilb,0,1);
-        asiakaantiedotGP.add(asiakaanSukunimitf,1,1);
-        asiakaantiedotGP.add(asiakaanOsoitelb,0,2);
-        asiakaantiedotGP.add(asiakaanOsoitetf,1,2);
-        asiakaantiedotGP.add(asiakaanPostinumerolb,0,3);
-        asiakaantiedotGP.add(asiakaanPostinumerotf,1,3);
+        GridPane asiakaantiedotGP = new GridPane(15, 15);
+        asiakaantiedotGP.add(asiakaanNimilb, 0, 0);
+        asiakaantiedotGP.add(asiakaanNimitf, 1, 0);
+        asiakaantiedotGP.add(asiakaanSukunimilb, 0, 1);
+        asiakaantiedotGP.add(asiakaanSukunimitf, 1, 1);
+        asiakaantiedotGP.add(asiakaanOsoitelb, 0, 2);
+        asiakaantiedotGP.add(asiakaanOsoitetf, 1, 2);
+        asiakaantiedotGP.add(asiakaanPostinumerolb, 0, 3);
+        asiakaantiedotGP.add(asiakaanPostinumerotf, 1, 3);
         asiakaantiedotGP.add(asiakkaanPostitoimipaikkalb, 0, 4);
         asiakaantiedotGP.add(asiakkaanPostitoimipaikkatf, 1, 4);
-        asiakaantiedotGP.add(asiakaanSahkopostilb,0,5);
-        asiakaantiedotGP.add(asiakaanSahkopostitf,1,5);
-        asiakaantiedotGP.add(asiakaanPuhelinnrolb,0,6);
-        asiakaantiedotGP.add(asiakaanPuhelinnrotf,1,6);
-        asiakaantiedotGP.add(asiakasHBox,1,7);
+        asiakaantiedotGP.add(asiakaanSahkopostilb, 0, 5);
+        asiakaantiedotGP.add(asiakaanSahkopostitf, 1, 5);
+        asiakaantiedotGP.add(asiakaanPuhelinnrolb, 0, 6);
+        asiakaantiedotGP.add(asiakaanPuhelinnrotf, 1, 6);
+        asiakaantiedotGP.add(asiakasHBox, 1, 7);
         asiakaantiedotGP.add(asiakkaanMuokkauscb, 2, 0);
-        asiakaantiedotGP.add(asiakkaanmuokkausohje,2,1);
+        asiakaantiedotGP.add(asiakkaanmuokkausohje, 2, 1);
         asiakasBP.setCenter(asiakaantiedotGP);
         asiakasBP.setTop(takaisinAsiakas);
 
@@ -325,8 +328,8 @@ public class Paaohjelma extends Application {
         postiNroTarkistus(mokinPostinrotf);
         numeronTarkistus(mokinHintatf);
         numeronTarkistus(mokinHenkilomaaratf);
-        mokinKuvaustf.setPrefSize(100,80);
-        mokinVaruselutf.setPrefSize(100,80);
+        mokinKuvaustf.setPrefSize(100, 80);
+        mokinVaruselutf.setPrefSize(100, 80);
         mokinKuvaustf.setWrapText(true);
         mokinVaruselutf.setWrapText(true);
         BorderPane mokkiBP = new BorderPane();
@@ -346,47 +349,46 @@ public class Paaohjelma extends Application {
         mokkienmuokkausohje.setVisible(false);
 
 
-        GridPane mokintiedotGP = new GridPane(15,15);
-        mokintiedotGP.add(mokinNimilb,0,0);
-        mokintiedotGP.add(mokinNimitf,1,0);
-        mokintiedotGP.add(mokinOsoitelb,0,1);
-        mokintiedotGP.add(mokinOsoitetf,1,1);
-        mokintiedotGP.add(mokinHintalb,0,2);
-        mokintiedotGP.add(mokinHintatf,1,2);
-        mokintiedotGP.add(mokinKuvaslb,0,3);
-        mokintiedotGP.add(mokinKuvaustf,1,3);
-        mokintiedotGP.add(mokinHenkilomaaralb,0,4);
-        mokintiedotGP.add(mokinHenkilomaaratf,1,4);
-        mokintiedotGP.add(mokinVaruselulb,0,5);
-        mokintiedotGP.add(mokinVaruselutf,1,5);
+        GridPane mokintiedotGP = new GridPane(15, 15);
+        mokintiedotGP.add(mokinNimilb, 0, 0);
+        mokintiedotGP.add(mokinNimitf, 1, 0);
+        mokintiedotGP.add(mokinOsoitelb, 0, 1);
+        mokintiedotGP.add(mokinOsoitetf, 1, 1);
+        mokintiedotGP.add(mokinHintalb, 0, 2);
+        mokintiedotGP.add(mokinHintatf, 1, 2);
+        mokintiedotGP.add(mokinKuvaslb, 0, 3);
+        mokintiedotGP.add(mokinKuvaustf, 1, 3);
+        mokintiedotGP.add(mokinHenkilomaaralb, 0, 4);
+        mokintiedotGP.add(mokinHenkilomaaratf, 1, 4);
+        mokintiedotGP.add(mokinVaruselulb, 0, 5);
+        mokintiedotGP.add(mokinVaruselutf, 1, 5);
         mokintiedotGP.add(mokinPostinrolb, 0, 6);
         mokintiedotGP.add(mokinPostinrotf, 1, 6);
         mokintiedotGP.add(mokinAluelb, 0, 7);
         mokintiedotGP.add(mokinalueetcb, 1, 7);
-        mokintiedotGP.add(mokkiHBox,1,8);
+        mokintiedotGP.add(mokkiHBox, 1, 8);
         mokintiedotGP.add(mokkienMuokkauscb, 2, 0);
-        mokintiedotGP.add(mokkienmuokkausohje,2, 1);
+        mokintiedotGP.add(mokkienmuokkausohje, 2, 1);
         mokkiBP.setCenter(mokintiedotGP);
         mokkiBP.setTop(takaisinMokki);
 
 
-
-        Scene mokinLisausValikko = new Scene(mokkiBP,550,600);
+        Scene mokinLisausValikko = new Scene(mokkiBP, 550, 600);
         mokintiedotGP.setAlignment(Pos.CENTER);
 
-        Scene asiakaanLisausValikko = new Scene(asiakasBP,500,500);
+        Scene asiakaanLisausValikko = new Scene(asiakasBP, 500, 500);
         asiakaantiedotGP.setAlignment(Pos.CENTER);
 
-        Scene alueenLisausValikko = new Scene(alueBP,500,500);
+        Scene alueenLisausValikko = new Scene(alueBP, 500, 500);
         aluidentiedotGP.setAlignment(Pos.CENTER);
 
-        Scene palveluidenLisausValikko = new Scene(palveluBP,550,550);
+        Scene palveluidenLisausValikko = new Scene(palveluBP, 550, 550);
         palveluidentiedotGP.setAlignment(Pos.CENTER);
 
         BorderPane pane = new BorderPane(kaikkiMuokattavat);
         kaikkiMuokattavat.setAlignment(Pos.CENTER);
 
-        Scene muokkaausvalikko = new Scene(pane,640,400);
+        Scene muokkaausvalikko = new Scene(pane, 640, 400);
 
         primaryStage.setTitle("Mökkivarausjärjestelmä");
         primaryStage.setScene(muokkaausvalikko);
@@ -449,7 +451,7 @@ public class Paaohjelma extends Application {
         //Takaisin napit
         takaisinMokki.setOnAction(e -> {
             primaryStage.setScene(muokkaausvalikko);
-            if(mokkienMuokkauscb.isVisible()){
+            if (mokkienMuokkauscb.isVisible()) {
                 mokkienMuokkauscb.setVisible(false);
                 lisaaMokkibt.setVisible(true);
                 mokkiMuokkaabt.setVisible(false);
@@ -461,7 +463,7 @@ public class Paaohjelma extends Application {
             primaryStage.setScene(muokkaausvalikko);
             alueMuokkauscb.setValue(null);
             alueennimitf.clear();
-            if(alueMuokkauscb.isVisible()){
+            if (alueMuokkauscb.isVisible()) {
                 alueMuokkauscb.setVisible(false);
                 lisaaAluebt.setVisible(true);
                 muokkaabt.setVisible(false);
@@ -472,7 +474,7 @@ public class Paaohjelma extends Application {
         takaisinAsiakas.setOnAction(e -> {
             primaryStage.setScene(muokkaausvalikko);
             asiakkaanMuokkauscb.setValue(null);
-            if(asiakkaanMuokkauscb.isVisible()){
+            if (asiakkaanMuokkauscb.isVisible()) {
                 asiakkaanMuokkauscb.setVisible(false);
                 lisaaAsiakasbt.setVisible(true);
                 asiakasMuokkaabt.setVisible(false);
@@ -482,7 +484,7 @@ public class Paaohjelma extends Application {
         });
         takaisinPalvelu.setOnAction(e -> {
             primaryStage.setScene(muokkaausvalikko);
-            if(muokkaaPalveluitacb.isVisible()){
+            if (muokkaaPalveluitacb.isVisible()) {
                 muokkaaPalveluitacb.setVisible(false);
                 lisaaPalvelubt.setVisible(true);
                 palveluMuokkaabt.setVisible(false);
@@ -496,15 +498,14 @@ public class Paaohjelma extends Application {
             if (selectedItem != null) {
                 String data = selectedItem.toString();
                 alueennimitf.setText(data);
-                System.out.println(alueMuokkauscb.getSelectionModel().getSelectedIndex());
             }
         });
 
         muokkaabt.setOnAction(e -> {
-            try{
-                if(!alueennimitf.getText().isEmpty()){
-                    komennot.updateQuery("update alue set nimi ='"+ alueennimitf.getText() +  "' where nimi = '"+
-                            alueMuokkauscb.getValue()+"'");
+            try {
+                if (!alueennimitf.getText().isEmpty()) {
+                    komennot.updateQuery("update alue set nimi ='" + alueennimitf.getText() + "' where nimi = '" +
+                            alueMuokkauscb.getValue() + "'");
                 }
 
             } catch (SQLException ex) {
@@ -515,7 +516,7 @@ public class Paaohjelma extends Application {
             alueMuokkauscb.setValue(null);
         });
 
-        muokkaaPalveluitacb.setOnAction(e ->{
+        muokkaaPalveluitacb.setOnAction(e -> {
             Object selectedItem = muokkaaPalveluitacb.getSelectionModel().getSelectedItem();
             if (selectedItem != null) {
                 String data = selectedItem.toString();
@@ -547,10 +548,56 @@ public class Paaohjelma extends Application {
 
         });
 */
+
+        asiakkaanMuokkauscb.setOnAction(e -> {
+            Object selectedItem = asiakkaanMuokkauscb.getSelectionModel().getSelectedItem();
+            if (selectedItem != null) {
+                String data = selectedItem.toString();
+                SqlKomennot.Asiakas asiakas = SqlKomennot.fetchAsiakas(Integer.parseInt(data));
+                if (asiakas != null) {
+                    asiakaanNimitf.setText(asiakas.etunimi);
+                    asiakaanSukunimitf.setText(asiakas.sukunimi);
+                    asiakaanOsoitetf.setText(asiakas.lahiosoite);
+                    asiakaanPostinumerotf.setText(String.valueOf(asiakas.postiNro));
+                    asiakkaanPostitoimipaikkatf.setText(SqlKomennot.fetchAsiakaanPosti(asiakaanPostinumerotf.getText()));
+                    asiakaanSahkopostitf.setText(asiakas.email);
+                    asiakaanPuhelinnrotf.setText(String.valueOf(asiakas.puhelinumero));
+                }
+
+            }
+        });
+
+        asiakasMuokkaabt.setOnAction(e -> {
+
+        });
+
+
+        mokkienMuokkauscb.setOnAction(e -> {
+            Object selectedItem = mokkienMuokkauscb.getSelectionModel().getSelectedItem();
+            if (selectedItem != null) {
+                String data = selectedItem.toString();
+                int id = SqlKomennot.fetchMokkiId(data);
+                SqlKomennot.Mokki mokki = SqlKomennot.fetchMokki(id);
+                if (mokki != null) {
+                    mokinNimitf.setText(mokki.mokkiNimi);
+                    mokinOsoitetf.setText(mokki.katuOsoite);
+                    mokinHintatf.setText(mokki.hinta.toString());
+                    mokinKuvaustf.setText(mokki.kuvaus);
+                    mokinHenkilomaaratf.setText(String.valueOf(mokki.henkilomaara));
+                    mokinVaruselutf.setText(mokki.varustelu);
+                    mokinPostinrotf.setText(String.valueOf(mokki.postiNro));
+                    String alueennimi = SqlKomennot.fetchAlueNimi(mokki.alueId);
+                    mokinalueetcb.setValue(alueennimi);
+                } else {
+                    System.out.println("Täällä");
+                }
+            }
+        });
+
         lisaaAluebt.setOnAction(e -> {
             try {
-                if(!alueennimitf.getText().isEmpty()){
-                    komennot.updateQuery("insert into alue (nimi) values ('"+ alueennimitf.getText() +  "')");
+                if (!alueennimitf.getText().isEmpty()) {
+                    komennot.updateQuery("insert into alue (nimi) values ('" + alueennimitf.getText() + "')");
                     listaAlueista = komennot.valitseKaikkiAlueet();
                     alueMuokkauscb.setItems(FXCollections.observableArrayList(listaAlueista));
                 }
@@ -562,15 +609,15 @@ public class Paaohjelma extends Application {
         });
 
         lisaaMokkibt.setOnAction(e -> {
-            try{
-                if(mokinNimitf.getText().isEmpty() || mokinOsoitetf.getText().isEmpty() || mokinHintatf.getText().isEmpty() || mokinKuvaustf.getText().isEmpty() ||
-                        mokinHenkilomaaratf.getText().isEmpty() || mokinVaruselutf.getText().isEmpty() || mokinPostinrotf.getText().isEmpty() || mokinalueetcb.getValue() == null){
+            try {
+                if (mokinNimitf.getText().isEmpty() || mokinOsoitetf.getText().isEmpty() || mokinHintatf.getText().isEmpty() || mokinKuvaustf.getText().isEmpty() ||
+                        mokinHenkilomaaratf.getText().isEmpty() || mokinVaruselutf.getText().isEmpty() || mokinPostinrotf.getText().isEmpty() || mokinalueetcb.getValue() == null) {
                     //tietoja puuttuu, vois vaikka virhetekstin pistää
 
-                }else{
+                } else {
                     String id = String.valueOf(komennot.haeAlueenID(String.valueOf(mokinalueetcb.getValue())));
-                    id = id.replaceAll("[\\[\\](){}]","");
-                    if(komennot.haePostriNrot().contains(Integer.valueOf(mokinPostinrotf.getText()))){
+                    id = id.replaceAll("[\\[\\](){}]", "");
+                    if (komennot.haePostriNrot().contains(Integer.valueOf(mokinPostinrotf.getText()))) {
                         komennot.updateQuery("insert into mokki (alue_id, postinro, mokkinimi, katuosoite, hinta, kuvaus, henkilomaara, varustelu) " +
                                 "values ('" + id + "','" + mokinPostinrotf.getText() + "','" + mokinNimitf.getText() + "','" + mokinOsoitetf.getText() + "','"
                                 + mokinHintatf.getText() + "','" + mokinKuvaustf.getText() + "','" + mokinHenkilomaaratf.getText() + "','" + mokinVaruselutf.getText() + "')");
@@ -583,8 +630,8 @@ public class Paaohjelma extends Application {
                         mokinPostinrotf.clear();
                         mokinalueetcb.setValue(null);
                         primaryStage.setScene(muokkaausvalikko);
-                    }else{
-                        komennot.updateQuery("insert into posti (postinro, toimipaikka) values ('" + Integer.valueOf(mokinPostinrotf.getText()) + "','" + mokinalueetcb.getValue() +"')");
+                    } else {
+                        komennot.updateQuery("insert into posti (postinro, toimipaikka) values ('" + Integer.valueOf(mokinPostinrotf.getText()) + "','" + mokinalueetcb.getValue() + "')");
                         komennot.updateQuery("insert into mokki (alue_id, postinro, mokkinimi, katuosoite, hinta, kuvaus, henkilomaara, varustelu) " +
                                 "values ('" + id + "','" + mokinPostinrotf.getText() + "','" + mokinNimitf.getText() + "','" + mokinOsoitetf.getText() + "','"
                                 + mokinHintatf.getText() + "','" + mokinKuvaustf.getText() + "','" + mokinHenkilomaaratf.getText() + "','" + mokinVaruselutf.getText() + "')");
@@ -599,19 +646,19 @@ public class Paaohjelma extends Application {
                         primaryStage.setScene(muokkaausvalikko);
                     }
                 }
-            }catch (SQLException ex){
+            } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
         });
 
         lisaaPalvelubt.setOnAction(e -> {
-            try{
-                if(palvelunnimitf.getText().isEmpty() || palvelunkuvaustf.getText().isEmpty() || palvelunhintatf.getText().isEmpty() ||
-                        palvelunAlvtf.getText().isEmpty() || palvelunIDtf.getText().isEmpty() || palvelunAlueencb.getValue() == null){
+            try {
+                if (palvelunnimitf.getText().isEmpty() || palvelunkuvaustf.getText().isEmpty() || palvelunhintatf.getText().isEmpty() ||
+                        palvelunAlvtf.getText().isEmpty() || palvelunIDtf.getText().isEmpty() || palvelunAlueencb.getValue() == null) {
                     //Tietoja puuttuu
-                }else{
+                } else {
                     String alueid = String.valueOf(komennot.haeAlueenID(String.valueOf(palvelunAlueencb.getValue())));
-                    alueid = alueid.replaceAll("[\\[\\](){}]","");
+                    alueid = alueid.replaceAll("[\\[\\](){}]", "");
                     komennot.updateQuery("insert into palvelu (palvelu_id, alue_id, nimi, kuvaus, hinta, alv) values ('" + palvelunIDtf.getText()
                             + "','" + alueid + "','" + palvelunnimitf.getText() + "','" + palvelunkuvaustf.getText() + "','" + palvelunhintatf.getText() + "','" + palvelunAlvtf.getText() + "')");
                     palvelunnimitf.clear();
@@ -623,18 +670,18 @@ public class Paaohjelma extends Application {
                     primaryStage.setScene(muokkaausvalikko);
                 }
 
-            }catch (SQLException ex){
+            } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
         });
 
         lisaaAsiakasbt.setOnAction(e -> {
-            try{
-                if(asiakaanNimitf.getText().isEmpty() || asiakaanSukunimitf.getText().isEmpty() || asiakaanOsoitetf.getText().isEmpty() ||
-                        asiakaanPostinumerotf.getText().isEmpty() || asiakkaanPostitoimipaikkatf.getText().isEmpty() || asiakaanSahkopostitf.getText().isEmpty() || asiakaanPuhelinnrotf.getText().isEmpty()){
+            try {
+                if (asiakaanNimitf.getText().isEmpty() || asiakaanSukunimitf.getText().isEmpty() || asiakaanOsoitetf.getText().isEmpty() ||
+                        asiakaanPostinumerotf.getText().isEmpty() || asiakkaanPostitoimipaikkatf.getText().isEmpty() || asiakaanSahkopostitf.getText().isEmpty() || asiakaanPuhelinnrotf.getText().isEmpty()) {
                     //Tietoja puuttuu
-                }else{
-                    if(komennot.haePostriNrot().contains(Integer.valueOf(asiakaanPostinumerotf.getText()))){
+                } else {
+                    if (komennot.haePostriNrot().contains(Integer.valueOf(asiakaanPostinumerotf.getText()))) {
                         komennot.updateQuery("insert into asiakas (postinro, etunimi, sukunimi, lahiosoite, email, puhelinnro) values ('" + asiakaanPostinumerotf.getText()
                                 + "','" + asiakaanNimitf.getText() + "','" + asiakaanSukunimitf.getText() + "','" + asiakaanOsoitetf.getText() + "','" +
                                 asiakaanSahkopostitf.getText() + "','" + asiakaanPuhelinnrotf.getText() + "')");
@@ -646,8 +693,8 @@ public class Paaohjelma extends Application {
                         asiakaanSahkopostitf.clear();
                         asiakaanPuhelinnrotf.clear();
                         primaryStage.setScene(muokkaausvalikko);
-                    }else{
-                        komennot.updateQuery("insert into posti (postinro, toimipaikka) values ('" + Integer.valueOf(asiakaanPostinumerotf.getText()) + "','" + asiakkaanPostitoimipaikkatf.getText() +"')");
+                    } else {
+                        komennot.updateQuery("insert into posti (postinro, toimipaikka) values ('" + Integer.valueOf(asiakaanPostinumerotf.getText()) + "','" + asiakkaanPostitoimipaikkatf.getText() + "')");
                         komennot.updateQuery("insert into asiakas (postinro, etunimi, sukunimi, lahiosoite, email, puhelinnro) values ('" + asiakaanPostinumerotf.getText()
                                 + "','" + asiakaanNimitf.getText() + "','" + asiakaanSukunimitf.getText() + "','" + asiakaanOsoitetf.getText() + "','" +
                                 asiakaanSahkopostitf.getText() + "','" + asiakaanPuhelinnrotf.getText() + "')");
@@ -657,17 +704,18 @@ public class Paaohjelma extends Application {
                         asiakaanPostinumerotf.clear();
                         asiakkaanPostitoimipaikkatf.clear();
                         asiakaanSahkopostitf.clear();
-                        asiakaanPostinumerotf.clear();
+                        asiakaanPuhelinnrotf.clear();
                         primaryStage.setScene(muokkaausvalikko);
                     }
                 }
-            }catch (SQLException ex){
+            } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
         });
 
 
     }
+
     private void numeronTarkistus(TextField textField) {
         textField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d*.?\\d+")) {
@@ -675,9 +723,19 @@ public class Paaohjelma extends Application {
             }
         });
     }
+
+    private void puhulinNroTarkistus(TextField textField) {
+        textField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.matches("[0-9]+") && newValue.length() == 11) {
+                textField.setText(oldValue);
+            }
+        });
+    }
+
+
     private void postiNroTarkistus(TextField textField) {
         textField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.matches("0*\\d{0,5}")) {
+            if (newValue.matches("[0-9]+") && newValue.length() == 6) {
                 textField.setText(oldValue);
             }
         });
