@@ -603,7 +603,6 @@ public class Paaohjelma extends Application {
             }
         });
 
-
     }
     private void integerinTarkistus (TextField textField) {
         textField.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -612,13 +611,15 @@ public class Paaohjelma extends Application {
             }
         });
     }
+
     private void postiNroTarkistus(TextField textField) {
         textField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.matches("\\d{0,5}")) {
+            if (!newValue.matches("\\d{1,5}")) {
                 textField.setText(oldValue);
             }
         });
     }
+
 
 
 
