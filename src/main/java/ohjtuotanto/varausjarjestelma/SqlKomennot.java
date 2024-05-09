@@ -14,13 +14,13 @@ public class SqlKomennot {
 
     private static final String URL = "jdbc:mysql://127.0.0.1:3306/vn";
     private static final String USER = "root";
-    private static final String PASSWORD = "salis123";
+    private static final String PASSWORD = "Yksitoista123";
 
     public SqlKomennot() throws SQLException {
         connection = DriverManager.getConnection(
                 "jdbc:mysql://127.0.0.1:3306/vn",
                 "root",
-                "salis123"
+                "Yksitoista123"
 
         );
         statement = connection.createStatement();
@@ -95,6 +95,18 @@ public class SqlKomennot {
 
     public ObservableList<String> haeAlueenID(String alue) throws SQLException {
         return executeQuery("SELECT alue_id FROM alue WHERE nimi = '" + alue + "'");
+    }
+
+    public ObservableList<String> haeAlueenmokit(String alue) throws SQLException {
+        String alueid = String.valueOf(haeAlueenID(alue));
+        alueid = alueid.replaceAll("[\\[\\](){}]", "");
+        return executeQuery("SELECT mokkinimi FROM mokki WHERE alue_id = '" + alueid + "'");
+    }
+
+    public ObservableList<String> haeAlueenpalvelut(String alue) throws SQLException {
+        String alueid = String.valueOf(haeAlueenID(alue));
+        alueid = alueid.replaceAll("[\\[\\](){}]", "");
+        return executeQuery("SELECT nimi FROM palvelu WHERE alue_id = '" + alueid + "'");
     }
 
     public ObservableList<Integer> haePostriNrot() throws SQLException {
