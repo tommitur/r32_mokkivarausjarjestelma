@@ -14,6 +14,7 @@ import javafx.stage.Stage;
 
 import java.sql.SQLException;
 
+@SuppressWarnings("unchecked")
 public class Paaohjelma extends Application {
 
     public static void main(String[] args) {
@@ -21,7 +22,15 @@ public class Paaohjelma extends Application {
     }
 
     public ObservableList<String> listaAlueista;
+    public ObservableList<String> mokinAlueet;
+    public ObservableList<String> mokit;
+    public ObservableList<String> listaAlueistaPalveluille;
+    public ObservableList<String> palvelutlista;
+    ObservableList<Integer> asiakkaanID;
     public ComboBox alueMuokkauscb;
+    public int palvelunIDmuokkaukseen;
+    public String asiakkaanIDmuokkaukseen;
+    public String mokinNimimuokkaukseen;
 
     @Override
     public void start(Stage primaryStage) throws SQLException {
@@ -208,7 +217,7 @@ public class Paaohjelma extends Application {
         TextField palvelunhintatf = new TextField();
         TextField palvelunAlvtf = new TextField();
         TextField palvelunIDtf = new TextField();
-        ObservableList<String> listaAlueistaPalveluille = komennot.valitseKaikkiAlueet();
+        listaAlueistaPalveluille = komennot.valitseKaikkiAlueet();
         ComboBox palvelunAlueencb = new ComboBox(FXCollections.observableArrayList(listaAlueistaPalveluille));
         palvelunAlueencb.setPrefSize(100, 10);
         palvelunkuvaustf.setPrefSize(100, 80);
@@ -219,7 +228,7 @@ public class Paaohjelma extends Application {
         BorderPane palveluBP = new BorderPane();
 
         //Palvelun muokkaamis scenen honmia
-        ObservableList<String> palvelutlista = komennot.valitseKaikkiPalvelut();
+        palvelutlista = komennot.valitseKaikkiPalvelut();
         ComboBox muokkaaPalveluitacb = new ComboBox(FXCollections.observableArrayList(palvelutlista));
         muokkaaPalveluitacb.setVisible(false);
         muokkaaPalveluitacb.setMinWidth(100);
@@ -273,7 +282,7 @@ public class Paaohjelma extends Application {
         BorderPane asiakasBP = new BorderPane();
 
         //Asiakkaan muokkaus
-        ObservableList<Integer> asiakkaanID = komennot.valitseKaikkiAsiakkaat();
+        asiakkaanID = komennot.valitseKaikkiAsiakkaat();
         ComboBox asiakkaanMuokkauscb = new ComboBox(FXCollections.observableArrayList(asiakkaanID));
         asiakkaanMuokkauscb.setVisible(false);
         asiakkaanMuokkauscb.setMinWidth(100);
@@ -316,7 +325,7 @@ public class Paaohjelma extends Application {
         Label mokinVaruselulb = new Label("Mökinvarustelu");
         Label mokinPostinrolb = new Label("Mökin postinumero");
         Label mokinAluelb = new Label("Mökin alue");
-        ObservableList<String> mokinAlueet = komennot.valitseKaikkiAlueet();
+        mokinAlueet = komennot.valitseKaikkiAlueet();
         ComboBox mokinalueetcb = new ComboBox(FXCollections.observableArrayList(mokinAlueet));
         TextField mokinNimitf = new TextField();
         TextField mokinOsoitetf = new TextField();
@@ -335,7 +344,7 @@ public class Paaohjelma extends Application {
         BorderPane mokkiBP = new BorderPane();
 
         //Mökkien muokkaus scene honma jutu
-        ObservableList<String> mokit = komennot.valitseKaikkiMokit();
+        mokit = komennot.valitseKaikkiMokit();
         ComboBox mokkienMuokkauscb = new ComboBox(FXCollections.observableArrayList(mokit));
         mokkienMuokkauscb.setMinWidth(100);
         mokkienMuokkauscb.setVisible(false);
@@ -400,8 +409,20 @@ public class Paaohjelma extends Application {
         });
         lisaaMokki.setOnAction(e -> {
             primaryStage.setScene(mokinLisausValikko);
+            try {
+                mokinAlueet = komennot.valitseKaikkiAlueet();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+            mokinalueetcb.setItems(FXCollections.observableArrayList(mokinAlueet));
         });
         lisaaPalvelu.setOnAction(e -> {
+            try {
+                listaAlueistaPalveluille = komennot.valitseKaikkiAlueet();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+            palvelunAlueencb.setItems(FXCollections.observableArrayList(listaAlueistaPalveluille));
             primaryStage.setScene(palveluidenLisausValikko);
         });
         lisaaAsiakas.setOnAction(e -> {
@@ -424,6 +445,12 @@ public class Paaohjelma extends Application {
             aluemuokkausohje.setVisible(true);
         });
         muokkaaMokki.setOnAction(e -> {
+            try {
+                mokit = komennot.valitseKaikkiMokit();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+            mokkienMuokkauscb.setItems(FXCollections.observableArrayList(mokit));
             primaryStage.setScene(mokinLisausValikko);
             mokkienMuokkauscb.setVisible(true);
             lisaaMokkibt.setVisible(false);
@@ -432,6 +459,14 @@ public class Paaohjelma extends Application {
             mokkienmuokkausohje.setVisible(true);
         });
         muokkaaPalvelu.setOnAction(e -> {
+            try {
+                palvelutlista = komennot.valitseKaikkiPalvelut();
+                listaAlueistaPalveluille = komennot.valitseKaikkiAlueet();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+            muokkaaPalveluitacb.setItems(FXCollections.observableArrayList(palvelutlista));
+            palvelunAlueencb.setItems(FXCollections.observableArrayList(listaAlueistaPalveluille));
             primaryStage.setScene(palveluidenLisausValikko);
             muokkaaPalveluitacb.setVisible(true);
             lisaaPalvelubt.setVisible(false);
@@ -440,6 +475,12 @@ public class Paaohjelma extends Application {
             palvelunmuokkausohje.setVisible(true);
         });
         muokkaaAsiakas.setOnAction(e -> {
+            try {
+                asiakkaanID = komennot.valitseKaikkiAsiakkaat();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+            asiakkaanMuokkauscb.setItems(FXCollections.observableArrayList(asiakkaanID));
             primaryStage.setScene(asiakaanLisausValikko);
             asiakkaanMuokkauscb.setVisible(true);
             lisaaAsiakasbt.setVisible(false);
@@ -451,6 +492,15 @@ public class Paaohjelma extends Application {
         //Takaisin napit
         takaisinMokki.setOnAction(e -> {
             primaryStage.setScene(muokkaausvalikko);
+            mokinNimitf.clear();
+            mokinOsoitetf.clear();
+            mokinHintatf.clear();
+            mokinKuvaustf.clear();
+            mokinHenkilomaaratf.clear();
+            mokinVaruselutf.clear();
+            mokinPostinrotf.clear();
+            mokinalueetcb.setValue(null);
+            mokkienMuokkauscb.setValue(null);
             if (mokkienMuokkauscb.isVisible()) {
                 mokkienMuokkauscb.setVisible(false);
                 lisaaMokkibt.setVisible(true);
@@ -473,6 +523,13 @@ public class Paaohjelma extends Application {
         });
         takaisinAsiakas.setOnAction(e -> {
             primaryStage.setScene(muokkaausvalikko);
+            asiakaanNimitf.clear();
+            asiakaanSukunimitf.clear();
+            asiakaanOsoitetf.clear();
+            asiakaanPostinumerotf.clear();
+            asiakkaanPostitoimipaikkatf.clear();
+            asiakaanSahkopostitf.clear();
+            asiakaanPuhelinnrotf.clear();
             asiakkaanMuokkauscb.setValue(null);
             if (asiakkaanMuokkauscb.isVisible()) {
                 asiakkaanMuokkauscb.setVisible(false);
@@ -484,6 +541,13 @@ public class Paaohjelma extends Application {
         });
         takaisinPalvelu.setOnAction(e -> {
             primaryStage.setScene(muokkaausvalikko);
+            palvelunnimitf.clear();
+            palvelunkuvaustf.clear();
+            palvelunhintatf.clear();
+            palvelunAlvtf.clear();
+            palvelunIDtf.clear();
+            muokkaaPalveluitacb.setValue(null);
+            palvelunAlueencb.setValue(null);
             if (muokkaaPalveluitacb.isVisible()) {
                 muokkaaPalveluitacb.setVisible(false);
                 lisaaPalvelubt.setVisible(true);
@@ -514,6 +578,67 @@ public class Paaohjelma extends Application {
             primaryStage.setScene(muokkaausvalikko);
             alueennimitf.clear();
             alueMuokkauscb.setValue(null);
+            alueMuokkauscb.setVisible(false);
+            lisaaAluebt.setVisible(true);
+            muokkaabt.setVisible(false);
+            poistabt.setVisible(false);
+            aluemuokkausohje.setVisible(false);
+        });
+
+        poistabt.setOnAction(e -> {
+            try {
+                if(!komennot.valitseKaikkiAlueet().contains("Ei aluetta")){
+                    System.out.println("Täällä");
+                    komennot.updateQuery("insert into alue (nimi) values ('Ei aluetta')");
+                    String eiAluettaid = String.valueOf(komennot.haeAlueenID("Ei aluetta"));
+                    eiAluettaid = eiAluettaid.replaceAll("[\\[\\](){}]", "");
+
+                    ObservableList<String> alueettomatMokit = komennot.haeAlueenmokit(String.valueOf(alueMuokkauscb.getValue()));
+                    for(int i = 0; i < alueettomatMokit.size(); i++){
+                        komennot.updateQuery("update mokki set alue_id = '" + eiAluettaid + "' where mokkinimi = '" + alueettomatMokit.get(i) + "'");
+                    }
+
+                    ObservableList<String> alueettomatPalvelut = komennot.haeAlueenpalvelut(String.valueOf(alueMuokkauscb.getValue()));
+                    for(int i = 0; i < alueettomatPalvelut.size(); i++){
+                        komennot.updateQuery("update palvelu set alue_id = '" + eiAluettaid + "' where nimi = '" + alueettomatPalvelut.get(i) + "'");
+                    }
+                }else{
+                    String eiAluettaid = String.valueOf(komennot.haeAlueenID("Ei aluetta"));
+                    eiAluettaid = eiAluettaid.replaceAll("[\\[\\](){}]", "");
+
+                    ObservableList<String> alueettomatMokit = komennot.haeAlueenmokit(String.valueOf(alueMuokkauscb.getValue()));
+                    for(int i = 0; i < alueettomatMokit.size(); i++){
+                        komennot.updateQuery("update mokki set alue_id = '" + eiAluettaid + "' where mokkinimi = '" + alueettomatMokit.get(i) + "'");
+                    }
+
+                    ObservableList<String> alueettomatPalvelut = komennot.haeAlueenpalvelut(String.valueOf(alueMuokkauscb.getValue()));
+                    for(int i = 0; i < alueettomatPalvelut.size(); i++){
+                        komennot.updateQuery("update palvelu set alue_id = '" + eiAluettaid + "' where nimi = '" + alueettomatPalvelut.get(i) + "'");
+                    }
+                }
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+
+            try {
+                if (!alueennimitf.getText().isEmpty()) {
+                    komennot.updateQuery("delete from alue where nimi = '" +
+                            alueMuokkauscb.getValue() + "'");
+                }
+
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+
+
+            primaryStage.setScene(muokkaausvalikko);
+            alueennimitf.clear();
+            alueMuokkauscb.setValue(null);
+            alueMuokkauscb.setVisible(false);
+            lisaaAluebt.setVisible(true);
+            muokkaabt.setVisible(false);
+            poistabt.setVisible(false);
+            aluemuokkausohje.setVisible(false);
         });
 
         muokkaaPalveluitacb.setOnAction(e -> {
@@ -521,6 +646,7 @@ public class Paaohjelma extends Application {
             if (selectedItem != null) {
                 String data = selectedItem.toString();
                 int id = SqlKomennot.fetchPalveluId(data);
+                palvelunIDmuokkaukseen = id;
                 SqlKomennot.Palvelu palvelu = SqlKomennot.fetchPalvelu(id);
                 palvelunnimitf.setText(palvelu.nimi);
                 palvelunkuvaustf.setText(palvelu.kuvaus);
@@ -533,26 +659,43 @@ public class Paaohjelma extends Application {
             }
         });
 
-        /*palveluMuokkaabt.setOnAction(e ->{
+        palveluMuokkaabt.setOnAction(e ->{
             try{
-                if(!palvelunnimitf.getText().isEmpty()){
-                    komennot.yksittainenKysely("select * from palvelu where nimi = '"+ muokkaaPalveluitacb.getValue() + "'");
-                    komennot.updateQuery("update alue set nimi ='"+ alueennimitf.getText() +  "' where nimi = '"+
-                            muokkaaPalveluitacb.getValue()+"'");
-                    System.out.println(komennot.fetchPalvelu(muokkaaPalveluitacb;
+                if (palvelunnimitf.getText().isEmpty() || palvelunkuvaustf.getText().isEmpty() || palvelunhintatf.getText().isEmpty() ||
+                        palvelunAlvtf.getText().isEmpty() || palvelunIDtf.getText().isEmpty() || palvelunAlueencb.getValue() == null) {
+                    //Tietoja puuttuu
+                } else {
+                    String alueid = String.valueOf(komennot.haeAlueenID(String.valueOf(palvelunAlueencb.getValue())));
+                    alueid = alueid.replaceAll("[\\[\\](){}]", "");
+                    komennot.updateQuery("update palvelu set palvelu_id = '" + palvelunIDtf.getText() + "', alue_id = '" + alueid + "', nimi = '" + palvelunnimitf.getText() +
+                            "', kuvaus = '" + palvelunkuvaustf.getText() + "', hinta = '" + palvelunhintatf.getText() + "', alv = '" + palvelunAlvtf.getText() + "' where palvelu_id = '" + palvelunIDmuokkaukseen + "'");
+                    palvelunnimitf.clear();
+                    palvelunkuvaustf.clear();
+                    palvelunhintatf.clear();
+                    palvelunAlvtf.clear();
+                    palvelunIDtf.clear();
+                    palvelunAlueencb.setValue(null);
+                    primaryStage.setScene(muokkaausvalikko);
                 }
+                muokkaaPalveluitacb.setValue(null);
+                muokkaaPalveluitacb.setVisible(false);
+                lisaaPalvelubt.setVisible(true);
+                palveluMuokkaabt.setVisible(false);
+                palveluPoistabt.setVisible(false);
+                palvelunmuokkausohje.setVisible(false);
 
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
 
         });
-*/
+
 
         asiakkaanMuokkauscb.setOnAction(e -> {
             Object selectedItem = asiakkaanMuokkauscb.getSelectionModel().getSelectedItem();
             if (selectedItem != null) {
                 String data = selectedItem.toString();
+                asiakkaanIDmuokkaukseen = data;
                 SqlKomennot.Asiakas asiakas = SqlKomennot.fetchAsiakas(Integer.parseInt(data));
                 if (asiakas != null) {
                     asiakaanNimitf.setText(asiakas.etunimi);
@@ -567,7 +710,52 @@ public class Paaohjelma extends Application {
             }
         });
 
-        asiakasMuokkaabt.setOnAction(e -> {
+        asiakasMuokkaabt.setOnAction(e ->{
+            try{
+                if (asiakaanNimitf.getText().isEmpty() || asiakaanSukunimitf.getText().isEmpty() || asiakaanOsoitetf.getText().isEmpty() ||
+                        asiakaanPostinumerotf.getText().isEmpty() || asiakkaanPostitoimipaikkatf.getText().isEmpty() || asiakaanSahkopostitf.getText().isEmpty() || asiakaanPuhelinnrotf.getText().isEmpty()) {
+                    //Tietoja puuttuu
+                } else {
+                    if (komennot.haePostriNrot().contains(Integer.valueOf(asiakaanPostinumerotf.getText()))) {
+                        komennot.updateQuery("update asiakas set postinro = '" + asiakaanPostinumerotf.getText()
+                                + "', etunimi = '" + asiakaanNimitf.getText() + "', sukunimi = '" + asiakaanSukunimitf.getText()
+                                + "', lahiosoite = '" + asiakaanOsoitetf.getText() + "', email = '" + asiakaanSahkopostitf.getText()
+                                + "', puhelinnro = '" + asiakaanPuhelinnrotf.getText() + "' where asiakas_id = '" + asiakkaanIDmuokkaukseen + "'");
+                        asiakaanNimitf.clear();
+                        asiakaanSukunimitf.clear();
+                        asiakaanOsoitetf.clear();
+                        asiakaanPostinumerotf.clear();
+                        asiakkaanPostitoimipaikkatf.clear();
+                        asiakaanSahkopostitf.clear();
+                        asiakaanPuhelinnrotf.clear();
+                        asiakkaanMuokkauscb.setValue(null);
+                        primaryStage.setScene(muokkaausvalikko);
+                    } else {
+                        komennot.updateQuery("insert into posti (postinro, toimipaikka) values ('" + Integer.valueOf(asiakaanPostinumerotf.getText()) + "','" + asiakkaanPostitoimipaikkatf.getText() + "')");
+                        komennot.updateQuery("update asiakas set postinro = '" + asiakaanPostinumerotf.getText()
+                                + "', etunimi = '" + asiakaanNimitf.getText() + "', sukunimi = '" + asiakaanSukunimitf.getText()
+                                + "', lahiosoite = '" + asiakaanOsoitetf.getText() + "', email = '" + asiakaanSahkopostitf.getText()
+                                + "', puhelinnro = '" + asiakaanPuhelinnrotf.getText() + "' where asiakas_id = '" + asiakkaanIDmuokkaukseen + "'");
+                        asiakaanNimitf.clear();
+                        asiakaanSukunimitf.clear();
+                        asiakaanOsoitetf.clear();
+                        asiakaanPostinumerotf.clear();
+                        asiakkaanPostitoimipaikkatf.clear();
+                        asiakaanSahkopostitf.clear();
+                        asiakaanPuhelinnrotf.clear();
+                        asiakkaanMuokkauscb.setValue(null);
+                        primaryStage.setScene(muokkaausvalikko);
+                    }
+                }
+                asiakkaanMuokkauscb.setVisible(false);
+                lisaaAsiakasbt.setVisible(true);
+                asiakasMuokkaabt.setVisible(false);
+                asiakasPoistabt.setVisible(false);
+                asiakkaanmuokkausohje.setVisible(false);
+
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
 
         });
 
@@ -576,6 +764,7 @@ public class Paaohjelma extends Application {
             Object selectedItem = mokkienMuokkauscb.getSelectionModel().getSelectedItem();
             if (selectedItem != null) {
                 String data = selectedItem.toString();
+                mokinNimimuokkaukseen = data;
                 int id = SqlKomennot.fetchMokkiId(data);
                 SqlKomennot.Mokki mokki = SqlKomennot.fetchMokki(id);
                 if (mokki != null) {
@@ -591,6 +780,61 @@ public class Paaohjelma extends Application {
                 } else {
                     System.out.println("Täällä");
                 }
+            }
+        });
+
+        mokkiMuokkaabt.setOnAction(e -> {
+            try {
+                if (mokinNimitf.getText().isEmpty() || mokinOsoitetf.getText().isEmpty() || mokinHintatf.getText().isEmpty() || mokinKuvaustf.getText().isEmpty() ||
+                        mokinHenkilomaaratf.getText().isEmpty() || mokinVaruselutf.getText().isEmpty() || mokinPostinrotf.getText().isEmpty() || mokinalueetcb.getValue() == null) {
+                    //tietoja puuttuu, vois vaikka virhetekstin pistää
+
+                } else {
+                    String id = String.valueOf(komennot.haeAlueenID(String.valueOf(mokinalueetcb.getValue())));
+                    id = id.replaceAll("[\\[\\](){}]", "");
+                    if (komennot.haePostriNrot().contains(Integer.valueOf(mokinPostinrotf.getText()))) {
+                        komennot.updateQuery("update mokki set alue_id = '" + id
+                                + "', postinro = '" + mokinPostinrotf.getText() + "', mokkinimi = '" + mokinNimitf.getText()
+                                + "', katuosoite = '" + mokinOsoitetf.getText() + "', hinta = '" + mokinHintatf.getText()
+                                + "', kuvaus = '" + mokinKuvaustf.getText() + "', henkilomaara = '" + mokinHenkilomaaratf.getText()
+                                + "', varustelu = '" + mokinVaruselutf.getText() + "' where mokkinimi = '" + mokinNimimuokkaukseen + "'");
+                        mokinNimitf.clear();
+                        mokinOsoitetf.clear();
+                        mokinHintatf.clear();
+                        mokinKuvaustf.clear();
+                        mokinHenkilomaaratf.clear();
+                        mokinVaruselutf.clear();
+                        mokinPostinrotf.clear();
+                        mokinalueetcb.setValue(null);
+                        mokkienMuokkauscb.setValue(null);
+                        primaryStage.setScene(muokkaausvalikko);
+                    } else {
+                        komennot.updateQuery("insert into posti (postinro, toimipaikka) values ('" + Integer.valueOf(mokinPostinrotf.getText()) + "','" + mokinalueetcb.getValue() + "')");
+
+                        komennot.updateQuery("update mokki set alue_id = '" + id
+                                + "', postinro = '" + mokinPostinrotf.getText() + "', mokkinimi = '" + mokinNimitf.getText()
+                                + "', katuosoite = '" + mokinOsoitetf.getText() + "', hinta = '" + mokinHintatf.getText()
+                                + "', kuvaus = '" + mokinKuvaustf.getText() + "', henkilomaara = '" + mokinHenkilomaaratf.getText()
+                                + "', varustelu = '" + mokinVaruselutf.getText() + "' where mokkinimi = '" + mokinNimimuokkaukseen + "'");
+                        mokinNimitf.clear();
+                        mokinOsoitetf.clear();
+                        mokinHintatf.clear();
+                        mokinKuvaustf.clear();
+                        mokinHenkilomaaratf.clear();
+                        mokinVaruselutf.clear();
+                        mokinPostinrotf.clear();
+                        mokinalueetcb.setValue(null);
+                        mokkienMuokkauscb.setValue(null);
+                        primaryStage.setScene(muokkaausvalikko);
+                    }
+                }
+                mokkienMuokkauscb.setVisible(false);
+                lisaaMokkibt.setVisible(true);
+                mokkiMuokkaabt.setVisible(false);
+                mokkiPoistabt.setVisible(false);
+                mokkienmuokkausohje.setVisible(false);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
             }
         });
 
