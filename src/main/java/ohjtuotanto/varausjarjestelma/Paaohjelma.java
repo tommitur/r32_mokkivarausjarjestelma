@@ -26,14 +26,49 @@ public class Paaohjelma extends Application {
     @Override
     public void start(Stage primaryStage) throws SQLException {
 
+
+
         SqlKomennot komennot = new SqlKomennot();
 
-        BorderPane asettelu = new BorderPane();
+        Button muokkaa = new Button("lisää/muokkaa tietoja");
+        muokkaa.setMinWidth(200);
+        Button varaa = new Button("Tee uusi varaus");
+        varaa.setMinWidth(200);
+        Button laskut = new Button("Laskutus");
+        laskut.setMinWidth(200);
+        Button palvelut = new Button("Palvelut");
+        palvelut.setMinWidth(200);
 
+        // sovelluksen sulkeminen päävalikossa
+        Button lopetus = new Button("sulje sovellus");
+        lopetus.setMinWidth(200);
+        lopetus.setOnAction(e -> {
+            // Lopeta ohjelma
+        System.exit(0);
+        });
+
+        HBox privi1 = new HBox(30, varaa, muokkaa);
+        HBox privi2 = new HBox(30, laskut, palvelut);
+        HBox privi3 = new HBox(30, lopetus);
+        privi3.setAlignment(Pos.CENTER);
+        VBox muotoilu = new VBox(20, privi1, privi2, privi3);
+        muotoilu.setAlignment(Pos.CENTER);
+        muotoilu.setPadding(new Insets(150));
+
+        BorderPane pvalikko = new BorderPane();
+        pvalikko.setCenter(muotoilu);
+        Scene paavalikko = new Scene(pvalikko, 700, 400);
+
+
+
+
+        BorderPane asettelu = new BorderPane();
         HBox kaikille = new HBox(30);
         kaikille.setPadding(new Insets(15,10,15,10));
         kaikille.setStyle("-fx-border-color: black; -fx-border-width: 2px;");
         //kaikille.setStyle("-fx-background-color: gray");
+
+
 
         HBox alueelle = new HBox(5);
         HBox sliderille = new HBox(5);
@@ -78,6 +113,15 @@ public class Paaohjelma extends Application {
         Button hae = new Button("Hae");
         hae.setMinWidth(50);
 
+        Button vtakaisin = new Button("Takaisin");
+        vtakaisin.setMinWidth(100);
+        vtakaisin.setPadding(new Insets(10));
+        asettelu.setBottom(vtakaisin);
+        vtakaisin.setOnAction(e -> {
+            // Siirrytään muokkausvalikkoon
+            primaryStage.setScene(paavalikko);
+        });
+
         alueelle.getChildren().addAll(paikkakunta, alueet);
 
         hinnalle.getChildren().addAll(hinnansaato, rahanArvo);
@@ -88,7 +132,11 @@ public class Paaohjelma extends Application {
         kaikille.getChildren().addAll(alueelle, sliderille, vieraat, hae);
         asettelu.setTop(kaikille);
 
-        Scene paavalikko = new Scene(asettelu, 700, 400);
+        Scene uusivaraus = new Scene(asettelu, 700, 400);
+        varaa.setOnAction(e -> {
+            // Siirrytään muokkausvalikkoon
+            primaryStage.setScene(uusivaraus);
+        });
 
 
         TextField kayttajatunnustf = new TextField();
@@ -114,8 +162,13 @@ public class Paaohjelma extends Application {
             }
         });
 
-
         Scene kirjautuminen = new Scene(kirjautumisetvbox,500,500);
+
+        primaryStage.setTitle("Mökkivarausjärjestelmä");
+        primaryStage.setScene(kirjautuminen);
+        primaryStage.show();
+
+        //muokkausvalikko
 
         Button lisaaAlue = new Button("Lisää uusi alue");
         Button lisaaMokki = new Button("Lisää uusi mökki");
@@ -370,6 +423,14 @@ public class Paaohjelma extends Application {
         mokkiBP.setCenter(mokintiedotGP);
         mokkiBP.setTop(takaisinMokki);
 
+        Button mtakaisin = new Button("Takaisin");
+        mtakaisin.setMinWidth(100);
+        mtakaisin.setPadding(new Insets(10));
+        mtakaisin.setOnAction(e -> {
+
+            primaryStage.setScene(paavalikko);
+        });
+
 
         Scene mokinLisausValikko = new Scene(mokkiBP,550,600);
         mokintiedotGP.setAlignment(Pos.CENTER);
@@ -385,12 +446,19 @@ public class Paaohjelma extends Application {
 
         BorderPane pane = new BorderPane(kaikkiMuokattavat);
         kaikkiMuokattavat.setAlignment(Pos.CENTER);
+        pane.setBottom(mtakaisin);
+
 
         Scene muokkaausvalikko = new Scene(pane,640,400);
 
-        primaryStage.setTitle("Mökkivarausjärjestelmä");
-        primaryStage.setScene(muokkaausvalikko);
-        primaryStage.show();
+
+
+        muokkaa.setOnAction(e -> {
+            // Siirrytään muokkausvalikkoon
+            primaryStage.setScene(muokkaausvalikko);
+        });
+
+
 
         //Alkuvalikon lisäysnapit
         lisaaAlue.setOnAction(e -> {
@@ -602,6 +670,9 @@ public class Paaohjelma extends Application {
                 throw new RuntimeException(ex);
             }
         });
+
+
+
 
 
     }

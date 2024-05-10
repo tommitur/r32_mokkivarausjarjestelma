@@ -11,9 +11,9 @@ public class SqlKomennot {
 
     public SqlKomennot() throws SQLException {
         connection = DriverManager.getConnection(
-                "jdbc:mysql://127.0.0.1:3306/vn",
+                "jdbc:mysql://127.0.0.1:3307/vn",
                 "root",
-                "Yksitoista123"
+                "root"
 
         );
         statement = connection.createStatement();
@@ -72,4 +72,7 @@ public class SqlKomennot {
     public void mokinArvo() throws SQLException {
         ResultSet set = statement.executeQuery("select hinta from mokki");
     }
+
+
+
 }
