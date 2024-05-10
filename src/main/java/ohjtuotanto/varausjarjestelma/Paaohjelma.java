@@ -1,6 +1,8 @@
 package ohjtuotanto.varausjarjestelma;
 
 import javafx.application.Application;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -20,6 +22,7 @@ public class Paaohjelma extends Application {
         Application.launch(args);
     }
 
+    //public ObservableList<String> mokit;
     public ObservableList<String> listaAlueista;
     public ComboBox alueMuokkauscb;
 
@@ -31,7 +34,7 @@ public class Paaohjelma extends Application {
         BorderPane asettelu = new BorderPane();
 
         HBox kaikille = new HBox(30);
-        kaikille.setPadding(new Insets(15,10,15,10));
+        kaikille.setPadding(new Insets(15, 10, 15, 10));
         kaikille.setStyle("-fx-border-color: black; -fx-border-width: 2px;");
         //kaikille.setStyle("-fx-background-color: gray");
 
@@ -41,7 +44,7 @@ public class Paaohjelma extends Application {
 
         Text paikkakunta = new Text("Paikkakunta:");
 
-        ObservableList<String>alueidenlista = FXCollections.observableArrayList();
+        ObservableList<String> alueidenlista = FXCollections.observableArrayList();
         alueidenlista = komennot.valitseKaikkiAlueet();
         ComboBox alueet = new ComboBox(FXCollections.observableArrayList(alueidenlista));
         alueet.setPromptText("Valitse");
@@ -50,7 +53,7 @@ public class Paaohjelma extends Application {
         Text rahanArvo = new Text("0€");
         Text hinta1000 = new Text("1000€");
 
-        Slider hinnansaato = new Slider(0,1000,0);
+        Slider hinnansaato = new Slider(0, 1000, 0);
         hinnansaato.setOrientation(Orientation.HORIZONTAL);
         hinnansaato.setBlockIncrement(100);
         hinnansaato.setShowTickMarks(true);
@@ -68,7 +71,6 @@ public class Paaohjelma extends Application {
             rahanArvo.setText("0-" + newHinta + "€");
         });
 
-
         ComboBox<Integer> vieraat = new ComboBox<>();
         vieraat.setPromptText("vieraiden lkm");
         vieraat.setItems(FXCollections.observableArrayList(
@@ -78,18 +80,100 @@ public class Paaohjelma extends Application {
         Button hae = new Button("Hae");
         hae.setMinWidth(50);
 
+        Button muokkaa = new Button("Muokkaa tietoja");
+        muokkaa.setMinWidth(50);
+
+        VBox varaus = new VBox(5);
+        varaus.setPadding(new Insets(10,10,10,10));
+        Button varaa = new Button("Varaa");
+        varaa.setMinWidth(50);
+
+        ObservableList<String> mokkilista = FXCollections.observableArrayList();
+        mokkilista = komennot.valitseKaikkiMokit();
+
+        TableView<Mokki> mokitTableView = new TableView<>();
+        TableColumn<Mokki, String> nimiColumn = new TableColumn<>("Mökin nimi");
+        nimiColumn.setCellValueFactory(cellData -> cellData.getValue().nimiProperty());
+
+        TableColumn<Mokki, Integer> hintaColumn = new TableColumn<>("Hinta / yö");
+        hintaColumn.setCellValueFactory(cellData -> cellData.getValue().hintaProperty().asObject());
+
+        TableColumn<Mokki, Integer> vieraidenLkmColumn = new TableColumn<>("Vieraiden lukumäärä");
+        vieraidenLkmColumn.setCellValueFactory(cellData -> cellData.getValue().vieraidenLkmProperty().asObject());
+
+        TableColumn<Mokki, Integer> alueColumn = new TableColumn<>("Alue");
+        alueColumn.setCellValueFactory(cellData -> cellData.getValue().alueIdProperty().asObject());
+
+        mokitTableView.getColumns().addAll(nimiColumn, hintaColumn, vieraidenLkmColumn, alueColumn);
+
+        BorderPane layout = new BorderPane();
+        layout.setCenter(mokitTableView);
+
+        Scene scene = new Scene(layout, 600, 400);
+        primaryStage.setScene(scene);
+        primaryStage.setTitle("Mökkivaraukset");
+        primaryStage.show();
+/*
+        try {
+            SqlKomennot testi = new SqlKomennot();
+            ObservableList<Mokki> testiLista = testi.haeMokit(); // Käytä haeMokit-metodia
+            mokitTableView.setItems(testiLista);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }*/
+
+        //ListView<String> listaMokeista = new ListView<>(mokkilista);
+/*
+        hae.setOnAction(event -> {
+            try {
+                String valittuAlue = (String) alueet.getValue();
+                if (valittuAlue == null) {
+                    System.out.println("Valitse alue ensin.");
+                    return;
+                }
+
+                int maksimiHinta = (int) hinnansaato.getValue();
+                int vieraidenLkm = vieraat.getValue();
+
+                // Hae kaikki mökit ja niiden tiedot kerralla tietokannasta
+                ObservableList<Mokki> kaikkiMokit = komennot.haeMokit();
+                ObservableList<Mokki> suodatetutMokit = FXCollections.observableArrayList();
+
+                // Käy läpi kaikki mökit ja suodata ne käyttäjän valintojen perusteella
+                for (Mokki mokki : kaikkiMokit) {
+                    // Hae mokin alue
+                    ObservableList<String> mokinAlue = komennot.haeAlueenMokit(mokki.getNimi());
+                    if (mokinAlue.contains(valittuAlue)) {
+                        // Tarkista, että mokin hinta on alle tai yhtä suuri kuin maksimihinta
+                        if (mokki.getHinta() <= maksimiHinta && mokki.getVieraidenLkm() >= vieraidenLkm) {
+                            suodatetutMokit.add(mokki);
+                        }
+                    }
+                }
+                // Päivitä TableView näyttämään suodatetut mökit
+                mokitTableView.setItems(suodatetutMokit);
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });*/
+
         alueelle.getChildren().addAll(paikkakunta, alueet);
 
         hinnalle.getChildren().addAll(hinnansaato, rahanArvo);
         hinnalle.setAlignment(Pos.CENTER);
 
+        varaus.getChildren().add(varaa);
+        varaus.setAlignment(Pos.BOTTOM_CENTER);
+
         sliderille.getChildren().addAll(hinta0, hinnalle, hinta1000);
 
-        kaikille.getChildren().addAll(alueelle, sliderille, vieraat, hae);
+        kaikille.getChildren().addAll(alueelle, sliderille, vieraat, hae, muokkaa);
+        asettelu.setBottom(varaus);
         asettelu.setTop(kaikille);
+        asettelu.setCenter(mokitTableView);
 
-        Scene paavalikko = new Scene(asettelu, 700, 400);
-
+        Scene paavalikko = new Scene(asettelu, 830, 500);
 
         TextField kayttajatunnustf = new TextField();
         TextField salasanatf = new TextField();
@@ -101,7 +185,6 @@ public class Paaohjelma extends Application {
         VBox kirjautumisetvbox  = new VBox(15);
         kirjautumisetvbox.getChildren().addAll(kayttajatunnustf,salasanatf,kirjaudu);
         kirjautumisetvbox.setAlignment(Pos.CENTER);
-
 
 
 
@@ -389,7 +472,7 @@ public class Paaohjelma extends Application {
         Scene muokkaausvalikko = new Scene(pane,640,400);
 
         primaryStage.setTitle("Mökkivarausjärjestelmä");
-        primaryStage.setScene(muokkaausvalikko);
+        primaryStage.setScene(paavalikko);
         primaryStage.show();
 
         //Alkuvalikon lisäysnapit
@@ -407,6 +490,10 @@ public class Paaohjelma extends Application {
         });
 
         //Alkuvalikon muokkausnapit
+        muokkaa.setOnAction(event -> {
+            primaryStage.setScene(muokkaausvalikko);
+        });
+
         muokkaaAlue.setOnAction(e -> {
             primaryStage.setScene(alueenLisausValikko);
             alueMuokkauscb.setVisible(true);
@@ -602,9 +689,8 @@ public class Paaohjelma extends Application {
                 throw new RuntimeException(ex);
             }
         });
-
-
     }
+
     private void integerinTarkistus (TextField textField) {
         textField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d*")) {
@@ -619,7 +705,4 @@ public class Paaohjelma extends Application {
             }
         });
     }
-
-
-
 }

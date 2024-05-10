@@ -55,10 +55,8 @@ public class SqlKomennot {
         return executeQuery("select mokkinimi from mokki");
     }
 
-
     public ObservableList<String> valitseKaikkiPalvelut() throws SQLException {
         return executeQuery("select nimi from palvelu");
-
     }
 
     public ObservableList<String> haeAlueenID(String alue) throws SQLException{
