@@ -1,5 +1,7 @@
 package ohjtuotanto.varausjarjestelma;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -249,6 +251,7 @@ public class SqlKomennot {
 
 
     static class Mokki {
+
         int mokkiId;
         int alueId;
         int postiNro;
@@ -258,6 +261,15 @@ public class SqlKomennot {
         String kuvaus;
         int henkilomaara;
         String varustelu;
+        public SimpleStringProperty mokkinimi;
+        public SimpleStringProperty mokinhenkilomaara;
+        public SimpleStringProperty mokinHinta;
+        public SimpleStringProperty mokinAlue;
+        public SimpleStringProperty mokinKuvaus;
+        public SimpleStringProperty mokinVarustelu;
+        public SimpleStringProperty mokinOsoite;
+
+
 
 
         public Mokki(int mokkiId, int alueId, int postiNro, String mokkiNimi, String katuOsoite, double hinta, String kuvaus, int henkilomaara, String varustelu) {
@@ -270,6 +282,74 @@ public class SqlKomennot {
             this.kuvaus = kuvaus;
             this.henkilomaara = henkilomaara;
             this.varustelu = varustelu;
+        }
+
+        public void setSimpleStringProperty(String nimi, int hmaara, double mokinHinta, String alue, String kuvaus, String varustelu, String osoite){
+            this.mokkinimi = new SimpleStringProperty(nimi);
+            this.mokinhenkilomaara = new SimpleStringProperty(String.valueOf(hmaara));
+            this.mokinHinta = new SimpleStringProperty(String.valueOf(mokinHinta));
+            this.mokinAlue = new SimpleStringProperty(alue);
+            this.mokinKuvaus = new SimpleStringProperty(kuvaus);
+            this.mokinVarustelu = new SimpleStringProperty(varustelu);
+            this.mokinOsoite = new SimpleStringProperty(osoite);
+        }
+
+        public StringProperty getNimi(){
+            return mokkinimi;
+        }
+        public StringProperty getHenkilo(){
+            return mokinhenkilomaara;
+        }
+        public StringProperty getMokinHinta(){
+            return mokinHinta;
+        }
+        public StringProperty getAlue(){
+            return mokinAlue;
+        }
+        public StringProperty getMokinKuvaus(){
+            return mokinKuvaus;
+        }
+        public StringProperty getMokinVarustelu(){
+            return mokinVarustelu;
+        }
+        public StringProperty getMokinOsoite(){
+            return mokinOsoite;
+        }
+
+        public int getMokkiId() {
+            return mokkiId;
+        }
+
+        public int getAlueId() {
+            return alueId;
+        }
+
+        public int getPostiNro() {
+            return postiNro;
+        }
+
+        public String getMokkiNimi() {
+            return mokkiNimi;
+        }
+
+        public String getKatuOsoite() {
+            return katuOsoite;
+        }
+
+        public Double getHinta() {
+            return hinta;
+        }
+
+        public String getKuvaus() {
+            return kuvaus;
+        }
+
+        public int getHenkilomaara() {
+            return henkilomaara;
+        }
+
+        public String getVarustelu() {
+            return varustelu;
         }
     }
 
@@ -320,10 +400,10 @@ public class SqlKomennot {
     }
 
 
-    public static List<Mokki> fetchMokkiAll(int alueId, double hinta, int henkilomaara) {
+    public static ObservableList<Mokki> fetchMokkiAll(int alueId, double hinta, int henkilomaara) {
         String sql = "SELECT * FROM mokki WHERE alue_id = ? AND hinta <= ? AND henkilomaara >= ?";
 
-        List<Mokki> mokkiList = new ArrayList<Mokki>();
+        ObservableList<Mokki> mokkiList = FXCollections.observableArrayList();
 
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement statement = connection.prepareStatement(sql)) {

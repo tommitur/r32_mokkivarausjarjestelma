@@ -8,11 +8,13 @@ import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 @SuppressWarnings("unchecked")
 public class Paaohjelma extends Application {
@@ -31,6 +33,8 @@ public class Paaohjelma extends Application {
     public int palvelunIDmuokkaukseen;
     public String asiakkaanIDmuokkaukseen;
     public String mokinNimimuokkaukseen;
+    public TableView<SqlKomennot.Mokki> haettavatMokit;
+
 
     @Override
     public void start(Stage primaryStage) throws SQLException {
@@ -64,6 +68,7 @@ public class Paaohjelma extends Application {
         hinnansaato.setBlockIncrement(100);
         hinnansaato.setShowTickMarks(true);
         hinnansaato.setMajorTickUnit(250);
+        haettavatMokit = new TableView<>();
 
         final double raja = 100.0; //finaali
 
@@ -96,6 +101,7 @@ public class Paaohjelma extends Application {
 
         kaikille.getChildren().addAll(alueelle, sliderille, vieraat, haebt);
         asettelu.setTop(kaikille);
+        asettelu.setCenter(haettavatMokit);
 
         Scene paavalikko = new Scene(asettelu, 900, 600);
 
@@ -112,8 +118,44 @@ public class Paaohjelma extends Application {
         kirjautumisetvbox.setAlignment(Pos.CENTER);
 
 
+        TableColumn<SqlKomennot.Mokki, String> mokkiNimi = new TableColumn<>("Mökin nimi");
+        mokkiNimi.setCellValueFactory(cellData -> cellData.getValue().getNimi());
+        TableColumn<SqlKomennot.Mokki, String> mokinHenkilomaara = new TableColumn<>("Mökin henkilömäärä");
+        mokinHenkilomaara.setCellValueFactory(cellData -> cellData.getValue().getHenkilo());
+        TableColumn<SqlKomennot.Mokki, String> mokinHinta = new TableColumn<>("Mökin hinta");
+        mokinHinta.setCellValueFactory(cellData -> cellData.getValue().getMokinHinta());
+        TableColumn<SqlKomennot.Mokki, String> mokinAlue = new TableColumn<>("Mökin alue");
+        mokinAlue.setCellValueFactory(cellData -> cellData.getValue().getAlue());
+        TableColumn<SqlKomennot.Mokki, String> mokinKuvaus = new TableColumn<>("Mökin kuvaus");
+        mokinKuvaus.setCellValueFactory(cellData -> cellData.getValue().getMokinKuvaus());
+        TableColumn<SqlKomennot.Mokki, String> mokinVarustelu = new TableColumn<>("Mökin varustelu");
+        mokinVarustelu.setCellValueFactory(cellData -> cellData.getValue().getMokinVarustelu());
+        TableColumn<SqlKomennot.Mokki, String> mokinOsoite = new TableColumn<>("Mökin osoite");
+        mokinOsoite.setCellValueFactory(cellData -> cellData.getValue().getMokinOsoite());
+        haettavatMokit.setMaxSize(800, 500);
+
         haebt.setOnAction(e -> {
-            System.out.println(SqlKomennot.fetchMokkiAll(5, 2, 1));
+            //System.out.println(SqlKomennot.fetchMokkiAll(604, 75, 2));
+            ObservableList<SqlKomennot.Mokki> haettujenMokkienTiedot = FXCollections.observableArrayList();
+            for(int i = 0; i < SqlKomennot.fetchMokkiAll(604, 75, 2).size(); i++){
+                int haetunMokinId = SqlKomennot.fetchMokkiAll(604, 75, 2).get(i).getMokkiId();
+                int alueID = SqlKomennot.fetchMokkiAll(604, 75, 2).get(i).getAlueId();
+                int postiNro = SqlKomennot.fetchMokkiAll(604, 75, 2).get(i).getPostiNro();
+                String nimi = SqlKomennot.fetchMokkiAll(604, 75, 2).get(i).getMokkiNimi();
+                String osoite = SqlKomennot.fetchMokkiAll(604, 75, 2).get(i).getKatuOsoite();
+                double hinta = SqlKomennot.fetchMokkiAll(604, 75, 2).get(i).getHinta();
+                String kuvaus = SqlKomennot.fetchMokkiAll(604, 75, 2).get(i).getKuvaus();
+                int hloMaara = SqlKomennot.fetchMokkiAll(604, 75, 2).get(i).getHenkilomaara();
+                String varustelu = SqlKomennot.fetchMokkiAll(604, 75, 2).get(i).getVarustelu();
+                SqlKomennot.Mokki mokki1 = new SqlKomennot.Mokki(haetunMokinId, alueID, postiNro, nimi, osoite, hinta, kuvaus, hloMaara, varustelu);
+                mokki1.setSimpleStringProperty(nimi, hloMaara, hinta, SqlKomennot.fetchAlueNimi(alueID), kuvaus, varustelu, osoite);
+                haettujenMokkienTiedot.add(mokki1);
+            }
+
+            haettavatMokit.setItems(haettujenMokkienTiedot);
+            haettavatMokit.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+            haettavatMokit.getColumns().addAll(mokkiNimi, mokinHenkilomaara, mokinHinta, mokinAlue, mokinKuvaus, mokinVarustelu, mokinOsoite);
+
         });
 
 
@@ -400,7 +442,7 @@ public class Paaohjelma extends Application {
         Scene muokkaausvalikko = new Scene(pane, 640, 400);
 
         primaryStage.setTitle("Mökkivarausjärjestelmä");
-        primaryStage.setScene(muokkaausvalikko);
+        primaryStage.setScene(paavalikko);
         primaryStage.show();
 
         //Alkuvalikon lisäysnapit
