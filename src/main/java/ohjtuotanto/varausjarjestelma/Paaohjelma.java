@@ -8,14 +8,10 @@ import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 @SuppressWarnings("unchecked")
 public class Paaohjelma extends Application {
@@ -79,7 +75,6 @@ public class Paaohjelma extends Application {
             rahanArvo.setText("0-" + newHinta + "€");
         });
 
-
         ComboBox<Integer> vieraat = new ComboBox<>();
         vieraat.setPromptText("vieraiden lkm");
         vieraat.setItems(FXCollections.observableArrayList(
@@ -124,11 +119,9 @@ public class Paaohjelma extends Application {
         kirjautumisetvbox.getChildren().addAll(kayttajatunnustf, salasanatf, kirjaudu);
         kirjautumisetvbox.setAlignment(Pos.CENTER);
 
-
         haebt.setOnAction(e -> {
             System.out.println(SqlKomennot.fetchMokkiAll(5, 2, 1));
         });
-
 
         kirjaudu.setOnAction(e -> {
             if (kayttajatunnustf.getText().equals("testi") && salasanatf.getText().equals("123")) {
