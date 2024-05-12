@@ -34,6 +34,7 @@ public class Paaohjelma extends Application {
     public String asiakkaanIDmuokkaukseen;
     public String mokinNimimuokkaukseen;
     public TableView<SqlKomennot.Mokki> haettavatMokit;
+    public ObservableList<SqlKomennot.Mokki> haettujenMokkienTiedot;
 
 
     @Override
@@ -134,24 +135,32 @@ public class Paaohjelma extends Application {
         mokinOsoite.setCellValueFactory(cellData -> cellData.getValue().getMokinOsoite());
         haettavatMokit.setMaxSize(800, 500);
 
-        haebt.setOnAction(e -> {
-            //System.out.println(SqlKomennot.fetchMokkiAll(604, 75, 2));
-            ObservableList<SqlKomennot.Mokki> haettujenMokkienTiedot = FXCollections.observableArrayList();
-            for(int i = 0; i < SqlKomennot.fetchMokkiAll(604, 75, 2).size(); i++){
-                int haetunMokinId = SqlKomennot.fetchMokkiAll(604, 75, 2).get(i).getMokkiId();
-                int alueID = SqlKomennot.fetchMokkiAll(604, 75, 2).get(i).getAlueId();
-                int postiNro = SqlKomennot.fetchMokkiAll(604, 75, 2).get(i).getPostiNro();
-                String nimi = SqlKomennot.fetchMokkiAll(604, 75, 2).get(i).getMokkiNimi();
-                String osoite = SqlKomennot.fetchMokkiAll(604, 75, 2).get(i).getKatuOsoite();
-                double hinta = SqlKomennot.fetchMokkiAll(604, 75, 2).get(i).getHinta();
-                String kuvaus = SqlKomennot.fetchMokkiAll(604, 75, 2).get(i).getKuvaus();
-                int hloMaara = SqlKomennot.fetchMokkiAll(604, 75, 2).get(i).getHenkilomaara();
-                String varustelu = SqlKomennot.fetchMokkiAll(604, 75, 2).get(i).getVarustelu();
-                SqlKomennot.Mokki mokki1 = new SqlKomennot.Mokki(haetunMokinId, alueID, postiNro, nimi, osoite, hinta, kuvaus, hloMaara, varustelu);
-                mokki1.setSimpleStringProperty(nimi, hloMaara, hinta, SqlKomennot.fetchAlueNimi(alueID), kuvaus, varustelu, osoite);
-                haettujenMokkienTiedot.add(mokki1);
-            }
 
+        haebt.setOnAction(e -> {
+            haettavatMokit.getColumns().clear();
+            haettujenMokkienTiedot = FXCollections.observableArrayList();
+            if(haettujenMokkienTiedot != null){
+                haettujenMokkienTiedot.clear();
+            }
+            if(alueet.getValue() == null || vieraat.getValue() == null){
+                //virhe
+            }else{
+                int alueenID = SqlKomennot.fetchAlueID(alueet.getValue().toString());
+                for(int i = 0; i < SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraat.getValue()).size(); i++){
+                    int haetunMokinId = SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraat.getValue()).get(i).getMokkiId();
+                    int alueID = SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraat.getValue()).get(i).getAlueId();
+                    int postiNro = SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraat.getValue()).get(i).getPostiNro();
+                    String nimi = SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraat.getValue()).get(i).getMokkiNimi();
+                    String osoite = SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraat.getValue()).get(i).getKatuOsoite();
+                    double hinta = SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraat.getValue()).get(i).getHinta();
+                    String kuvaus = SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraat.getValue()).get(i).getKuvaus();
+                    int hloMaara = SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraat.getValue()).get(i).getHenkilomaara();
+                    String varustelu = SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraat.getValue()).get(i).getVarustelu();
+                    SqlKomennot.Mokki mokki1 = new SqlKomennot.Mokki(haetunMokinId, alueID, postiNro, nimi, osoite, hinta, kuvaus, hloMaara, varustelu);
+                    mokki1.setSimpleStringProperty(nimi, hloMaara, hinta, SqlKomennot.fetchAlueNimi(alueID), kuvaus, varustelu, osoite);
+                    haettujenMokkienTiedot.add(mokki1);
+                }
+            }
             haettavatMokit.setItems(haettujenMokkienTiedot);
             haettavatMokit.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
             haettavatMokit.getColumns().addAll(mokkiNimi, mokinHenkilomaara, mokinHinta, mokinAlue, mokinKuvaus, mokinVarustelu, mokinOsoite);

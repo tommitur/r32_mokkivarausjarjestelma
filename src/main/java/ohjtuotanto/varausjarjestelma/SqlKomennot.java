@@ -452,4 +452,21 @@ public class SqlKomennot {
         }
         return "";
     }
+    public static int fetchAlueID(String alue) {
+        String sql = "SELECT alue_id FROM alue WHERE nimi = ?";
+
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, alue);
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("alue_id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
 }
