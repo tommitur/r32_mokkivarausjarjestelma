@@ -93,6 +93,14 @@ public class Paaohjelma extends Application {
         Button haebt = new Button("Hae");
         haebt.setMinWidth(50);
 
+        Button varaabt = new Button("Varaa mökki");
+        varaabt.setMinWidth(50);
+        varaabt.setMinHeight(50);
+
+        Button muokkaajapoistabt = new Button("Muokkaa ja poista tietoja");
+
+        Region tyhjatilaR = new Region();
+
         alueelle.getChildren().addAll(paikkakunta, alueet);
 
         hinnalle.getChildren().addAll(hinnansaato, rahanArvo);
@@ -100,11 +108,20 @@ public class Paaohjelma extends Application {
 
         sliderille.getChildren().addAll(hinta0, hinnalle, hinta1000);
 
-        kaikille.getChildren().addAll(alueelle, sliderille, vieraat, haebt);
+        kaikille.getChildren().addAll(alueelle, sliderille, vieraat, haebt, tyhjatilaR, muokkaajapoistabt);
+
+        HBox.setHgrow(tyhjatilaR, Priority.ALWAYS);
+        HBox varaabtHbox = new HBox(5);
+        varaabtHbox.getChildren().addAll(varaabt);
+        varaabtHbox.setAlignment(Pos.CENTER);
+        varaabtHbox.setPadding(new Insets(30, 30, 30, 30));
+
         asettelu.setTop(kaikille);
         asettelu.setCenter(haettavatMokit);
 
-        Scene paavalikko = new Scene(asettelu, 900, 600);
+        asettelu.setBottom(varaabtHbox);
+
+        Scene paavalikko = new Scene(asettelu, 1050, 700);
 
 
         TextField kayttajatunnustf = new TextField();
@@ -133,7 +150,22 @@ public class Paaohjelma extends Application {
         mokinVarustelu.setCellValueFactory(cellData -> cellData.getValue().getMokinVarustelu());
         TableColumn<SqlKomennot.Mokki, String> mokinOsoite = new TableColumn<>("Mökin osoite");
         mokinOsoite.setCellValueFactory(cellData -> cellData.getValue().getMokinOsoite());
-        haettavatMokit.setMaxSize(800, 500);
+
+        mokkiNimi.setResizable(false);
+        mokinHenkilomaara.setResizable(false);
+        mokinHinta.setResizable(false);
+        mokinAlue.setResizable(false);
+        mokinKuvaus.setResizable(false);
+        mokinVarustelu.setResizable(false);
+        mokinOsoite.setResizable(false);
+
+        mokkiNimi.setMinWidth(150);
+        mokinHenkilomaara.setMinWidth(150);
+        mokinHinta.setMinWidth(150);
+        mokinAlue.setMinWidth(150);
+        mokinKuvaus.setMinWidth(150);
+        mokinVarustelu.setMinWidth(150);
+        mokinOsoite.setMinWidth(148);
 
 
         haebt.setOnAction(e -> {
@@ -204,14 +236,14 @@ public class Paaohjelma extends Application {
         muokkaaAsiakas.setStyle("-fx-border-color: Blue");
         muokkaaPalvelu.setStyle("-fx-border-color: Blue");
 
-        lisaaAlue.setPrefSize(140, 100);
-        lisaaMokki.setPrefSize(140, 100);
-        lisaaPalvelu.setPrefSize(140, 100);
-        lisaaAsiakas.setPrefSize(140, 100);
-        muokkaaAlue.setPrefSize(140, 100);
-        muokkaaMokki.setPrefSize(140, 100);
-        muokkaaPalvelu.setPrefSize(140, 100);
-        muokkaaAsiakas.setPrefSize(140, 100);
+        lisaaAlue.setPrefSize(170, 130);
+        lisaaMokki.setPrefSize(170, 130);
+        lisaaPalvelu.setPrefSize(170, 130);
+        lisaaAsiakas.setPrefSize(170, 130);
+        muokkaaAlue.setPrefSize(170, 130);
+        muokkaaMokki.setPrefSize(170, 130);
+        muokkaaPalvelu.setPrefSize(170, 130);
+        muokkaaAsiakas.setPrefSize(170, 130);
 
         GridPane kaikkiMuokattavat = new GridPane(15, 15);
 
@@ -445,14 +477,31 @@ public class Paaohjelma extends Application {
         Scene palveluidenLisausValikko = new Scene(palveluBP, 550, 550);
         palveluidentiedotGP.setAlignment(Pos.CENTER);
 
-        BorderPane pane = new BorderPane(kaikkiMuokattavat);
+        Button takaisinPaavalikkoonbt = new Button("Takaisin varausvalikkoon");
+        takaisinPaavalikkoonbt.setMinWidth(200);
+
+        HBox takaisinNappiHB = new HBox(15);
+
+        takaisinNappiHB.getChildren().add(takaisinPaavalikkoonbt);
+
+        BorderPane pane = new BorderPane();
+        pane.setTop(takaisinNappiHB);
+        pane.setCenter(kaikkiMuokattavat);
         kaikkiMuokattavat.setAlignment(Pos.CENTER);
 
-        Scene muokkaausvalikko = new Scene(pane, 640, 400);
+        takaisinPaavalikkoonbt.setOnAction(e->{
+            primaryStage.setScene(paavalikko);
+        });
+
+        Scene muokkaausvalikko = new Scene(pane, 800, 600);
 
         primaryStage.setTitle("Mökkivarausjärjestelmä");
         primaryStage.setScene(paavalikko);
         primaryStage.show();
+
+        muokkaajapoistabt.setOnAction(e->{
+            primaryStage.setScene(muokkaausvalikko);
+        });
 
         //Alkuvalikon lisäysnapit
         lisaaAlue.setOnAction(e -> {
