@@ -8,11 +8,14 @@ import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings("unchecked")
 public class Paaohjelma extends Application {
@@ -39,10 +42,9 @@ public class Paaohjelma extends Application {
 
         BorderPane asettelu = new BorderPane();
 
-        HBox kaikille = new HBox(30);
+        HBox kaikille = new HBox(50);
         kaikille.setPadding(new Insets(15, 10, 15, 10));
         kaikille.setStyle("-fx-border-color: black; -fx-border-width: 2px;");
-        //kaikille.setStyle("-fx-background-color: gray");
 
         HBox alueelle = new HBox(5);
         HBox sliderille = new HBox(5);
@@ -73,7 +75,7 @@ public class Paaohjelma extends Application {
         });
 
         hinnansaato.valueProperty().addListener((o, oldValue, newValue) -> {
-            int newHinta = newValue.intValue();
+            double newHinta = newValue.intValue();
             rahanArvo.setText("0-" + newHinta + "€");
         });
 
@@ -87,17 +89,29 @@ public class Paaohjelma extends Application {
         Button haebt = new Button("Hae");
         haebt.setMinWidth(50);
 
+        Button muokkaa = new Button("Muokkaa tietoja");
+        muokkaa.setMinWidth(50);
+
+        VBox varaus = new VBox(5);
+        varaus.setPadding(new Insets(10,10,10,10));
+        Button varaa = new Button("Varaa");
+        varaa.setMinWidth(50);
+
         alueelle.getChildren().addAll(paikkakunta, alueet);
 
         hinnalle.getChildren().addAll(hinnansaato, rahanArvo);
         hinnalle.setAlignment(Pos.CENTER);
 
+        varaus.getChildren().add(varaa);
+        varaus.setAlignment(Pos.BOTTOM_CENTER);
+
         sliderille.getChildren().addAll(hinta0, hinnalle, hinta1000);
 
-        kaikille.getChildren().addAll(alueelle, sliderille, vieraat, haebt);
+        kaikille.getChildren().addAll(alueelle, sliderille, vieraat, haebt, muokkaa);
+        asettelu.setBottom(varaus);
         asettelu.setTop(kaikille);
 
-        Scene paavalikko = new Scene(asettelu, 900, 600);
+        Scene paavalikko = new Scene(asettelu, 900, 500);
 
 
         TextField kayttajatunnustf = new TextField();
@@ -124,7 +138,6 @@ public class Paaohjelma extends Application {
                 System.out.println("Salasana väärin");
             }
         });
-
 
         Scene kirjautuminen = new Scene(kirjautumisetvbox, 500, 500);
 
@@ -400,10 +413,14 @@ public class Paaohjelma extends Application {
         Scene muokkaausvalikko = new Scene(pane, 640, 400);
 
         primaryStage.setTitle("Mökkivarausjärjestelmä");
-        primaryStage.setScene(muokkaausvalikko);
+        primaryStage.setScene(paavalikko);
         primaryStage.show();
 
         //Alkuvalikon lisäysnapit
+        muokkaa.setOnAction(e -> {
+            primaryStage.setScene(muokkaausvalikko);
+        });
+
         lisaaAlue.setOnAction(e -> {
             primaryStage.setScene(alueenLisausValikko);
         });
