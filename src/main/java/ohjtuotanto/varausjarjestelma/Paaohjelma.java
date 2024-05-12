@@ -3,6 +3,7 @@ package ohjtuotanto.varausjarjestelma;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -14,6 +15,9 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 
 @SuppressWarnings("unchecked")
@@ -35,7 +39,7 @@ public class Paaohjelma extends Application {
     public String mokinNimimuokkaukseen;
     public TableView<SqlKomennot.Mokki> haettavatMokit;
     public ObservableList<SqlKomennot.Mokki> haettujenMokkienTiedot;
-
+    private DatePicker pvmLista;
 
     @Override
     public void start(Stage primaryStage) throws SQLException {
@@ -44,21 +48,21 @@ public class Paaohjelma extends Application {
 
         BorderPane asettelu = new BorderPane();
 
-        HBox kaikille = new HBox(30);
-        kaikille.setPadding(new Insets(15, 10, 15, 10));
-        kaikille.setStyle("-fx-border-color: black; -fx-border-width: 2px;");
+        HBox kaikkiHbox = new HBox(30);
+        kaikkiHbox.setPadding(new Insets(15, 10, 15, 10));
+        kaikkiHbox.setStyle("-fx-border-color: black; -fx-border-width: 2px;");
         //kaikille.setStyle("-fx-background-color: gray");
 
-        HBox alueelle = new HBox(5);
-        HBox sliderille = new HBox(5);
-        VBox hinnalle = new VBox();
+        HBox aluehbox = new HBox(5);
+        HBox sliderhbox = new HBox(5);
+        VBox hintahbox = new VBox();
 
-        Text paikkakunta = new Text("Paikkakunta:");
+        Text paikkakuntatxt = new Text("Paikkakunta:");
 
         ObservableList<String> alueidenlista = FXCollections.observableArrayList();
         alueidenlista = komennot.valitseKaikkiAlueet();
-        ComboBox alueet = new ComboBox(FXCollections.observableArrayList(alueidenlista));
-        alueet.setPromptText("Valitse");
+        ComboBox alueetcb = new ComboBox(FXCollections.observableArrayList(alueidenlista));
+        alueetcb.setPromptText("Valitse");
 
         Text hinta0 = new Text("hinta/yö 0€");
         Text rahanArvo = new Text("0€");
@@ -84,9 +88,9 @@ public class Paaohjelma extends Application {
         });
 
 
-        ComboBox<Integer> vieraat = new ComboBox<>();
-        vieraat.setPromptText("vieraiden lkm");
-        vieraat.setItems(FXCollections.observableArrayList(
+        ComboBox<Integer> vieraatcb = new ComboBox<>();
+        vieraatcb.setPromptText("vieraiden lkm");
+        vieraatcb.setItems(FXCollections.observableArrayList(
                 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12
         ));
 
@@ -101,14 +105,14 @@ public class Paaohjelma extends Application {
 
         Region tyhjatilaR = new Region();
 
-        alueelle.getChildren().addAll(paikkakunta, alueet);
+        aluehbox.getChildren().addAll(paikkakuntatxt, alueetcb);
 
-        hinnalle.getChildren().addAll(hinnansaato, rahanArvo);
-        hinnalle.setAlignment(Pos.CENTER);
+        hintahbox.getChildren().addAll(hinnansaato, rahanArvo);
+        hintahbox.setAlignment(Pos.CENTER);
 
-        sliderille.getChildren().addAll(hinta0, hinnalle, hinta1000);
+        sliderhbox.getChildren().addAll(hinta0, hintahbox, hinta1000);
 
-        kaikille.getChildren().addAll(alueelle, sliderille, vieraat, haebt, tyhjatilaR, muokkaajapoistabt);
+        kaikkiHbox.getChildren().addAll(aluehbox, sliderhbox, vieraatcb, haebt, tyhjatilaR, muokkaajapoistabt);
 
         HBox.setHgrow(tyhjatilaR, Priority.ALWAYS);
         HBox varaabtHbox = new HBox(5);
@@ -116,7 +120,7 @@ public class Paaohjelma extends Application {
         varaabtHbox.setAlignment(Pos.CENTER);
         varaabtHbox.setPadding(new Insets(30, 30, 30, 30));
 
-        asettelu.setTop(kaikille);
+        asettelu.setTop(kaikkiHbox);
         asettelu.setCenter(haettavatMokit);
 
         asettelu.setBottom(varaabtHbox);
@@ -174,20 +178,20 @@ public class Paaohjelma extends Application {
             if(haettujenMokkienTiedot != null){
                 haettujenMokkienTiedot.clear();
             }
-            if(alueet.getValue() == null || vieraat.getValue() == null){
+            if(alueetcb.getValue() == null || vieraatcb.getValue() == null){
                 //virhe
             }else{
-                int alueenID = SqlKomennot.fetchAlueID(alueet.getValue().toString());
-                for(int i = 0; i < SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraat.getValue()).size(); i++){
-                    int haetunMokinId = SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraat.getValue()).get(i).getMokkiId();
-                    int alueID = SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraat.getValue()).get(i).getAlueId();
-                    int postiNro = SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraat.getValue()).get(i).getPostiNro();
-                    String nimi = SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraat.getValue()).get(i).getMokkiNimi();
-                    String osoite = SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraat.getValue()).get(i).getKatuOsoite();
-                    double hinta = SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraat.getValue()).get(i).getHinta();
-                    String kuvaus = SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraat.getValue()).get(i).getKuvaus();
-                    int hloMaara = SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraat.getValue()).get(i).getHenkilomaara();
-                    String varustelu = SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraat.getValue()).get(i).getVarustelu();
+                int alueenID = SqlKomennot.fetchAlueID(alueetcb.getValue().toString());
+                for(int i = 0; i < SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraatcb.getValue()).size(); i++){
+                    int haetunMokinId = SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraatcb.getValue()).get(i).getMokkiId();
+                    int alueID = SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraatcb.getValue()).get(i).getAlueId();
+                    int postiNro = SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraatcb.getValue()).get(i).getPostiNro();
+                    String nimi = SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraatcb.getValue()).get(i).getMokkiNimi();
+                    String osoite = SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraatcb.getValue()).get(i).getKatuOsoite();
+                    double hinta = SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraatcb.getValue()).get(i).getHinta();
+                    String kuvaus = SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraatcb.getValue()).get(i).getKuvaus();
+                    int hloMaara = SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraatcb.getValue()).get(i).getHenkilomaara();
+                    String varustelu = SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraatcb.getValue()).get(i).getVarustelu();
                     SqlKomennot.Mokki mokki1 = new SqlKomennot.Mokki(haetunMokinId, alueID, postiNro, nimi, osoite, hinta, kuvaus, hloMaara, varustelu);
                     mokki1.setSimpleStringProperty(nimi, hloMaara, hinta, SqlKomennot.fetchAlueNimi(alueID), kuvaus, varustelu, osoite);
                     haettujenMokkienTiedot.add(mokki1);
@@ -199,6 +203,88 @@ public class Paaohjelma extends Application {
 
         });
 
+        BorderPane varaustiedotBP = new BorderPane();
+
+        HBox varaustiedothbox = new HBox();
+
+        GridPane varaustiedotGP = new GridPane(50, 40);
+
+
+        ObservableList<String> sahkopostilista = FXCollections.observableArrayList();
+        sahkopostilista = komennot.valitseKaikkiSahkopostit();
+        ComboBox sahkoposticb = new ComboBox(FXCollections.observableArrayList(sahkopostilista));
+        sahkoposticb.setPromptText("Valitse sähköposti");
+
+        Label sahkopostilb = new Label("Sähköposti:");
+        Label mokkiIdlb = new Label("Mökin ID:");
+        Label varausPvmlb = new Label("Varauspäivämäärä:");
+        Label vahvistusPvmlb = new Label("Vahvistuspäivämäärä:");
+        Label varauksenalkuPvmlb = new Label("Tulo päivämäärä:");
+        Label varauksenloppuPvmlb = new Label("Lähtö päivämäärä:");
+        Label mokinhintalb = new Label("Varauksen hinta: ");
+
+        DatePicker varausPvmDP = new DatePicker();
+        DatePicker vahvistusPvmDP = new DatePicker();
+        DatePicker varauksenalkuPvmDP = new DatePicker();
+        DatePicker varauksenloppuPvmDP = new DatePicker();
+
+        TextField mokki_idtf = new TextField();
+        mokki_idtf.setEditable(false);
+
+        Button uusiAsiakasbt = new Button("Uusi asiakas?");
+        Button mokinVarausbt = new Button("Varaa mökki");
+
+        varaustiedotGP.add(sahkopostilb,0,1);
+        varaustiedotGP.add(mokkiIdlb,0,2);
+        varaustiedotGP.add(varausPvmlb,0,3);
+        varaustiedotGP.add(vahvistusPvmlb,0,4);
+        varaustiedotGP.add(varauksenalkuPvmlb,0,5);
+        varaustiedotGP.add(varauksenloppuPvmlb,0,6);
+        varaustiedotGP.add(sahkoposticb,1,1);
+        varaustiedotGP.add(mokki_idtf,1,2);
+        varaustiedotGP.add(varausPvmDP,1,3);
+        varaustiedotGP.add(vahvistusPvmDP,1,4);
+        varaustiedotGP.add(varauksenalkuPvmDP,1,5);
+        varaustiedotGP.add(varauksenloppuPvmDP,1,6);
+
+        varaustiedotGP.add(uusiAsiakasbt,2,1);
+        varaustiedotGP.add(mokinhintalb,2,5);
+        varaustiedotGP.add(mokinVarausbt,2,6);
+
+        varaustiedothbox.getChildren().add(varaustiedotGP);
+        varaustiedothbox.setAlignment(Pos.CENTER);
+        varaustiedotBP.setCenter(varaustiedothbox);
+
+        Scene varausvalikko = new Scene(varaustiedotBP, 650, 450);
+
+        varaabt.setOnAction(e -> {
+
+            if (haettavatMokit.getSelectionModel().getSelectedItem() != null) {
+
+                SqlKomennot.Mokki valittuMokki = haettavatMokit.getSelectionModel().getSelectedItem();
+                mokki_idtf.setText(String.valueOf(valittuMokki.getMokkiId()));
+
+                primaryStage.setScene(varausvalikko);
+            }
+        });
+
+        varauksenloppuPvmDP.setOnAction(e -> {
+            if (varauksenalkuPvmDP.getValue() != null) {
+
+                SqlKomennot.Mokki valitunMokinHinta = haettavatMokit.getSelectionModel().getSelectedItem();
+
+                LocalDate tuloPVM = varauksenalkuPvmDP.getValue();
+                LocalDate lahtoPVM = varauksenloppuPvmDP.getValue();
+
+                if (tuloPVM != null && lahtoPVM != null) {
+                    long erotus = ChronoUnit.DAYS.between(tuloPVM, lahtoPVM);
+                    double yopymisenHinta = erotus * valitunMokinHinta.getHinta();
+                    mokinhintalb.setText("Varauksen hinta: \n" + yopymisenHinta + " €");
+                } else {
+                    mokinhintalb.setText("Valitse tulo-\nja lähtöpvm");
+                }
+            }
+        });
 
         kirjaudu.setOnAction(e -> {
             if (kayttajatunnustf.getText().equals("testi") && salasanatf.getText().equals("123")) {
@@ -343,7 +429,6 @@ public class Paaohjelma extends Application {
         palveluBP.setCenter(palveluidentiedotGP);
         palveluBP.setTop(takaisinPalvelu);
 
-
         Button lisaaAsiakasbt = new Button("Lisää");
         Label asiakaanNimilb = new Label("Etunimi");
         Label asiakaanSukunimilb = new Label("Sukunimi ");
@@ -440,7 +525,6 @@ public class Paaohjelma extends Application {
         Label mokkienmuokkausohje = new Label("Valitse mökki ylhäältä\nja voit muokata sen tietoja\ntai poistaa sen");
         mokkienmuokkausohje.setVisible(false);
 
-
         GridPane mokintiedotGP = new GridPane(15, 15);
         mokintiedotGP.add(mokinNimilb, 0, 0);
         mokintiedotGP.add(mokinNimitf, 1, 0);
@@ -463,7 +547,6 @@ public class Paaohjelma extends Application {
         mokintiedotGP.add(mokkienmuokkausohje, 2, 1);
         mokkiBP.setCenter(mokintiedotGP);
         mokkiBP.setTop(takaisinMokki);
-
 
         Scene mokinLisausValikko = new Scene(mokkiBP, 550, 600);
         mokintiedotGP.setAlignment(Pos.CENTER);
@@ -488,6 +571,10 @@ public class Paaohjelma extends Application {
         pane.setTop(takaisinNappiHB);
         pane.setCenter(kaikkiMuokattavat);
         kaikkiMuokattavat.setAlignment(Pos.CENTER);
+
+        uusiAsiakasbt.setOnAction(e -> {
+            primaryStage.setScene(asiakaanLisausValikko);
+        });
 
         takaisinPaavalikkoonbt.setOnAction(e->{
             primaryStage.setScene(paavalikko);
@@ -1083,5 +1170,10 @@ public class Paaohjelma extends Application {
                 textField.setText(oldValue);
             }
         });
+    }
+
+    private void paivamaara(ActionEvent event) {
+        LocalDate valitsePvm = pvmLista.getValue();
+        String jarjestys = valitsePvm.format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
     }
 }
