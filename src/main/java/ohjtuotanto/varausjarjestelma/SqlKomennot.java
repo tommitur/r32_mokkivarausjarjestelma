@@ -1,5 +1,7 @@
 package ohjtuotanto.varausjarjestelma;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -14,13 +16,13 @@ public class SqlKomennot {
 
     private static final String URL = "jdbc:mysql://127.0.0.1:3306/vn";
     private static final String USER = "root";
-    private static final String PASSWORD = "Kukkakaali50";
+    private static final String PASSWORD = "salis123";
 
     public SqlKomennot() throws SQLException {
         connection = DriverManager.getConnection(
                 "jdbc:mysql://127.0.0.1:3306/vn",
                 "root",
-                "Kukkakaali50"
+                "salis123"
 
         );
         statement = connection.createStatement();
@@ -249,6 +251,7 @@ public class SqlKomennot {
 
 
     static class Mokki {
+
         int mokkiId;
         int alueId;
         int postiNro;
@@ -258,6 +261,15 @@ public class SqlKomennot {
         String kuvaus;
         int henkilomaara;
         String varustelu;
+        public SimpleStringProperty mokkinimi;
+        public SimpleStringProperty mokinhenkilomaara;
+        public SimpleStringProperty mokinHinta;
+        public SimpleStringProperty mokinAlue;
+        public SimpleStringProperty mokinKuvaus;
+        public SimpleStringProperty mokinVarustelu;
+        public SimpleStringProperty mokinOsoite;
+
+
 
 
         public Mokki(int mokkiId, int alueId, int postiNro, String mokkiNimi, String katuOsoite, double hinta, String kuvaus, int henkilomaara, String varustelu) {
@@ -272,7 +284,72 @@ public class SqlKomennot {
             this.varustelu = varustelu;
         }
 
-        public Mokki(int alueId, double hinta, int henkilomaara) {
+        public void setSimpleStringProperty(String nimi, int hmaara, double mokinHinta, String alue, String kuvaus, String varustelu, String osoite){
+            this.mokkinimi = new SimpleStringProperty(nimi);
+            this.mokinhenkilomaara = new SimpleStringProperty(String.valueOf(hmaara));
+            this.mokinHinta = new SimpleStringProperty(String.valueOf(mokinHinta));
+            this.mokinAlue = new SimpleStringProperty(alue);
+            this.mokinKuvaus = new SimpleStringProperty(kuvaus);
+            this.mokinVarustelu = new SimpleStringProperty(varustelu);
+            this.mokinOsoite = new SimpleStringProperty(osoite);
+        }
+
+        public StringProperty getNimi(){
+            return mokkinimi;
+        }
+        public StringProperty getHenkilo(){
+            return mokinhenkilomaara;
+        }
+        public StringProperty getMokinHinta(){
+            return mokinHinta;
+        }
+        public StringProperty getAlue(){
+            return mokinAlue;
+        }
+        public StringProperty getMokinKuvaus(){
+            return mokinKuvaus;
+        }
+        public StringProperty getMokinVarustelu(){
+            return mokinVarustelu;
+        }
+        public StringProperty getMokinOsoite(){
+            return mokinOsoite;
+        }
+
+        public int getMokkiId() {
+            return mokkiId;
+        }
+
+        public int getAlueId() {
+            return alueId;
+        }
+
+        public int getPostiNro() {
+            return postiNro;
+        }
+
+        public String getMokkiNimi() {
+            return mokkiNimi;
+        }
+
+        public String getKatuOsoite() {
+            return katuOsoite;
+        }
+
+        public Double getHinta() {
+            return hinta;
+        }
+
+        public String getKuvaus() {
+            return kuvaus;
+        }
+
+        public int getHenkilomaara() {
+            return henkilomaara;
+        }
+
+        public String getVarustelu() {
+            return varustelu;
         }
     }
 
@@ -323,10 +400,10 @@ public class SqlKomennot {
     }
 
 
-    public static List<Mokki> fetchMokkiAll(int alueId, double hinta, int henkilomaara) {
+    public static ObservableList<Mokki> fetchMokkiAll(int alueId, double hinta, int henkilomaara) {
         String sql = "SELECT * FROM mokki WHERE alue_id = ? AND hinta <= ? AND henkilomaara >= ?";
 
-        List<Mokki> mokkiList = new ArrayList<Mokki>();
+        ObservableList<Mokki> mokkiList = FXCollections.observableArrayList();
 
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -357,75 +434,6 @@ public class SqlKomennot {
         return mokkiList;
     }
 
-    public static int getAlueIdByNimi(String alueNimi) throws SQLException {
-        String query = "SELECT alue_id FROM alue WHERE nimi = ?";
-        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
-             PreparedStatement ps = conn.prepareStatement(query)) {
-            ps.setString(1, alueNimi);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt("alue_id");
-                }
-            }
-        }
-        // Jos mitään ei löydetty, palauta oletusarvo tai käske käyttäjää valitsemaan alue
-        return -1; // Tämä on vain esimerkki, voit palauttaa vaikka -1 jos mitään ei löydetä
-    }
-
-    public static ObservableList<String> getData() throws SQLException {
-        String kysely = "SELECT m.mokkinimi FROM mokki m " +
-                "INNER JOIN alue a ON m.alue_id = a.alue_id " +
-                "WHERE m.alue_id = ? AND m.hinta <= ? AND m.henkilomaara >= ?";
-        ObservableList<String> lista = FXCollections.observableArrayList();
-        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
-             PreparedStatement ps = conn.prepareStatement(kysely)) {
-
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    lista.add(rs.getString("mokkinimi"));
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return lista;
-    }
-
-
-    public static ObservableList<Mokit> getDatat(int alue_id, Double maxHinta, int vieraidenLkm) {
-        String kysely = "SELECT m.mokki_id, m.alue_id, a.nimi AS alue_nimi, m.mokkinimi, m.hinta, m.henkilomaara\n" +
-                "FROM mokki m\n" +
-                "INNER JOIN alue a ON m.alue_id = a.alue_id\n" +
-                "WHERE m.alue_id = ? AND m.hinta <= ? AND m.henkilomaara >= ?";
-        ObservableList<Mokit> lista = FXCollections.observableArrayList();
-        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
-             PreparedStatement ps = conn.prepareStatement(kysely)) {
-
-            ps.setInt(1, alue_id);
-            ps.setDouble(2, maxHinta);
-            ps.setInt(3, vieraidenLkm);
-
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    lista.add(new Mokit(
-                            rs.getInt("alue_id"),
-                            rs.getInt("henkilomaara"),
-                            rs.getString("mokkinimi"),
-                            rs.getDouble("hinta"),
-                            rs.getInt("mokki_id"),
-                            rs.getInt("postinro"),
-                            rs.getString("katuosoite"),
-                            rs.getString("kuvaus"),
-                            rs.getString("varustelu")
-                    ));
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return lista;
-    }
-
 
     public static String fetchAlueNimi(int alueId) {
         String sql = "SELECT nimi FROM alue WHERE alue_id = ?";
@@ -443,5 +451,22 @@ public class SqlKomennot {
             e.printStackTrace();
         }
         return "";
+    }
+    public static int fetchAlueID(String alue) {
+        String sql = "SELECT alue_id FROM alue WHERE nimi = ?";
+
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, alue);
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("alue_id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
     }
 }

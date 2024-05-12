@@ -8,10 +8,13 @@ import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 @SuppressWarnings("unchecked")
 public class Paaohjelma extends Application {
@@ -30,6 +33,9 @@ public class Paaohjelma extends Application {
     public int palvelunIDmuokkaukseen;
     public String asiakkaanIDmuokkaukseen;
     public String mokinNimimuokkaukseen;
+    public TableView<SqlKomennot.Mokki> haettavatMokit;
+    public ObservableList<SqlKomennot.Mokki> haettujenMokkienTiedot;
+
 
     @Override
     public void start(Stage primaryStage) throws SQLException {
@@ -38,9 +44,10 @@ public class Paaohjelma extends Application {
 
         BorderPane asettelu = new BorderPane();
 
-        HBox kaikille = new HBox(50);
+        HBox kaikille = new HBox(30);
         kaikille.setPadding(new Insets(15, 10, 15, 10));
         kaikille.setStyle("-fx-border-color: black; -fx-border-width: 2px;");
+        //kaikille.setStyle("-fx-background-color: gray");
 
         HBox alueelle = new HBox(5);
         HBox sliderille = new HBox(5);
@@ -62,6 +69,7 @@ public class Paaohjelma extends Application {
         hinnansaato.setBlockIncrement(100);
         hinnansaato.setShowTickMarks(true);
         hinnansaato.setMajorTickUnit(250);
+        haettavatMokit = new TableView<>();
 
         final double raja = 100.0; //finaali
 
@@ -71,9 +79,10 @@ public class Paaohjelma extends Application {
         });
 
         hinnansaato.valueProperty().addListener((o, oldValue, newValue) -> {
-            double newHinta = newValue.intValue();
+            int newHinta = newValue.intValue();
             rahanArvo.setText("0-" + newHinta + "€");
         });
+
 
         ComboBox<Integer> vieraat = new ComboBox<>();
         vieraat.setPromptText("vieraiden lkm");
@@ -84,29 +93,36 @@ public class Paaohjelma extends Application {
         Button haebt = new Button("Hae");
         haebt.setMinWidth(50);
 
-        Button muokkaa = new Button("Muokkaa tietoja");
-        muokkaa.setMinWidth(50);
+        Button varaabt = new Button("Varaa mökki");
+        varaabt.setMinWidth(50);
+        varaabt.setMinHeight(50);
 
-        VBox varaus = new VBox(5);
-        varaus.setPadding(new Insets(10,10,10,10));
-        Button varaa = new Button("Varaa");
-        varaa.setMinWidth(50);
+        Button muokkaajapoistabt = new Button("Muokkaa ja poista tietoja");
+
+        Region tyhjatilaR = new Region();
 
         alueelle.getChildren().addAll(paikkakunta, alueet);
 
         hinnalle.getChildren().addAll(hinnansaato, rahanArvo);
         hinnalle.setAlignment(Pos.CENTER);
 
-        varaus.getChildren().add(varaa);
-        varaus.setAlignment(Pos.BOTTOM_CENTER);
-
         sliderille.getChildren().addAll(hinta0, hinnalle, hinta1000);
 
-        kaikille.getChildren().addAll(alueelle, sliderille, vieraat, haebt, muokkaa);
-        asettelu.setBottom(varaus);
-        asettelu.setTop(kaikille);
+        kaikille.getChildren().addAll(alueelle, sliderille, vieraat, haebt, tyhjatilaR, muokkaajapoistabt);
 
-        Scene paavalikko = new Scene(asettelu, 900, 500);
+        HBox.setHgrow(tyhjatilaR, Priority.ALWAYS);
+        HBox varaabtHbox = new HBox(5);
+        varaabtHbox.getChildren().addAll(varaabt);
+        varaabtHbox.setAlignment(Pos.CENTER);
+        varaabtHbox.setPadding(new Insets(30, 30, 30, 30));
+
+        asettelu.setTop(kaikille);
+        asettelu.setCenter(haettavatMokit);
+
+        asettelu.setBottom(varaabtHbox);
+
+        Scene paavalikko = new Scene(asettelu, 1050, 700);
+
 
         TextField kayttajatunnustf = new TextField();
         TextField salasanatf = new TextField();
@@ -119,9 +135,70 @@ public class Paaohjelma extends Application {
         kirjautumisetvbox.getChildren().addAll(kayttajatunnustf, salasanatf, kirjaudu);
         kirjautumisetvbox.setAlignment(Pos.CENTER);
 
+
+        TableColumn<SqlKomennot.Mokki, String> mokkiNimi = new TableColumn<>("Mökin nimi");
+        mokkiNimi.setCellValueFactory(cellData -> cellData.getValue().getNimi());
+        TableColumn<SqlKomennot.Mokki, String> mokinHenkilomaara = new TableColumn<>("Mökin henkilömäärä");
+        mokinHenkilomaara.setCellValueFactory(cellData -> cellData.getValue().getHenkilo());
+        TableColumn<SqlKomennot.Mokki, String> mokinHinta = new TableColumn<>("Mökin hinta");
+        mokinHinta.setCellValueFactory(cellData -> cellData.getValue().getMokinHinta());
+        TableColumn<SqlKomennot.Mokki, String> mokinAlue = new TableColumn<>("Mökin alue");
+        mokinAlue.setCellValueFactory(cellData -> cellData.getValue().getAlue());
+        TableColumn<SqlKomennot.Mokki, String> mokinKuvaus = new TableColumn<>("Mökin kuvaus");
+        mokinKuvaus.setCellValueFactory(cellData -> cellData.getValue().getMokinKuvaus());
+        TableColumn<SqlKomennot.Mokki, String> mokinVarustelu = new TableColumn<>("Mökin varustelu");
+        mokinVarustelu.setCellValueFactory(cellData -> cellData.getValue().getMokinVarustelu());
+        TableColumn<SqlKomennot.Mokki, String> mokinOsoite = new TableColumn<>("Mökin osoite");
+        mokinOsoite.setCellValueFactory(cellData -> cellData.getValue().getMokinOsoite());
+
+        mokkiNimi.setResizable(false);
+        mokinHenkilomaara.setResizable(false);
+        mokinHinta.setResizable(false);
+        mokinAlue.setResizable(false);
+        mokinKuvaus.setResizable(false);
+        mokinVarustelu.setResizable(false);
+        mokinOsoite.setResizable(false);
+
+        mokkiNimi.setMinWidth(150);
+        mokinHenkilomaara.setMinWidth(150);
+        mokinHinta.setMinWidth(150);
+        mokinAlue.setMinWidth(150);
+        mokinKuvaus.setMinWidth(150);
+        mokinVarustelu.setMinWidth(150);
+        mokinOsoite.setMinWidth(148);
+
+
         haebt.setOnAction(e -> {
-            System.out.println(SqlKomennot.fetchMokkiAll(5, 2, 1));
+            haettavatMokit.getColumns().clear();
+            haettujenMokkienTiedot = FXCollections.observableArrayList();
+            if(haettujenMokkienTiedot != null){
+                haettujenMokkienTiedot.clear();
+            }
+            if(alueet.getValue() == null || vieraat.getValue() == null){
+                //virhe
+            }else{
+                int alueenID = SqlKomennot.fetchAlueID(alueet.getValue().toString());
+                for(int i = 0; i < SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraat.getValue()).size(); i++){
+                    int haetunMokinId = SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraat.getValue()).get(i).getMokkiId();
+                    int alueID = SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraat.getValue()).get(i).getAlueId();
+                    int postiNro = SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraat.getValue()).get(i).getPostiNro();
+                    String nimi = SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraat.getValue()).get(i).getMokkiNimi();
+                    String osoite = SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraat.getValue()).get(i).getKatuOsoite();
+                    double hinta = SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraat.getValue()).get(i).getHinta();
+                    String kuvaus = SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraat.getValue()).get(i).getKuvaus();
+                    int hloMaara = SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraat.getValue()).get(i).getHenkilomaara();
+                    String varustelu = SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraat.getValue()).get(i).getVarustelu();
+                    SqlKomennot.Mokki mokki1 = new SqlKomennot.Mokki(haetunMokinId, alueID, postiNro, nimi, osoite, hinta, kuvaus, hloMaara, varustelu);
+                    mokki1.setSimpleStringProperty(nimi, hloMaara, hinta, SqlKomennot.fetchAlueNimi(alueID), kuvaus, varustelu, osoite);
+                    haettujenMokkienTiedot.add(mokki1);
+                }
+            }
+            haettavatMokit.setItems(haettujenMokkienTiedot);
+            haettavatMokit.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+            haettavatMokit.getColumns().addAll(mokkiNimi, mokinHenkilomaara, mokinHinta, mokinAlue, mokinKuvaus, mokinVarustelu, mokinOsoite);
+
         });
+
 
         kirjaudu.setOnAction(e -> {
             if (kayttajatunnustf.getText().equals("testi") && salasanatf.getText().equals("123")) {
@@ -130,6 +207,7 @@ public class Paaohjelma extends Application {
                 System.out.println("Salasana väärin");
             }
         });
+
 
         Scene kirjautuminen = new Scene(kirjautumisetvbox, 500, 500);
 
@@ -158,14 +236,14 @@ public class Paaohjelma extends Application {
         muokkaaAsiakas.setStyle("-fx-border-color: Blue");
         muokkaaPalvelu.setStyle("-fx-border-color: Blue");
 
-        lisaaAlue.setPrefSize(140, 100);
-        lisaaMokki.setPrefSize(140, 100);
-        lisaaPalvelu.setPrefSize(140, 100);
-        lisaaAsiakas.setPrefSize(140, 100);
-        muokkaaAlue.setPrefSize(140, 100);
-        muokkaaMokki.setPrefSize(140, 100);
-        muokkaaPalvelu.setPrefSize(140, 100);
-        muokkaaAsiakas.setPrefSize(140, 100);
+        lisaaAlue.setPrefSize(170, 130);
+        lisaaMokki.setPrefSize(170, 130);
+        lisaaPalvelu.setPrefSize(170, 130);
+        lisaaAsiakas.setPrefSize(170, 130);
+        muokkaaAlue.setPrefSize(170, 130);
+        muokkaaMokki.setPrefSize(170, 130);
+        muokkaaPalvelu.setPrefSize(170, 130);
+        muokkaaAsiakas.setPrefSize(170, 130);
 
         GridPane kaikkiMuokattavat = new GridPane(15, 15);
 
@@ -399,20 +477,33 @@ public class Paaohjelma extends Application {
         Scene palveluidenLisausValikko = new Scene(palveluBP, 550, 550);
         palveluidentiedotGP.setAlignment(Pos.CENTER);
 
-        BorderPane pane = new BorderPane(kaikkiMuokattavat);
+        Button takaisinPaavalikkoonbt = new Button("Takaisin varausvalikkoon");
+        takaisinPaavalikkoonbt.setMinWidth(200);
+
+        HBox takaisinNappiHB = new HBox(15);
+
+        takaisinNappiHB.getChildren().add(takaisinPaavalikkoonbt);
+
+        BorderPane pane = new BorderPane();
+        pane.setTop(takaisinNappiHB);
+        pane.setCenter(kaikkiMuokattavat);
         kaikkiMuokattavat.setAlignment(Pos.CENTER);
 
-        Scene muokkaausvalikko = new Scene(pane, 640, 400);
+        takaisinPaavalikkoonbt.setOnAction(e->{
+            primaryStage.setScene(paavalikko);
+        });
+
+        Scene muokkaausvalikko = new Scene(pane, 800, 600);
 
         primaryStage.setTitle("Mökkivarausjärjestelmä");
         primaryStage.setScene(paavalikko);
         primaryStage.show();
 
-        //Alkuvalikon lisäysnapit
-        muokkaa.setOnAction(e -> {
+        muokkaajapoistabt.setOnAction(e->{
             primaryStage.setScene(muokkaausvalikko);
         });
 
+        //Alkuvalikon lisäysnapit
         lisaaAlue.setOnAction(e -> {
             primaryStage.setScene(alueenLisausValikko);
         });
