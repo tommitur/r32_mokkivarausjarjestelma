@@ -113,7 +113,6 @@ public class Paaohjelma extends Application {
 
         Scene paavalikko = new Scene(asettelu, 900, 500);
 
-
         TextField kayttajatunnustf = new TextField();
         TextField salasanatf = new TextField();
 

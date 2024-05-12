@@ -426,6 +426,7 @@ public class SqlKomennot {
         return lista;
     }
 
+
     public static String fetchAlueNimi(int alueId) {
         String sql = "SELECT nimi FROM alue WHERE alue_id = ?";
 
