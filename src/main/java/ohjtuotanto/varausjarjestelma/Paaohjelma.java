@@ -278,6 +278,31 @@ public class Paaohjelma extends Application {
         Button uusiAsiakasbt = new Button("Uusi asiakas?");
         Button mokinVarausbt = new Button("Varaa mökki");
 
+        mokinVarausbt.setOnAction(e -> {
+            int asiakkaanID = SqlKomennot.fetchAsiakkaanIDsahkopostilla(String.valueOf(sahkoposticb.getValue()));
+            int mokki_id = Integer.parseInt(mokki_idtf.getText());
+            LocalDate varattu_pvm = varausPvmDP.getValue();
+            LocalDate vahvistus_pvm = vahvistusPvmDP.getValue();
+            LocalDate alkupvm = varauksenalkuPvmDP.getValue();
+            LocalDate loppupvm = varauksenloppuPvmDP.getValue();
+            if(sahkoposticb.getValue() == null || varattu_pvm == null || vahvistus_pvm == null|| alkupvm == null || loppupvm == null){
+                System.out.println("Tietoja puuttuu");
+            }else{
+                try {
+                    komennot.updateQuery("insert into varaus (asiakas_id, mokki_id, varattu_pvm, vahvistus_pvm, varattu_alkupvm, varattu_loppupvm) values ('" +
+                            asiakkaanID + "','" + mokki_id + "','" + varattu_pvm + "','"+ vahvistus_pvm + "','" + alkupvm + "','" + loppupvm + "')");
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+                sahkoposticb.setValue(null);
+                mokki_idtf.clear();
+                varausPvmDP.setValue(null);
+                vahvistusPvmDP.setValue(null);
+                varauksenalkuPvmDP.setValue(null);
+                varauksenloppuPvmDP.setValue(null);
+            }
+        });
+
         varaustiedotGP.add(sahkopostilb,0,1);
         varaustiedotGP.add(mokkiIdlb,0,2);
         varaustiedotGP.add(varausPvmlb,0,3);

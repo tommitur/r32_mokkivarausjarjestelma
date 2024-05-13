@@ -17,13 +17,13 @@ public class SqlKomennot {
 
     private static final String URL = "jdbc:mysql://127.0.0.1:3306/vn";
     private static final String USER = "root";
-    private static final String PASSWORD = "salis123";
+    private static final String PASSWORD = "Yksitoista123";
 
     public SqlKomennot() throws SQLException {
         connection = DriverManager.getConnection(
                 "jdbc:mysql://127.0.0.1:3306/vn",
                 "root",
-                "salis123"
+                "Yksitoista123"
 
         );
         statement = connection.createStatement();
@@ -252,6 +252,24 @@ public class SqlKomennot {
             e.printStackTrace();
         }
         return "";
+    }
+
+    public static int fetchAsiakkaanIDsahkopostilla(String email) {
+        String sql = "SELECT asiakas_id FROM asiakas WHERE email = ?";
+
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, email);
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("asiakas_id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
     }
 
 
