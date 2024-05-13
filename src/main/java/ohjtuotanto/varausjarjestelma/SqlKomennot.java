@@ -15,15 +15,15 @@ public class SqlKomennot {
     Statement statement;
     Connection connection;
 
-    private static final String URL = "jdbc:mysql://127.0.0.1:3307/vn";
+    private static final String URL = "jdbc:mysql://127.0.0.1:3306/vn";
     private static final String USER = "root";
-    private static final String PASSWORD = "root";
+    private static final String PASSWORD = "Yksitoista123";
 
     public SqlKomennot() throws SQLException {
         connection = DriverManager.getConnection(
-                "jdbc:mysql://127.0.0.1:3307/vn",
+                "jdbc:mysql://127.0.0.1:3306/vn",
                 "root",
-                "root"
+                "Yksitoista123"
 
         );
         statement = connection.createStatement();
@@ -254,6 +254,24 @@ public class SqlKomennot {
         return "";
     }
 
+    public static int fetchAsiakkaanIDsahkopostilla(String email) {
+        String sql = "SELECT asiakas_id FROM asiakas WHERE email = ?";
+
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, email);
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("asiakas_id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
 
     static class Mokki {
 
@@ -275,8 +293,6 @@ public class SqlKomennot {
         public SimpleStringProperty mokinOsoite;
 
 
-
-
         public Mokki(int mokkiId, int alueId, int postiNro, String mokkiNimi, String katuOsoite, double hinta, String kuvaus, int henkilomaara, String varustelu) {
             this.mokkiId = mokkiId;
             this.alueId = alueId;
@@ -289,7 +305,7 @@ public class SqlKomennot {
             this.varustelu = varustelu;
         }
 
-        public void setSimpleStringProperty(String nimi, int hmaara, double mokinHinta, String alue, String kuvaus, String varustelu, String osoite){
+        public void setSimpleStringProperty(String nimi, int hmaara, double mokinHinta, String alue, String kuvaus, String varustelu, String osoite) {
             this.mokkinimi = new SimpleStringProperty(nimi);
             this.mokinhenkilomaara = new SimpleStringProperty(String.valueOf(hmaara));
             this.mokinHinta = new SimpleStringProperty(String.valueOf(mokinHinta));
@@ -299,25 +315,31 @@ public class SqlKomennot {
             this.mokinOsoite = new SimpleStringProperty(osoite);
         }
 
-        public StringProperty getNimi(){
+        public StringProperty getNimi() {
             return mokkinimi;
         }
-        public StringProperty getHenkilo(){
+
+        public StringProperty getHenkilo() {
             return mokinhenkilomaara;
         }
-        public StringProperty getMokinHinta(){
+
+        public StringProperty getMokinHinta() {
             return mokinHinta;
         }
-        public StringProperty getAlue(){
+
+        public StringProperty getAlue() {
             return mokinAlue;
         }
-        public StringProperty getMokinKuvaus(){
+
+        public StringProperty getMokinKuvaus() {
             return mokinKuvaus;
         }
-        public StringProperty getMokinVarustelu(){
+
+        public StringProperty getMokinVarustelu() {
             return mokinVarustelu;
         }
-        public StringProperty getMokinOsoite(){
+
+        public StringProperty getMokinOsoite() {
             return mokinOsoite;
         }
 
@@ -357,6 +379,7 @@ public class SqlKomennot {
             return varustelu;
         }
     }
+
 
     public static Mokki fetchMokki(int mokkiId) {
         Mokki mokki = null;
@@ -456,6 +479,7 @@ public class SqlKomennot {
         }
         return "";
     }
+
     public static int fetchAlueID(String alue) {
         String sql = "SELECT alue_id FROM alue WHERE nimi = ?";
 

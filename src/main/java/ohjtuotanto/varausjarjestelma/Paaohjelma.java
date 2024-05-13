@@ -13,6 +13,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -22,6 +23,8 @@ import java.util.ArrayList;
 
 @SuppressWarnings("unchecked")
 public class Paaohjelma extends Application {
+
+
 
     public static void main(String[] args) {
         Application.launch(args);
@@ -234,17 +237,71 @@ public class Paaohjelma extends Application {
         Label varauksenalkuPvmlb = new Label("Tulo päivämäärä:");
         Label varauksenloppuPvmlb = new Label("Lähtö päivämäärä:");
         Label mokinhintalb = new Label("Varauksen hinta: ");
+        Label palvelulb = new Label("Palveluita: ");
+
+        StringConverter<LocalDate> converter = new StringConverter<LocalDate>() {
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+            @Override
+            public String toString(LocalDate pvm) {
+                if (pvm != null) {
+                    return dateFormatter.format(pvm);
+                } else {
+                    return "";
+                }
+            }
+
+            @Override
+            public LocalDate fromString(String string) {
+                if (string != null && !string.isEmpty()) {
+                    return LocalDate.parse(string, dateFormatter);
+                } else {
+                    return null;
+                }
+            }
+        };
 
         DatePicker varausPvmDP = new DatePicker();
+        varausPvmDP.setConverter(converter);
         DatePicker vahvistusPvmDP = new DatePicker();
+        vahvistusPvmDP.setConverter(converter);
         DatePicker varauksenalkuPvmDP = new DatePicker();
+        varauksenalkuPvmDP.setConverter(converter);
         DatePicker varauksenloppuPvmDP = new DatePicker();
+        varauksenloppuPvmDP.setConverter(converter);
 
         TextField mokki_idtf = new TextField();
         mokki_idtf.setEditable(false);
 
+        ListView palveluLV = new ListView<>();
+
         Button uusiAsiakasbt = new Button("Uusi asiakas?");
         Button mokinVarausbt = new Button("Varaa mökki");
+
+        mokinVarausbt.setOnAction(e -> {
+            int asiakkaanID = SqlKomennot.fetchAsiakkaanIDsahkopostilla(String.valueOf(sahkoposticb.getValue()));
+            int mokki_id = Integer.parseInt(mokki_idtf.getText());
+            LocalDate varattu_pvm = varausPvmDP.getValue();
+            LocalDate vahvistus_pvm = vahvistusPvmDP.getValue();
+            LocalDate alkupvm = varauksenalkuPvmDP.getValue();
+            LocalDate loppupvm = varauksenloppuPvmDP.getValue();
+            if(sahkoposticb.getValue() == null || varattu_pvm == null || vahvistus_pvm == null|| alkupvm == null || loppupvm == null){
+                System.out.println("Tietoja puuttuu");
+            }else{
+                try {
+                    komennot.updateQuery("insert into varaus (asiakas_id, mokki_id, varattu_pvm, vahvistus_pvm, varattu_alkupvm, varattu_loppupvm) values ('" +
+                            asiakkaanID + "','" + mokki_id + "','" + varattu_pvm + "','"+ vahvistus_pvm + "','" + alkupvm + "','" + loppupvm + "')");
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+                sahkoposticb.setValue(null);
+                mokki_idtf.clear();
+                varausPvmDP.setValue(null);
+                vahvistusPvmDP.setValue(null);
+                varauksenalkuPvmDP.setValue(null);
+                varauksenloppuPvmDP.setValue(null);
+            }
+        });
 
         varaustiedotGP.add(sahkopostilb,0,1);
         varaustiedotGP.add(mokkiIdlb,0,2);
@@ -252,12 +309,15 @@ public class Paaohjelma extends Application {
         varaustiedotGP.add(vahvistusPvmlb,0,4);
         varaustiedotGP.add(varauksenalkuPvmlb,0,5);
         varaustiedotGP.add(varauksenloppuPvmlb,0,6);
+        varaustiedotGP.add(palvelulb,0,7);
+
         varaustiedotGP.add(sahkoposticb,1,1);
         varaustiedotGP.add(mokki_idtf,1,2);
         varaustiedotGP.add(varausPvmDP,1,3);
         varaustiedotGP.add(vahvistusPvmDP,1,4);
         varaustiedotGP.add(varauksenalkuPvmDP,1,5);
         varaustiedotGP.add(varauksenloppuPvmDP,1,6);
+        varaustiedotGP.add(palveluLV,1,7);
 
         varaustiedotGP.add(uusiAsiakasbt,2,1);
         varaustiedotGP.add(mokinhintalb,2,5);
@@ -270,7 +330,6 @@ public class Paaohjelma extends Application {
         Scene varausvalikko = new Scene(varaustiedotBP, 650, 450);
 
         varaabt.setOnAction(e -> {
-
             if (haettavatMokit.getSelectionModel().getSelectedItem() != null) {
 
                 SqlKomennot.Mokki valittuMokki = haettavatMokit.getSelectionModel().getSelectedItem();
@@ -291,7 +350,7 @@ public class Paaohjelma extends Application {
                 if (tuloPVM != null && lahtoPVM != null) {
                     long erotus = ChronoUnit.DAYS.between(tuloPVM, lahtoPVM);
                     double yopymisenHinta = erotus * valitunMokinHinta.getHinta();
-                    mokinhintalb.setText("Varauksen hinta: \n" + yopymisenHinta + " €");
+                    mokinhintalb.setText("Varauksen hinta: " + yopymisenHinta + "€");
                 } else {
                     mokinhintalb.setText("Valitse tulo-\nja lähtöpvm");
                 }
@@ -594,9 +653,7 @@ public class Paaohjelma extends Application {
 
         Scene muokkaausvalikko = new Scene(pane, 800, 600);
 
-        primaryStage.setTitle("Mökkivarausjärjestelmä");
-        primaryStage.setScene(paavalikko);
-        primaryStage.show();
+
 
         muokkaajapoistabt.setOnAction(e->{
             primaryStage.setScene(muokkaausvalikko);
@@ -1267,6 +1324,10 @@ public class Paaohjelma extends Application {
 
         Scene laskutus = new Scene(laskut, 500,500);
 
+        primaryStage.setTitle("Mökkivarausjärjestelmä");
+        primaryStage.setScene(paavalikko);
+        primaryStage.show();
+
 
     }
 
@@ -1295,9 +1356,14 @@ public class Paaohjelma extends Application {
         });
     }
 
-    private void paivamaara(ActionEvent event) {
-        LocalDate valitsePvm = pvmLista.getValue();
-        String jarjestys = valitsePvm.format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
+    private void muunnaPvmFormat(DatePicker datePicker) {
+        datePicker.setOnAction(event -> {
+            LocalDate valittuPVM = datePicker.getValue();
+            if (valittuPVM != null) {
+                String muunneltuPVM = valittuPVM.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                datePicker.getEditor().setText(muunneltuPVM);
+            }
+        });
     }
     private void showAlert(Alert.AlertType alertType, String title, String message) {
         Alert alert = new Alert(alertType);
