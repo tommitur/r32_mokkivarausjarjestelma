@@ -784,112 +784,7 @@ public class Paaohjelma extends Application {
             aluemuokkausohje.setVisible(false);
         });
 
-        poistabt.setOnAction(e -> {
 
-            try {
-                if (!alueennimitf.getText().isEmpty()) {
-                    komennot.updateQuery("delete from alue where nimi = '" +
-                            alueMuokkauscb.getValue() + "'");
-                }
-
-            } catch (SQLException ex) {
-                showAlert(Alert.AlertType.ERROR, "Virhe", "Aluetta ei voitu poistaa!");
-                throw new RuntimeException(ex);
-            }
-
-            primaryStage.setScene(muokkaausvalikko);
-            alueennimitf.clear();
-            alueMuokkauscb.setValue(null);
-            alueMuokkauscb.setVisible(false);
-            lisaaAluebt.setVisible(true);
-            muokkaabt.setVisible(false);
-            poistabt.setVisible(false);
-            aluemuokkausohje.setVisible(false);
-        });
-
-        asiakasPoistabt.setOnAction(e -> {
-
-            try {
-                if (!asiakaanNimitf.getText().isEmpty()) {
-                    komennot.updateQuery("delete from asiakas where asiakas_id = '" +
-                            asiakkaanMuokkauscb.getValue() + "'");
-                }
-
-            } catch (SQLException ex) {
-                showAlert(Alert.AlertType.ERROR, "Virhe", "Asiakasta ei voitu poistaa!");
-                throw new RuntimeException(ex);
-            }
-
-            primaryStage.setScene(muokkaausvalikko);
-            asiakaanNimitf.clear();
-            asiakaanSukunimitf.clear();
-            asiakaanPostinumerotf.clear();
-            asiakaanPuhelinnrotf.clear();
-            asiakaanOsoitetf.clear();
-            asiakkaanPostitoimipaikkatf.clear();
-            asiakaanSahkopostitf.clear();
-            asiakkaanMuokkauscb.setValue(null);
-            asiakkaanMuokkauscb.setVisible(false);
-            lisaaAsiakasbt.setVisible(true);
-            asiakasMuokkaabt.setVisible(false);
-            asiakasPoistabt.setVisible(false);
-            asiakkaanmuokkausohje.setVisible(false);
-        });
-
-        palveluPoistabt.setOnAction(e -> {
-
-            try {
-                if (!palvelunnimitf.getText().isEmpty()) {
-                    komennot.updateQuery("delete from palvelu where nimi = '" +
-                            muokkaaPalveluitacb.getValue() + "'");
-                }
-
-            } catch (SQLException ex) {
-                showAlert(Alert.AlertType.ERROR, "Virhe", "palvelua ei voitu poistaa!");
-                throw new RuntimeException(ex);
-            }
-
-            primaryStage.setScene(muokkaausvalikko);
-            palvelunnimitf.clear();
-            palvelunkuvaustf.clear();
-            palvelunhintatf.clear();
-            palvelunAlvtf.clear();
-            palvelunAlueencb.setValue(null);
-            palvelunAlueencb.setVisible(false);
-            lisaaPalvelubt.setVisible(true);
-            palveluMuokkaabt.setVisible(false);
-            palveluPoistabt.setVisible(false);
-            palvelunmuokkausohje.setVisible(false);
-        });
-
-        mokkiPoistabt.setOnAction(e -> {
-
-            try {
-                if (!mokinNimitf.getText().isEmpty()) {
-                    komennot.updateQuery("delete from mokki where mokkinimi = '" +
-                            mokkienMuokkauscb.getValue() + "'");
-                }
-
-            } catch (SQLException ex) {
-                showAlert(Alert.AlertType.ERROR, "Virhe", "mökkiä ei voitu poistaa!");
-                throw new RuntimeException(ex);
-            }
-
-            primaryStage.setScene(muokkaausvalikko);
-            mokinNimitf.clear();
-            mokinOsoitetf.clear();
-            mokinHintatf.clear();
-            mokinKuvaustf.clear();
-            mokinHenkilomaaratf.clear();
-            mokinPostinrotf.clear();
-            mokinVaruselutf.clear();
-            mokkienMuokkauscb.setValue(null);
-            mokkienMuokkauscb.setVisible(false);
-            lisaaMokkibt.setVisible(true);
-            mokkiMuokkaabt.setVisible(false);
-            mokkiPoistabt.setVisible(false);
-            mokkienmuokkausohje.setVisible(false);
-        });
 
 
 
@@ -1207,6 +1102,113 @@ public class Paaohjelma extends Application {
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
+        });
+
+        poistabt.setOnAction(e -> {
+
+            try {
+                if (!alueennimitf.getText().isEmpty()) {
+                    komennot.updateQuery("delete from alue where nimi = '" +
+                            alueMuokkauscb.getValue() + "'");
+                }
+
+            } catch (SQLException ex) {
+                showAlert(Alert.AlertType.ERROR, "Virhe", "Aluetta ei voitu poistaa!");
+                throw new RuntimeException(ex);
+            }
+
+            primaryStage.setScene(muokkaausvalikko);
+            alueennimitf.clear();
+            alueMuokkauscb.setValue(null);
+            alueMuokkauscb.setVisible(false);
+            lisaaAluebt.setVisible(true);
+            muokkaabt.setVisible(false);
+            poistabt.setVisible(false);
+            aluemuokkausohje.setVisible(false);
+        });
+
+        asiakasPoistabt.setOnAction(e -> {
+
+            try {
+                if (!asiakaanNimitf.getText().isEmpty()) {
+                    komennot.updateQuery("delete from asiakas where asiakas_id = '" +
+                            asiakkaanMuokkauscb.getValue() + "'");
+                }
+
+            } catch (SQLException ex) {
+                showAlert(Alert.AlertType.ERROR, "Virhe", "Asiakasta ei voitu poistaa!");
+                throw new RuntimeException(ex);
+            }
+
+            primaryStage.setScene(muokkaausvalikko);
+            asiakaanNimitf.clear();
+            asiakaanSukunimitf.clear();
+            asiakaanPostinumerotf.clear();
+            asiakaanPuhelinnrotf.clear();
+            asiakaanOsoitetf.clear();
+            asiakkaanPostitoimipaikkatf.clear();
+            asiakaanSahkopostitf.clear();
+            asiakkaanMuokkauscb.setValue(null);
+            asiakkaanMuokkauscb.setVisible(false);
+            lisaaAsiakasbt.setVisible(true);
+            asiakasMuokkaabt.setVisible(false);
+            asiakasPoistabt.setVisible(false);
+            asiakkaanmuokkausohje.setVisible(false);
+        });
+
+        palveluPoistabt.setOnAction(e -> {
+
+            try {
+                if (!palvelunnimitf.getText().isEmpty()) {
+                    komennot.updateQuery("delete from palvelu where nimi = '" +
+                            muokkaaPalveluitacb.getValue() + "'");
+                }
+
+            } catch (SQLException ex) {
+                showAlert(Alert.AlertType.ERROR, "Virhe", "palvelua ei voitu poistaa!");
+                throw new RuntimeException(ex);
+            }
+
+            primaryStage.setScene(muokkaausvalikko);
+            palvelunnimitf.clear();
+            palvelunkuvaustf.clear();
+            palvelunhintatf.clear();
+            palvelunAlvtf.clear();
+            palvelunAlueencb.setValue(null);
+            palvelunAlueencb.setVisible(false);
+            lisaaPalvelubt.setVisible(true);
+            palveluMuokkaabt.setVisible(false);
+            palveluPoistabt.setVisible(false);
+            palvelunmuokkausohje.setVisible(false);
+        });
+
+        mokkiPoistabt.setOnAction(e -> {
+
+            try {
+                if (!mokinNimitf.getText().isEmpty()) {
+                    komennot.updateQuery("delete from mokki where mokkinimi = '" +
+                            mokkienMuokkauscb.getValue() + "'");
+                }
+
+            } catch (SQLException ex) {
+                showAlert(Alert.AlertType.ERROR, "Virhe", "mökkiä ei voitu poistaa!");
+                throw new RuntimeException(ex);
+            }
+
+            primaryStage.setScene(muokkaausvalikko);
+            mokinNimitf.clear();
+            mokinOsoitetf.clear();
+            mokinHintatf.clear();
+            mokinKuvaustf.clear();
+            mokinHenkilomaaratf.clear();
+            mokinPostinrotf.clear();
+            mokinVaruselutf.clear();
+            mokkienMuokkauscb.setValue(null);
+            mokkienMuokkauscb.setVisible(false);
+            lisaaMokkibt.setVisible(true);
+            mokkiMuokkaabt.setVisible(false);
+            mokkiPoistabt.setVisible(false);
+            mokkienmuokkausohje.setVisible(false);
         });
 
         ListView<String> laskuListView = komennot.haeLaskut();
