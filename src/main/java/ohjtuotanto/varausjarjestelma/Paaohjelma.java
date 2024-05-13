@@ -24,6 +24,8 @@ import java.util.ArrayList;
 @SuppressWarnings("unchecked")
 public class Paaohjelma extends Application {
 
+
+
     public static void main(String[] args) {
         Application.launch(args);
     }
@@ -626,9 +628,7 @@ public class Paaohjelma extends Application {
 
         Scene muokkaausvalikko = new Scene(pane, 800, 600);
 
-        primaryStage.setTitle("Mökkivarausjärjestelmä");
-        primaryStage.setScene(paavalikko);
-        primaryStage.show();
+
 
         muokkaajapoistabt.setOnAction(e->{
             primaryStage.setScene(muokkaausvalikko);
@@ -1241,6 +1241,10 @@ public class Paaohjelma extends Application {
         laskut.setTop(layout);
 
         Scene laskutus = new Scene(laskut, 500,500);
+
+        primaryStage.setTitle("Mökkivarausjärjestelmä");
+        primaryStage.setScene(paavalikko);
+        primaryStage.show();
 
 
     }
