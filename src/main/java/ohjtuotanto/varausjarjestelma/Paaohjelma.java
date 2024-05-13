@@ -3,13 +3,12 @@ package ohjtuotanto.varausjarjestelma;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -19,7 +18,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
+
 
 @SuppressWarnings("unchecked")
 public class Paaohjelma extends Application {
@@ -110,6 +109,7 @@ public class Paaohjelma extends Application {
         varaabt.setMinHeight(50);
 
         Button muokkaajapoistabt = new Button("Muokkaa ja poista tietoja");
+        Button laskujenhallintabt = new Button("Laskujen hallinta");
 
         Region tyhjatilaR = new Region();
 
@@ -120,7 +120,7 @@ public class Paaohjelma extends Application {
 
         sliderhbox.getChildren().addAll(hinta0, hintahbox, hinta1000);
 
-        kaikkiHbox.getChildren().addAll(aluehbox, sliderhbox, vieraatcb, haebt, tyhjatilaR, muokkaajapoistabt);
+        kaikkiHbox.getChildren().addAll(aluehbox, sliderhbox, vieraatcb, haebt, tyhjatilaR, muokkaajapoistabt,laskujenhallintabt);
 
         HBox.setHgrow(tyhjatilaR, Priority.ALWAYS);
         HBox varaabtHbox = new HBox(5);
@@ -1334,11 +1334,16 @@ public class Paaohjelma extends Application {
             }
         });
 
-        VBox layout = new VBox(laskuListView, showDetailsButton);
+        VBox layout = new VBox(takaisinpaavalikkoonbt,laskuListView, showDetailsButton, tyhjatilaR);
+        layout.setAlignment(Pos.TOP_LEFT);
         BorderPane laskut = new BorderPane();
         laskut.setTop(layout);
 
         Scene laskutus = new Scene(laskut, 500,500);
+
+        laskujenhallintabt.setOnAction(e->{
+            primaryStage.setScene(laskutus);
+        });
 
         primaryStage.setTitle("Mökkivarausjärjestelmä");
         primaryStage.setScene(paavalikko);
