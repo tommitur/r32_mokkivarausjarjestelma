@@ -240,7 +240,8 @@ public class Paaohjelma extends Application {
         Label varauksenalkuPvmlb = new Label("Tulo päivämäärä:");
         Label varauksenloppuPvmlb = new Label("Lähtö päivämäärä:");
         Label mokinhintalb = new Label("Varauksen hinta: ");
-        Label palvelulb = new Label("Palveluita: ");
+        Label palvelulb = new Label("Valitse halutessasi alueen palveluita:");
+        Label palveluhintalb = new Label("Palveluiden hinta: ");
 
         StringConverter<LocalDate> converter = new StringConverter<LocalDate>() {
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -266,17 +267,22 @@ public class Paaohjelma extends Application {
 
         DatePicker varausPvmDP = new DatePicker();
         varausPvmDP.setConverter(converter);
+        varausPvmDP.setEditable(false);
         DatePicker vahvistusPvmDP = new DatePicker();
         vahvistusPvmDP.setConverter(converter);
+        vahvistusPvmDP.setEditable(false);
         DatePicker varauksenalkuPvmDP = new DatePicker();
         varauksenalkuPvmDP.setConverter(converter);
+        varauksenalkuPvmDP.setEditable(false);
         DatePicker varauksenloppuPvmDP = new DatePicker();
         varauksenloppuPvmDP.setConverter(converter);
+        varauksenloppuPvmDP.setEditable(false);
 
         TextField mokki_idtf = new TextField();
         mokki_idtf.setEditable(false);
 
-        ListView palveluLV = new ListView<>();
+        ListView palveluLV = new ListView<>(FXCollections.observableArrayList());
+        palveluLV.setPrefHeight(75);
 
         Button uusiAsiakasbt = new Button("Uusi asiakas?");
         Button mokinVarausbt = new Button("Varaa mökki");
@@ -328,21 +334,33 @@ public class Paaohjelma extends Application {
         varaustiedotGP.add(palveluLV,1,7);
 
         varaustiedotGP.add(uusiAsiakasbt,2,1);
-        varaustiedotGP.add(mokinhintalb,2,5);
-        varaustiedotGP.add(mokinVarausbt,2,6);
+        varaustiedotGP.add(mokinhintalb,2,6);
+        varaustiedotGP.add(palveluhintalb,2,7);
+        varaustiedotGP.add(mokinVarausbt,2,8);
 
         varaustiedothbox.getChildren().add(varaustiedotGP);
         varaustiedothbox.setAlignment(Pos.CENTER);
         varaustiedotBP.setCenter(varaustiedothbox);
         varaustiedotBP.setTop(takaisinpaavalikkoonbt);
 
-        Scene varausvalikko = new Scene(varaustiedotBP, 650, 450);
+        Scene varausvalikko = new Scene(varaustiedotBP, 650, 600);
 
         varaabt.setOnAction(e -> {
             if (haettavatMokit.getSelectionModel().getSelectedItem() != null) {
 
                 SqlKomennot.Mokki valittuMokki = haettavatMokit.getSelectionModel().getSelectedItem();
                 mokki_idtf.setText(String.valueOf(valittuMokki.getMokkiId()));
+
+                int alueid = SqlKomennot.fetchMokinAlueID(valittuMokki.getMokkiId());
+                String aluenimi = SqlKomennot.fetchAlueNimi(alueid);
+
+                ObservableList<String> palvelulista = FXCollections.observableArrayList();
+                try {
+                    palvelulista = FXCollections.observableArrayList(komennot.haeAlueenpalvelut(aluenimi));
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+                palveluLV.setItems(palvelulista);
 
                 primaryStage.setScene(varausvalikko);
                 varausvalikkoonPaasty = true;
@@ -360,11 +378,23 @@ public class Paaohjelma extends Application {
                 if (tuloPVM != null && lahtoPVM != null) {
                     long erotus = ChronoUnit.DAYS.between(tuloPVM, lahtoPVM);
                     double yopymisenHinta = erotus * valitunMokinHinta.getHinta();
-                    mokinhintalb.setText("Varauksen hinta: " + yopymisenHinta + "€");
+                    mokinhintalb.setText("Varauksen hinta:\n" + yopymisenHinta + "€");
                 } else {
                     mokinhintalb.setText("Valitse tulo-\nja lähtöpvm");
                 }
             }
+        });
+
+        palveluLV.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        palveluLV.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            double yhteissumma = 0.0;
+            ObservableList<String> valitutPalvelut = palveluLV.getSelectionModel().getSelectedItems();
+
+            for (String palveluNimi : valitutPalvelut) {
+                double palvelunHinta = SqlKomennot.fetchPalvelunHinta(palveluNimi);
+                yhteissumma += palvelunHinta;
+            }
+            palveluhintalb.setText("Palveluiden hinta:\n " + yhteissumma + "€");
         });
 
         kirjaudu.setOnAction(e -> {
@@ -374,7 +404,6 @@ public class Paaohjelma extends Application {
                 System.out.println("Salasana väärin");
             }
         });
-
 
         Scene kirjautuminen = new Scene(kirjautumisetvbox, 500, 500);
 

@@ -15,15 +15,15 @@ public class SqlKomennot {
     Statement statement;
     Connection connection;
 
-    private static final String URL = "jdbc:mysql://127.0.0.1:3307/vn";
+    private static final String URL = "jdbc:mysql://127.0.0.1:3306/vn";
     private static final String USER = "root";
-    private static final String PASSWORD = "root";
+    private static final String PASSWORD = "Kukkakaali50";
 
     public SqlKomennot() throws SQLException {
         connection = DriverManager.getConnection(
-                "jdbc:mysql://127.0.0.1:3307/vn",
+                "jdbc:mysql://127.0.0.1:3306/vn",
                 "root",
-                "root"
+                "Kukkakaali50"
 
         );
         statement = connection.createStatement();
@@ -542,5 +542,42 @@ public class SqlKomennot {
             e.printStackTrace();
             throw e;
         }
+    }
+
+    public static double fetchPalvelunHinta(String palveluNimi) {
+        double hinta = 0.0;
+        String sql = "SELECT hinta FROM palvelu WHERE nimi = ?";
+
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, palveluNimi);
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                hinta = rs.getDouble("hinta");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return hinta;
+    }
+
+    public static int fetchMokinAlueID(int mokinID) {
+        String sql = "SELECT alue_id FROM mokki WHERE mokki_id = ?";
+
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setInt(1, mokinID);
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("alue_id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
     }
 }
