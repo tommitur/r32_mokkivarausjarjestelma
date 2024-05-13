@@ -1104,6 +1104,8 @@ public class Paaohjelma extends Application {
             }
         });
 
+        // Tietojen poisto nappien toiminnallisuus
+
         poistabt.setOnAction(e -> {
 
             try {
