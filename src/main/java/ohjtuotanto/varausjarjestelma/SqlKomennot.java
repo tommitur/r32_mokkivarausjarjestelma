@@ -4,8 +4,11 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.ListView;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class SqlKomennot {
@@ -14,13 +17,13 @@ public class SqlKomennot {
 
     private static final String URL = "jdbc:mysql://127.0.0.1:3306/vn";
     private static final String USER = "root";
-    private static final String PASSWORD = "Kukkakaali50";
+    private static final String PASSWORD = "salis123";
 
     public SqlKomennot() throws SQLException {
         connection = DriverManager.getConnection(
                 "jdbc:mysql://127.0.0.1:3306/vn",
                 "root",
-                "Kukkakaali50"
+                "salis123"
 
         );
         statement = connection.createStatement();
@@ -121,6 +124,7 @@ public class SqlKomennot {
         ResultSet set = statement.executeQuery("SELECT hinta FROM mokki");
     }
 
+
     static class Palvelu {
         int palveluId;
         int alueId;
@@ -162,6 +166,8 @@ public class SqlKomennot {
             e.printStackTrace();
         }
         return palvelu;
+
+
     }
 
     public static int fetchPalveluId(String palvelunNimi) {
@@ -182,24 +188,6 @@ public class SqlKomennot {
         return -1;
     }
 
-    public static double fetchPalvelunHinta(String palveluNimi) {
-        double hinta = 0.0;
-        String sql = "SELECT hinta FROM palvelu WHERE nimi = ?";
-
-        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-
-            statement.setString(1, palveluNimi);
-            ResultSet rs = statement.executeQuery();
-
-            if (rs.next()) {
-                hinta = rs.getDouble("hinta");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return hinta;
-    }
 
     static class Asiakas {
         int asiakasId;
@@ -266,6 +254,24 @@ public class SqlKomennot {
         return "";
     }
 
+    public static int fetchAsiakkaanIDsahkopostilla(String email) {
+        String sql = "SELECT asiakas_id FROM asiakas WHERE email = ?";
+
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, email);
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("asiakas_id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
 
     static class Mokki {
 
@@ -287,8 +293,6 @@ public class SqlKomennot {
         public SimpleStringProperty mokinOsoite;
 
 
-
-
         public Mokki(int mokkiId, int alueId, int postiNro, String mokkiNimi, String katuOsoite, double hinta, String kuvaus, int henkilomaara, String varustelu) {
             this.mokkiId = mokkiId;
             this.alueId = alueId;
@@ -301,7 +305,7 @@ public class SqlKomennot {
             this.varustelu = varustelu;
         }
 
-        public void setSimpleStringProperty(String nimi, int hmaara, double mokinHinta, String alue, String kuvaus, String varustelu, String osoite){
+        public void setSimpleStringProperty(String nimi, int hmaara, double mokinHinta, String alue, String kuvaus, String varustelu, String osoite) {
             this.mokkinimi = new SimpleStringProperty(nimi);
             this.mokinhenkilomaara = new SimpleStringProperty(String.valueOf(hmaara));
             this.mokinHinta = new SimpleStringProperty(String.valueOf(mokinHinta));
@@ -311,25 +315,31 @@ public class SqlKomennot {
             this.mokinOsoite = new SimpleStringProperty(osoite);
         }
 
-        public StringProperty getNimi(){
+        public StringProperty getNimi() {
             return mokkinimi;
         }
-        public StringProperty getHenkilo(){
+
+        public StringProperty getHenkilo() {
             return mokinhenkilomaara;
         }
-        public StringProperty getMokinHinta(){
+
+        public StringProperty getMokinHinta() {
             return mokinHinta;
         }
-        public StringProperty getAlue(){
+
+        public StringProperty getAlue() {
             return mokinAlue;
         }
-        public StringProperty getMokinKuvaus(){
+
+        public StringProperty getMokinKuvaus() {
             return mokinKuvaus;
         }
-        public StringProperty getMokinVarustelu(){
+
+        public StringProperty getMokinVarustelu() {
             return mokinVarustelu;
         }
-        public StringProperty getMokinOsoite(){
+
+        public StringProperty getMokinOsoite() {
             return mokinOsoite;
         }
 
@@ -369,6 +379,7 @@ public class SqlKomennot {
             return varustelu;
         }
     }
+
 
     public static Mokki fetchMokki(int mokkiId) {
         Mokki mokki = null;
@@ -469,24 +480,6 @@ public class SqlKomennot {
         return "";
     }
 
-    public static int fetchMokinAlueID(int mokinID) {
-        String sql = "SELECT alue_id FROM mokki WHERE mokki_id = ?";
-
-        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-
-            statement.setInt(1, mokinID);
-            ResultSet rs = statement.executeQuery();
-
-            if (rs.next()) {
-                return rs.getInt("alue_id");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return -1;
-    }
-
     public static int fetchAlueID(String alue) {
         String sql = "SELECT alue_id FROM alue WHERE nimi = ?";
 
@@ -503,5 +496,51 @@ public class SqlKomennot {
             e.printStackTrace();
         }
         return -1;
+    }
+
+    public ListView<String> haeLaskut() throws SQLException {
+        ObservableList<String> laskuList = FXCollections.observableArrayList();
+
+        String query = "SELECT L.*, A.Etunimi, A.Sukunimi " +
+                "FROM Lasku L " +
+                "INNER JOIN Varaus V ON L.Varaus_id = V.Varaus_id " +
+                "INNER JOIN Asiakas A ON V.Asiakas_id = A.Asiakas_id";
+
+        ResultSet resultSet = statement.executeQuery(query);
+        try {
+            while (resultSet.next()) {
+                int laskuId = resultSet.getInt("Lasku_id");
+                int varausId = resultSet.getInt("Varaus_id");
+                double summa = resultSet.getDouble("Summa");
+                double alv = resultSet.getDouble("Alv");
+                int maksettu = resultSet.getInt("Maksettu");
+                String etunimi = resultSet.getString("Etunimi");
+                String sukunimi = resultSet.getString("Sukunimi");
+
+                String maksettuStr = (maksettu == 1) ? "kyllä" : "ei";
+                laskuList.add("Lasku ID: " + laskuId + ", Varaus ID: " + varausId +
+                        ", Summa: " + summa + ", Alv: " + alv +
+                        ", Asiakas: " + etunimi + " " + sukunimi +
+                        ", Maksettu: " + maksettuStr);
+            }
+        } finally {
+            if (resultSet != null) {
+                resultSet.close();
+            }
+        }
+
+        ListView<String> laskuListView = new ListView<>(laskuList);
+        return laskuListView;
+    }
+
+    public void merkitseLaskuMaksetuksi(int laskuId) throws SQLException {
+        String query = "UPDATE Lasku SET Maksettu = 1 WHERE Lasku_id = ?";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, laskuId);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        }
     }
 }
