@@ -386,7 +386,6 @@ public class Paaohjelma extends Application {
         });
 
         palveluLV.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-
         palveluLV.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             double yhteissumma = 0.0;
             ObservableList<String> valitutPalvelut = palveluLV.getSelectionModel().getSelectedItems();
@@ -395,7 +394,6 @@ public class Paaohjelma extends Application {
                 double palvelunHinta = SqlKomennot.fetchPalvelunHinta(palveluNimi);
                 yhteissumma += palvelunHinta;
             }
-
             palveluhintalb.setText("Palveluiden hinta:\n " + yhteissumma + "€");
         });
 
