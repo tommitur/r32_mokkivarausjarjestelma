@@ -16,13 +16,13 @@ public class SqlKomennot {
 
     private static final String URL = "jdbc:mysql://127.0.0.1:3306/vn";
     private static final String USER = "root";
-    private static final String PASSWORD = "Kukkakaali50";
+    private static final String PASSWORD = "Yksitoista123";
 
     public SqlKomennot() throws SQLException {
         connection = DriverManager.getConnection(
                 "jdbc:mysql://127.0.0.1:3306/vn",
                 "root",
-                "Kukkakaali50"
+                "Yksitoista123"
 
         );
         statement = connection.createStatement();
@@ -406,7 +406,6 @@ public class SqlKomennot {
 
     public static ObservableList<Mokki> fetchMokkiAll(int alueId, double hinta, int henkilomaara) {
         String sql = "SELECT * FROM mokki WHERE alue_id = ? AND hinta <= ? AND henkilomaara >= ?";
-
         ObservableList<Mokki> mokkiList = FXCollections.observableArrayList();
 
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);

@@ -40,6 +40,7 @@ public class Paaohjelma extends Application {
     public TableView<SqlKomennot.Mokki> haettavatMokit;
     public ObservableList<SqlKomennot.Mokki> haettujenMokkienTiedot;
     private DatePicker pvmLista;
+    int vieraat;
 
     @Override
     public void start(Stage primaryStage) throws SQLException {
@@ -178,20 +179,31 @@ public class Paaohjelma extends Application {
             if(haettujenMokkienTiedot != null){
                 haettujenMokkienTiedot.clear();
             }
-            if(alueetcb.getValue() == null || vieraatcb.getValue() == null){
-                //virhe
+            if(alueetcb.getValue() == null){
+                //virhe, valitse alue
             }else{
+                double mokinhinta = hinnansaato.getValue();
+                if(mokinhinta == 0){
+                    mokinhinta = 1000;
+                }
+
+                if(vieraatcb.getValue() == null){
+                    vieraat = 0;
+                }else{
+                    vieraat = vieraatcb.getValue();
+                }
+
                 int alueenID = SqlKomennot.fetchAlueID(alueetcb.getValue().toString());
-                for(int i = 0; i < SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraatcb.getValue()).size(); i++){
-                    int haetunMokinId = SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraatcb.getValue()).get(i).getMokkiId();
-                    int alueID = SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraatcb.getValue()).get(i).getAlueId();
-                    int postiNro = SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraatcb.getValue()).get(i).getPostiNro();
-                    String nimi = SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraatcb.getValue()).get(i).getMokkiNimi();
-                    String osoite = SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraatcb.getValue()).get(i).getKatuOsoite();
-                    double hinta = SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraatcb.getValue()).get(i).getHinta();
-                    String kuvaus = SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraatcb.getValue()).get(i).getKuvaus();
-                    int hloMaara = SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraatcb.getValue()).get(i).getHenkilomaara();
-                    String varustelu = SqlKomennot.fetchMokkiAll(alueenID, hinnansaato.getValue(), vieraatcb.getValue()).get(i).getVarustelu();
+                for(int i = 0; i < SqlKomennot.fetchMokkiAll(alueenID, mokinhinta, vieraat).size(); i++){
+                    int haetunMokinId = SqlKomennot.fetchMokkiAll(alueenID, mokinhinta, vieraat).get(i).getMokkiId();
+                    int alueID = SqlKomennot.fetchMokkiAll(alueenID, mokinhinta, vieraat).get(i).getAlueId();
+                    int postiNro = SqlKomennot.fetchMokkiAll(alueenID, mokinhinta, vieraat).get(i).getPostiNro();
+                    String nimi = SqlKomennot.fetchMokkiAll(alueenID, mokinhinta, vieraat).get(i).getMokkiNimi();
+                    String osoite = SqlKomennot.fetchMokkiAll(alueenID, mokinhinta, vieraat).get(i).getKatuOsoite();
+                    double hinta = SqlKomennot.fetchMokkiAll(alueenID, mokinhinta, vieraat).get(i).getHinta();
+                    String kuvaus = SqlKomennot.fetchMokkiAll(alueenID, mokinhinta, vieraat).get(i).getKuvaus();
+                    int hloMaara = SqlKomennot.fetchMokkiAll(alueenID, mokinhinta, vieraat).get(i).getHenkilomaara();
+                    String varustelu = SqlKomennot.fetchMokkiAll(alueenID, mokinhinta, vieraat).get(i).getVarustelu();
                     SqlKomennot.Mokki mokki1 = new SqlKomennot.Mokki(haetunMokinId, alueID, postiNro, nimi, osoite, hinta, kuvaus, hloMaara, varustelu);
                     mokki1.setSimpleStringProperty(nimi, hloMaara, hinta, SqlKomennot.fetchAlueNimi(alueID), kuvaus, varustelu, osoite);
                     haettujenMokkienTiedot.add(mokki1);
