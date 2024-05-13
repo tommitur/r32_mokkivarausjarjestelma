@@ -785,39 +785,6 @@ public class Paaohjelma extends Application {
         });
 
         poistabt.setOnAction(e -> {
-            try {
-                if(!komennot.valitseKaikkiAlueet().contains("Ei aluetta")){
-                    System.out.println("Täällä");
-                    komennot.updateQuery("insert into alue (nimi) values ('Ei aluetta')");
-                    String eiAluettaid = String.valueOf(komennot.haeAlueenID("Ei aluetta"));
-                    eiAluettaid = eiAluettaid.replaceAll("[\\[\\](){}]", "");
-
-                    ObservableList<String> alueettomatMokit = komennot.haeAlueenmokit(String.valueOf(alueMuokkauscb.getValue()));
-                    for(int i = 0; i < alueettomatMokit.size(); i++){
-                        komennot.updateQuery("update mokki set alue_id = '" + eiAluettaid + "' where mokkinimi = '" + alueettomatMokit.get(i) + "'");
-                    }
-
-                    ObservableList<String> alueettomatPalvelut = komennot.haeAlueenpalvelut(String.valueOf(alueMuokkauscb.getValue()));
-                    for(int i = 0; i < alueettomatPalvelut.size(); i++){
-                        komennot.updateQuery("update palvelu set alue_id = '" + eiAluettaid + "' where nimi = '" + alueettomatPalvelut.get(i) + "'");
-                    }
-                }else{
-                    String eiAluettaid = String.valueOf(komennot.haeAlueenID("Ei aluetta"));
-                    eiAluettaid = eiAluettaid.replaceAll("[\\[\\](){}]", "");
-
-                    ObservableList<String> alueettomatMokit = komennot.haeAlueenmokit(String.valueOf(alueMuokkauscb.getValue()));
-                    for(int i = 0; i < alueettomatMokit.size(); i++){
-                        komennot.updateQuery("update mokki set alue_id = '" + eiAluettaid + "' where mokkinimi = '" + alueettomatMokit.get(i) + "'");
-                    }
-
-                    ObservableList<String> alueettomatPalvelut = komennot.haeAlueenpalvelut(String.valueOf(alueMuokkauscb.getValue()));
-                    for(int i = 0; i < alueettomatPalvelut.size(); i++){
-                        komennot.updateQuery("update palvelu set alue_id = '" + eiAluettaid + "' where nimi = '" + alueettomatPalvelut.get(i) + "'");
-                    }
-                }
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            }
 
             try {
                 if (!alueennimitf.getText().isEmpty()) {
@@ -826,9 +793,9 @@ public class Paaohjelma extends Application {
                 }
 
             } catch (SQLException ex) {
+                showAlert(Alert.AlertType.ERROR, "Virhe", "Aluetta ei voitu poistaa!");
                 throw new RuntimeException(ex);
             }
-
 
             primaryStage.setScene(muokkaausvalikko);
             alueennimitf.clear();
@@ -839,6 +806,92 @@ public class Paaohjelma extends Application {
             poistabt.setVisible(false);
             aluemuokkausohje.setVisible(false);
         });
+
+        asiakasPoistabt.setOnAction(e -> {
+
+            try {
+                if (!asiakaanNimitf.getText().isEmpty()) {
+                    komennot.updateQuery("delete from asiakas where asiakas_id = '" +
+                            asiakkaanMuokkauscb.getValue() + "'");
+                }
+
+            } catch (SQLException ex) {
+                showAlert(Alert.AlertType.ERROR, "Virhe", "Asiakasta ei voitu poistaa!");
+                throw new RuntimeException(ex);
+            }
+
+            primaryStage.setScene(muokkaausvalikko);
+            asiakaanNimitf.clear();
+            asiakaanSukunimitf.clear();
+            asiakaanPostinumerotf.clear();
+            asiakaanPuhelinnrotf.clear();
+            asiakaanOsoitetf.clear();
+            asiakkaanPostitoimipaikkatf.clear();
+            asiakaanSahkopostitf.clear();
+            asiakkaanMuokkauscb.setValue(null);
+            asiakkaanMuokkauscb.setVisible(false);
+            lisaaAsiakasbt.setVisible(true);
+            asiakasMuokkaabt.setVisible(false);
+            asiakasPoistabt.setVisible(false);
+            asiakkaanmuokkausohje.setVisible(false);
+        });
+
+        palveluPoistabt.setOnAction(e -> {
+
+            try {
+                if (!palvelunnimitf.getText().isEmpty()) {
+                    komennot.updateQuery("delete from palvelu where nimi = '" +
+                            muokkaaPalveluitacb.getValue() + "'");
+                }
+
+            } catch (SQLException ex) {
+                showAlert(Alert.AlertType.ERROR, "Virhe", "palvelua ei voitu poistaa!");
+                throw new RuntimeException(ex);
+            }
+
+            primaryStage.setScene(muokkaausvalikko);
+            palvelunnimitf.clear();
+            palvelunkuvaustf.clear();
+            palvelunhintatf.clear();
+            palvelunAlvtf.clear();
+            palvelunAlueencb.setValue(null);
+            palvelunAlueencb.setVisible(false);
+            lisaaPalvelubt.setVisible(true);
+            palveluMuokkaabt.setVisible(false);
+            palveluPoistabt.setVisible(false);
+            palvelunmuokkausohje.setVisible(false);
+        });
+
+        mokkiPoistabt.setOnAction(e -> {
+
+            try {
+                if (!mokinNimitf.getText().isEmpty()) {
+                    komennot.updateQuery("delete from mokki where mokkinimi = '" +
+                            mokkienMuokkauscb.getValue() + "'");
+                }
+
+            } catch (SQLException ex) {
+                showAlert(Alert.AlertType.ERROR, "Virhe", "mökkiä ei voitu poistaa!");
+                throw new RuntimeException(ex);
+            }
+
+            primaryStage.setScene(muokkaausvalikko);
+            mokinNimitf.clear();
+            mokinOsoitetf.clear();
+            mokinHintatf.clear();
+            mokinKuvaustf.clear();
+            mokinHenkilomaaratf.clear();
+            mokinPostinrotf.clear();
+            mokinVaruselutf.clear();
+            mokkienMuokkauscb.setValue(null);
+            mokkienMuokkauscb.setVisible(false);
+            lisaaMokkibt.setVisible(true);
+            mokkiMuokkaabt.setVisible(false);
+            mokkiPoistabt.setVisible(false);
+            mokkienmuokkausohje.setVisible(false);
+        });
+
+
 
         muokkaaPalveluitacb.setOnAction(e -> {
             Object selectedItem = muokkaaPalveluitacb.getSelectionModel().getSelectedItem();
@@ -1242,4 +1295,12 @@ public class Paaohjelma extends Application {
         LocalDate valitsePvm = pvmLista.getValue();
         String jarjestys = valitsePvm.format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
     }
+    private void showAlert(Alert.AlertType alertType, String title, String message) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
 }
