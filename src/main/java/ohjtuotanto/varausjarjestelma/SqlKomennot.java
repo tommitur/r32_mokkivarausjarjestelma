@@ -4,6 +4,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.ListView;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -471,5 +472,53 @@ public class SqlKomennot {
             e.printStackTrace();
         }
         return -1;
+    }
+
+    public ListView<String> haeLaskut() throws SQLException {
+        ObservableList<String> laskuList = FXCollections.observableArrayList();
+
+        String query = "SELECT L.*, A.Etunimi, A.Sukunimi " +
+                "FROM Lasku L " +
+                "INNER JOIN Varaus V ON L.Varaus_id = V.Varaus_id " +
+                "INNER JOIN Asiakas A ON V.Asiakas_id = A.Asiakas_id";
+
+        ResultSet resultSet = statement.executeQuery(query);
+        try {
+            while (resultSet.next()) {
+                int laskuId = resultSet.getInt("Lasku_id");
+                int varausId = resultSet.getInt("Varaus_id");
+                double summa = resultSet.getDouble("Summa");
+                double alv = resultSet.getDouble("Alv");
+                int maksettu = resultSet.getInt("Maksettu");
+                String etunimi = resultSet.getString("Etunimi");
+                String sukunimi = resultSet.getString("Sukunimi");
+
+                // Muunnetaan maksettu-arvo merkkijonoksi "kyllä" tai "ei"
+                String maksettuStr = (maksettu == 1) ? "kyllä" : "ei";
+
+                laskuList.add("Lasku ID: " + laskuId + ", Varaus ID: " + varausId +
+                        ", Summa: " + summa + ", Alv: " + alv +
+                        ", Asiakas: " + etunimi + " " + sukunimi +
+                        ", Maksettu: " + maksettuStr);
+            }
+        } finally {
+            if (resultSet != null) {
+                resultSet.close();
+            }
+        }
+
+        ListView<String> laskuListView = new ListView<>(laskuList);
+        return laskuListView;
+    }
+
+    public void merkitseLaskuMaksetuksi(int laskuId) throws SQLException {
+        String query = "UPDATE Lasku SET Maksettu = 1 WHERE Lasku_id = ?";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, laskuId);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        }
     }
 }
