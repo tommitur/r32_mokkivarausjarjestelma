@@ -6,8 +6,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class SqlKomennot {
@@ -123,7 +121,6 @@ public class SqlKomennot {
         ResultSet set = statement.executeQuery("SELECT hinta FROM mokki");
     }
 
-
     static class Palvelu {
         int palveluId;
         int alueId;
@@ -165,8 +162,6 @@ public class SqlKomennot {
             e.printStackTrace();
         }
         return palvelu;
-
-
     }
 
     public static int fetchPalveluId(String palvelunNimi) {
@@ -187,6 +182,24 @@ public class SqlKomennot {
         return -1;
     }
 
+    public static double fetchPalvelunHinta(String palveluNimi) {
+        double hinta = 0.0;
+        String sql = "SELECT hinta FROM palvelu WHERE nimi = ?";
+
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, palveluNimi);
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                hinta = rs.getDouble("hinta");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return hinta;
+    }
 
     static class Asiakas {
         int asiakasId;
@@ -455,6 +468,25 @@ public class SqlKomennot {
         }
         return "";
     }
+
+    public static int fetchMokinAlueID(int mokinID) {
+        String sql = "SELECT alue_id FROM mokki WHERE mokki_id = ?";
+
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setInt(1, mokinID);
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("alue_id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
     public static int fetchAlueID(String alue) {
         String sql = "SELECT alue_id FROM alue WHERE nimi = ?";
 
