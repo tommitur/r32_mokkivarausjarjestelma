@@ -1156,6 +1156,60 @@ public class Paaohjelma extends Application {
             }
         });
 
+        ListView<String> laskuListView = komennot.haeLaskut();
+        Button showDetailsButton = new Button("Näytä tiedot");
+        showDetailsButton.setOnAction(e -> {
+            String selectedLasku = laskuListView.getSelectionModel().getSelectedItem();
+            if (selectedLasku != null) {
+
+                VBox laskunTiedotLayout = new VBox(10);
+                laskunTiedotLayout.setAlignment(Pos.CENTER);
+                laskunTiedotLayout.setPadding(new Insets(10));
+
+                TextArea laskunTiedotTextArea = new TextArea(selectedLasku);
+                laskunTiedotTextArea.setEditable(false);
+                laskunTiedotLayout.getChildren().add(laskunTiedotTextArea);
+
+                Button maksettuButton = new Button("Maksettu");
+                Button peruutaButton = new Button("Takaisin");
+
+                maksettuButton.setOnAction(event -> {
+                    try {
+                        String[] tiedot = selectedLasku.split(", ");
+                        int laskuId = Integer.parseInt(tiedot[0].split(": ")[1]);
+                        int varausId = Integer.parseInt(tiedot[1].split(": ")[1]);
+
+                        komennot.merkitseLaskuMaksetuksi(laskuId);
+
+                        laskuListView.getItems().clear();
+                        laskuListView.getItems().addAll(komennot.haeLaskut().getItems());
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                });
+
+                peruutaButton.setOnAction(event -> {
+                    Stage stage = (Stage) laskunTiedotLayout.getScene().getWindow();
+                    stage.close(); // Sulje ikkuna
+                });
+
+                laskunTiedotLayout.getChildren().addAll(maksettuButton, peruutaButton);
+
+                Scene laskunTiedotScene = new Scene(laskunTiedotLayout, 400, 300);
+
+                Stage laskunTiedotStage = new Stage();
+                laskunTiedotStage.setTitle("Laskun tiedot");
+                laskunTiedotStage.setScene(laskunTiedotScene);
+                laskunTiedotStage.show();
+            }
+        });
+
+        VBox layout = new VBox(laskuListView, showDetailsButton);
+        BorderPane laskut = new BorderPane();
+        laskut.setTop(layout);
+
+        Scene laskutus = new Scene(laskut, 500,500);
+
 
     }
 

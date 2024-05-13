@@ -493,9 +493,7 @@ public class SqlKomennot {
                 String etunimi = resultSet.getString("Etunimi");
                 String sukunimi = resultSet.getString("Sukunimi");
 
-                // Muunnetaan maksettu-arvo merkkijonoksi "kyllä" tai "ei"
                 String maksettuStr = (maksettu == 1) ? "kyllä" : "ei";
-
                 laskuList.add("Lasku ID: " + laskuId + ", Varaus ID: " + varausId +
                         ", Summa: " + summa + ", Alv: " + alv +
                         ", Asiakas: " + etunimi + " " + sukunimi +
