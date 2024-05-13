@@ -1320,7 +1320,7 @@ public class Paaohjelma extends Application {
 
                 peruutaButton.setOnAction(event -> {
                     Stage stage = (Stage) laskunTiedotLayout.getScene().getWindow();
-                    stage.close(); // Sulje ikkuna
+                    stage.close();
                 });
 
                 laskunTiedotLayout.getChildren().addAll(maksettuButton, peruutaButton);
