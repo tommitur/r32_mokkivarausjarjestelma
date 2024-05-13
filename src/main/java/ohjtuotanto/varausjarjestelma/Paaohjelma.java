@@ -1371,6 +1371,7 @@ public class Paaohjelma extends Application {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+
     }
 
 }
