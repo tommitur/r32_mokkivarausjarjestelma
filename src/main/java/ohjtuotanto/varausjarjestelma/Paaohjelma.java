@@ -44,6 +44,10 @@ public class Paaohjelma extends Application {
     public ObservableList<SqlKomennot.Mokki> haettujenMokkienTiedot;
     private DatePicker pvmLista;
     int vieraat;
+    public boolean varausvalikkoonPaasty = false;
+    public ObservableList<String> sahkopostilista = FXCollections.observableArrayList();
+    public ComboBox sahkoposticb;
+
 
     @Override
     public void start(Stage primaryStage) throws SQLException {
@@ -225,9 +229,8 @@ public class Paaohjelma extends Application {
         GridPane varaustiedotGP = new GridPane(50, 40);
 
 
-        ObservableList<String> sahkopostilista = FXCollections.observableArrayList();
         sahkopostilista = komennot.valitseKaikkiSahkopostit();
-        ComboBox sahkoposticb = new ComboBox(FXCollections.observableArrayList(sahkopostilista));
+        sahkoposticb = new ComboBox(FXCollections.observableArrayList(sahkopostilista));
         sahkoposticb.setPromptText("Valitse sähköposti");
 
         Label sahkopostilb = new Label("Sähköposti:");
@@ -277,6 +280,11 @@ public class Paaohjelma extends Application {
 
         Button uusiAsiakasbt = new Button("Uusi asiakas?");
         Button mokinVarausbt = new Button("Varaa mökki");
+        Button takaisinpaavalikkoonbt = new Button("Takaisin päävalikkoon");
+
+        takaisinpaavalikkoonbt.setOnAction(e->{
+            primaryStage.setScene(paavalikko);
+        });
 
         mokinVarausbt.setOnAction(e -> {
             int asiakkaanID = SqlKomennot.fetchAsiakkaanIDsahkopostilla(String.valueOf(sahkoposticb.getValue()));
@@ -326,6 +334,7 @@ public class Paaohjelma extends Application {
         varaustiedothbox.getChildren().add(varaustiedotGP);
         varaustiedothbox.setAlignment(Pos.CENTER);
         varaustiedotBP.setCenter(varaustiedothbox);
+        varaustiedotBP.setTop(takaisinpaavalikkoonbt);
 
         Scene varausvalikko = new Scene(varaustiedotBP, 650, 450);
 
@@ -336,6 +345,7 @@ public class Paaohjelma extends Application {
                 mokki_idtf.setText(String.valueOf(valittuMokki.getMokkiId()));
 
                 primaryStage.setScene(varausvalikko);
+                varausvalikkoonPaasty = true;
             }
         });
 
@@ -1194,6 +1204,7 @@ public class Paaohjelma extends Application {
                         asiakaanPuhelinnrotf.clear();
                         primaryStage.setScene(muokkaausvalikko);
                     } else {
+
                         komennot.updateQuery("insert into posti (postinro, toimipaikka) values ('" + Integer.valueOf(asiakaanPostinumerotf.getText()) + "','" + asiakkaanPostitoimipaikkatf.getText() + "')");
                         komennot.updateQuery("insert into asiakas (postinro, etunimi, sukunimi, lahiosoite, email, puhelinnro) values ('" + asiakaanPostinumerotf.getText()
                                 + "','" + asiakaanNimitf.getText() + "','" + asiakaanSukunimitf.getText() + "','" + asiakaanOsoitetf.getText() + "','" +
@@ -1205,8 +1216,13 @@ public class Paaohjelma extends Application {
                         asiakkaanPostitoimipaikkatf.clear();
                         asiakaanSahkopostitf.clear();
                         asiakaanPuhelinnrotf.clear();
+
                         primaryStage.setScene(muokkaausvalikko);
-                    }
+                        }
+                    }if (varausvalikkoonPaasty == true){
+                        sahkopostilista = komennot.valitseKaikkiSahkopostit();
+                        sahkoposticb.setItems(FXCollections.observableArrayList(sahkopostilista));
+                        primaryStage.setScene(varausvalikko);
                 }
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);

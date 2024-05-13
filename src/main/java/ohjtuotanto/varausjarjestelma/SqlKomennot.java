@@ -17,13 +17,13 @@ public class SqlKomennot {
 
     private static final String URL = "jdbc:mysql://127.0.0.1:3306/vn";
     private static final String USER = "root";
-    private static final String PASSWORD = "Yksitoista123";
+    private static final String PASSWORD = "salis123";
 
     public SqlKomennot() throws SQLException {
         connection = DriverManager.getConnection(
                 "jdbc:mysql://127.0.0.1:3306/vn",
                 "root",
-                "Yksitoista123"
+                "salis123"
 
         );
         statement = connection.createStatement();
