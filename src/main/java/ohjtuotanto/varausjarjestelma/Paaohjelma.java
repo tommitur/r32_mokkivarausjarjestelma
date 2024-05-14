@@ -228,7 +228,7 @@ public class Paaohjelma extends Application {
 
         HBox varaustiedothbox = new HBox();
 
-        GridPane varaustiedotGP = new GridPane(50, 40);
+        GridPane varaustiedotGP = new GridPane(50, 35);
 
 
         sahkopostilista = komennot.valitseKaikkiSahkopostit();
@@ -286,6 +286,12 @@ public class Paaohjelma extends Application {
         ListView palveluLV = new ListView<>(FXCollections.observableArrayList());
         palveluLV.setPrefHeight(75);
 
+        ComboBox<Integer> palvelutcb = new ComboBox<>();
+        palvelutcb.setPromptText("palveluiden lkm");
+        palvelutcb.setItems(FXCollections.observableArrayList(
+                1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+        ));
+
         Button uusiAsiakasbt = new Button("Uusi asiakas?");
         Button mokinVarausbt = new Button("Varaa mökki");
         Button takaisinpaavalikkoonbt = new Button("Takaisin päävalikkoon");
@@ -302,7 +308,7 @@ public class Paaohjelma extends Application {
             LocalDate vahvistus_pvm = vahvistusPvmDP.getValue();
             LocalDate alkupvm = varauksenalkuPvmDP.getValue();
             LocalDate loppupvm = varauksenloppuPvmDP.getValue();
-            if(sahkoposticb.getValue() == null || varattu_pvm == null || vahvistus_pvm == null|| alkupvm == null || loppupvm == null){
+            if(sahkoposticb.getValue() == null || varattu_pvm == null || vahvistus_pvm == null|| alkupvm == null || loppupvm == null || palvelutcb == null){
                 System.out.println("Tietoja puuttuu");
             }else{
                 try {
@@ -311,7 +317,8 @@ public class Paaohjelma extends Application {
                     int varausID = SqlKomennot.fetchAsiakkaanVarausID(asiakkaanID, varattu_pvm, vahvistus_pvm, alkupvm, loppupvm);
                     for(int i = 0; i < palveluLV.getSelectionModel().getSelectedItems().size(); i++){
                         int palveluID = SqlKomennot.fetchPalveluId((String) palveluLV.getSelectionModel().getSelectedItems().get(i));
-                        komennot.updateQuery("insert into varauksen_palvelut (varaus_id, palvelu_id, lkm) values ('" + varausID + "','" + palveluID + "','1')");
+                        int lkm = palvelutcb.getValue();
+                        komennot.updateQuery("insert into varauksen_palvelut (varaus_id, palvelu_id, lkm) values ('" + varausID + "','" + palveluID + "','" + lkm + "')");
                     }
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
@@ -326,6 +333,7 @@ public class Paaohjelma extends Application {
                 palveluhintalb.setText("Palveluiden hinta: ");
                 varausvalikkoonPaasty = false;
                 primaryStage.setScene(paavalikko);
+                palvelutcb.setValue(null);
             }
         });
 
@@ -344,6 +352,7 @@ public class Paaohjelma extends Application {
         varaustiedotGP.add(varauksenalkuPvmDP,1,5);
         varaustiedotGP.add(varauksenloppuPvmDP,1,6);
         varaustiedotGP.add(palveluLV,1,7);
+        varaustiedotGP.add(palvelutcb, 1, 8);
 
         varaustiedotGP.add(uusiAsiakasbt,2,1);
         varaustiedotGP.add(mokinhintalb,2,6);
@@ -390,6 +399,7 @@ public class Paaohjelma extends Application {
             varauksenloppuPvmDP.setValue(null);
             mokinhintalb.setText("Varauksen hinta: ");
             palveluhintalb.setText("Palveluiden hinta: ");
+            palvelutcb.setValue(null);
         });
 
         varauksenloppuPvmDP.setOnAction(e -> {
