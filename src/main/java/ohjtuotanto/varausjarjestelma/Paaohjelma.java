@@ -316,6 +316,7 @@ public class Paaohjelma extends Application {
                 vahvistusPvmDP.setValue(null);
                 varauksenalkuPvmDP.setValue(null);
                 varauksenloppuPvmDP.setValue(null);
+                varausvalikkoonPaasty = false;
             }
         });
 
@@ -751,6 +752,14 @@ public class Paaohjelma extends Application {
         kaikkiMuokattavat.setAlignment(Pos.CENTER);
 
         uusiAsiakasbt.setOnAction(e -> {
+            asiakaanNimitf.clear();
+            asiakaanSukunimitf.clear();
+            asiakaanOsoitetf.clear();
+            asiakaanPostinumerotf.clear();
+            asiakkaanPostitoimipaikkatf.clear();
+            asiakaanSahkopostitf.clear();
+            asiakaanPuhelinnrotf.clear();
+            asiakkaanMuokkauscb.setValue(null);
             primaryStage.setScene(asiakaanLisausValikko);
         });
 
@@ -891,7 +900,11 @@ public class Paaohjelma extends Application {
             }
         });
         takaisinAsiakas.setOnAction(e -> {
-            primaryStage.setScene(muokkaausvalikko);
+            if (varausvalikkoonPaasty){
+                primaryStage.setScene(varausvalikko);
+            }
+            else{
+                primaryStage.setScene(muokkaausvalikko);}
             asiakaanNimitf.clear();
             asiakaanSukunimitf.clear();
             asiakaanOsoitetf.clear();
