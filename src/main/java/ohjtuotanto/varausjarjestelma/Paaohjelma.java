@@ -10,6 +10,8 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
@@ -459,8 +461,20 @@ public class Paaohjelma extends Application {
         Button lisaaAluebt = new Button("Lisää");
         GridPane aluidentiedotGP = new GridPane(15, 15);
         BorderPane alueBP = new BorderPane();
+        Label aluePuuttuuTietojalb = new Label("Lisää puuttuvat tiedot");
+        aluePuuttuuTietojalb.setFont(Font.font(12));
+        aluePuuttuuTietojalb.setTextFill(Color.RED);
+        aluePuuttuuTietojalb.setVisible(false);
 
         //Alueen muokkaus
+        Label valitseMuokattavaAluelb = new Label("Valitse muokattava alue");
+        valitseMuokattavaAluelb.setFont(Font.font(12));
+        valitseMuokattavaAluelb.setTextFill(Color.RED);
+        valitseMuokattavaAluelb.setVisible(false);
+        Label valitsePoistettavaAluelb = new Label("Valitse poistettava alue");
+        valitsePoistettavaAluelb.setFont(Font.font(12));
+        valitsePoistettavaAluelb.setTextFill(Color.RED);
+        valitsePoistettavaAluelb.setVisible(false);
         Button muokkaabt = new Button("Muokkaa");
         muokkaabt.setVisible(false);
         Button poistabt = new Button("Poista");
@@ -470,8 +484,10 @@ public class Paaohjelma extends Application {
         alueMuokkauscb.setMinWidth(100);
         alueMuokkauscb.setVisible(false);
         HBox alueHBox = new HBox(150);
+        VBox alueVBox = new VBox(5);
+        alueVBox.getChildren().addAll(alueMuokkauscb, valitseMuokattavaAluelb, valitsePoistettavaAluelb);
         alueHBox.setPadding(new Insets(5, 5, 5, 5));
-        alueHBox.getChildren().addAll(takaisinAlue, alueMuokkauscb);
+        alueHBox.getChildren().addAll(takaisinAlue, alueVBox);
         HBox alueButtonit = new HBox(15);
         alueButtonit.getChildren().addAll(lisaaAluebt, muokkaabt, poistabt);
         Label aluemuokkausohje = new Label("Valitse alue ylhäältä\nja voit joko muokata sen nimeä\ntai poistaa sen");
@@ -481,9 +497,18 @@ public class Paaohjelma extends Application {
         aluidentiedotGP.add(alueennimitf, 1, 0);
         aluidentiedotGP.add(alueButtonit, 1, 1);
         aluidentiedotGP.add(aluemuokkausohje, 1, 2);
+        aluidentiedotGP.add(aluePuuttuuTietojalb, 1, 3);
         alueBP.setCenter(aluidentiedotGP);
         alueBP.setTop(alueHBox);
 
+        Label valitseMuokattavaPalvelulb = new Label("Valitse muokattava palvelu");
+        valitseMuokattavaPalvelulb.setFont(Font.font(12));
+        valitseMuokattavaPalvelulb.setTextFill(Color.RED);
+        valitseMuokattavaPalvelulb.setVisible(false);
+        Label valitsePoistettavaPalvelulb = new Label("Valitse poistettava palvelu");
+        valitsePoistettavaPalvelulb.setFont(Font.font(12));
+        valitsePoistettavaPalvelulb.setTextFill(Color.RED);
+        valitsePoistettavaPalvelulb.setVisible(false);
         Button lisaaPalvelubt = new Button("Lisää");
         Label palvelunNimilb = new Label("Palvelun nimi");
         Label palvelunKuvauslb = new Label("Palvelun kuvaus");
@@ -505,6 +530,15 @@ public class Paaohjelma extends Application {
         numeronTarkistus(palvelunhintatf);
         numeronTarkistus(palvelunAlvtf);
         BorderPane palveluBP = new BorderPane();
+        Label palveluPuuttuuTietojalb = new Label("Lisää puuttuvat tiedot");
+        palveluPuuttuuTietojalb.setFont(Font.font(12));
+        palveluPuuttuuTietojalb.setTextFill(Color.RED);
+        palveluPuuttuuTietojalb.setVisible(false);
+        HBox palveluHBox = new HBox(150);
+        VBox palveluVBox = new VBox(5);
+        palveluVBox.getChildren().addAll(palveluPuuttuuTietojalb, valitseMuokattavaPalvelulb, valitsePoistettavaPalvelulb);
+        palveluHBox.getChildren().addAll(takaisinPalvelu, palveluVBox);
+        palveluHBox.setPadding(new Insets(5, 5, 5, 5));
 
         //Palvelun muokkaamis scenen honmia
         palvelutlista = komennot.valitseKaikkiPalvelut();
@@ -537,8 +571,16 @@ public class Paaohjelma extends Application {
         palveluidentiedotGP.add(muokkaaPalveluitacb, 2, 0);
         palveluidentiedotGP.add(palvelunmuokkausohje, 2, 1);
         palveluBP.setCenter(palveluidentiedotGP);
-        palveluBP.setTop(takaisinPalvelu);
+        palveluBP.setTop(palveluHBox);
 
+        Label valitseMuokattavaAsiakaslb = new Label("Valitse muokattava asiakas");
+        valitseMuokattavaAsiakaslb.setFont(Font.font(12));
+        valitseMuokattavaAsiakaslb.setTextFill(Color.RED);
+        valitseMuokattavaAsiakaslb.setVisible(false);
+        Label valitsePoistettavaAsiakaslb = new Label("Valitse poistettava asiakas");
+        valitsePoistettavaAsiakaslb.setFont(Font.font(12));
+        valitsePoistettavaAsiakaslb.setTextFill(Color.RED);
+        valitsePoistettavaAsiakaslb.setVisible(false);
         Button lisaaAsiakasbt = new Button("Lisää");
         Label asiakaanNimilb = new Label("Etunimi");
         Label asiakaanSukunimilb = new Label("Sukunimi ");
@@ -558,6 +600,15 @@ public class Paaohjelma extends Application {
         postiNroTarkistus(asiakaanPostinumerotf);
         puhulinNroTarkistus(asiakaanPuhelinnrotf);
         BorderPane asiakasBP = new BorderPane();
+        Label asiakasPuuttuuTietojalb = new Label("Lisää puuttuvat tiedot");
+        asiakasPuuttuuTietojalb.setFont(Font.font(12));
+        asiakasPuuttuuTietojalb.setTextFill(Color.RED);
+        asiakasPuuttuuTietojalb.setVisible(false);
+        HBox asiakasHBox2 = new HBox(150);
+        VBox asiakasVBox = new VBox(5);
+        asiakasVBox.getChildren().addAll(asiakasPuuttuuTietojalb, valitseMuokattavaAsiakaslb, valitsePoistettavaAsiakaslb);
+        asiakasHBox2.getChildren().addAll(takaisinAsiakas, asiakasVBox);
+        asiakasHBox2.setPadding(new Insets(5, 5, 5, 5));
 
         //Asiakkaan muokkaus
         asiakkaanID = komennot.valitseKaikkiAsiakkaat();
@@ -592,8 +643,16 @@ public class Paaohjelma extends Application {
         asiakaantiedotGP.add(asiakkaanMuokkauscb, 2, 0);
         asiakaantiedotGP.add(asiakkaanmuokkausohje, 2, 1);
         asiakasBP.setCenter(asiakaantiedotGP);
-        asiakasBP.setTop(takaisinAsiakas);
+        asiakasBP.setTop(asiakasHBox2);
 
+        Label valitseMuokattavaMokkilb = new Label("Valitse muokattava mokki");
+        valitseMuokattavaMokkilb.setFont(Font.font(12));
+        valitseMuokattavaMokkilb.setTextFill(Color.RED);
+        valitseMuokattavaMokkilb.setVisible(false);
+        Label valitsePoistetavaMokkilb = new Label("Valitse poistettava mokki");
+        valitsePoistetavaMokkilb.setFont(Font.font(12));
+        valitsePoistetavaMokkilb.setTextFill(Color.RED);
+        valitsePoistetavaMokkilb.setVisible(false);
         Button lisaaMokkibt = new Button("Lisää");
         Label mokinNimilb = new Label("Mökin nimi");
         Label mokinOsoitelb = new Label("Mökin osoite ");
@@ -620,6 +679,10 @@ public class Paaohjelma extends Application {
         mokinKuvaustf.setWrapText(true);
         mokinVaruselutf.setWrapText(true);
         BorderPane mokkiBP = new BorderPane();
+        Label mokkiPuuttuuTietojalb = new Label("Lisää puuttuvat tiedot");
+        mokkiPuuttuuTietojalb.setFont(Font.font(12));
+        mokkiPuuttuuTietojalb.setTextFill(Color.RED);
+        mokkiPuuttuuTietojalb.setVisible(false);
 
         //Mökkien muokkaus scene honma jutu
         mokit = komennot.valitseKaikkiMokit();
@@ -634,6 +697,11 @@ public class Paaohjelma extends Application {
         mokkiPoistabt.setVisible(false);
         Label mokkienmuokkausohje = new Label("Valitse mökki ylhäältä\nja voit muokata sen tietoja\ntai poistaa sen");
         mokkienmuokkausohje.setVisible(false);
+        HBox mokkiHBox2 = new HBox(150);
+        VBox mokkiVBox = new VBox(5);
+        mokkiVBox.getChildren().addAll(mokkiPuuttuuTietojalb, valitseMuokattavaMokkilb, valitsePoistetavaMokkilb);
+        mokkiHBox2.getChildren().addAll(takaisinMokki, mokkiVBox);
+        mokkiHBox2.setPadding(new Insets(5, 5, 5, 5));
 
         GridPane mokintiedotGP = new GridPane(15, 15);
         mokintiedotGP.add(mokinNimilb, 0, 0);
@@ -656,7 +724,7 @@ public class Paaohjelma extends Application {
         mokintiedotGP.add(mokkienMuokkauscb, 2, 0);
         mokintiedotGP.add(mokkienmuokkausohje, 2, 1);
         mokkiBP.setCenter(mokintiedotGP);
-        mokkiBP.setTop(takaisinMokki);
+        mokkiBP.setTop(mokkiHBox2);
 
         Scene mokinLisausValikko = new Scene(mokkiBP, 550, 600);
         mokintiedotGP.setAlignment(Pos.CENTER);
@@ -796,6 +864,9 @@ public class Paaohjelma extends Application {
             mokinPostinrotf.clear();
             mokinalueetcb.setValue(null);
             mokkienMuokkauscb.setValue(null);
+            mokkiPuuttuuTietojalb.setVisible(false);
+            valitseMuokattavaMokkilb.setVisible(false);
+            valitsePoistetavaMokkilb.setVisible(false);
             if (mokkienMuokkauscb.isVisible()) {
                 mokkienMuokkauscb.setVisible(false);
                 lisaaMokkibt.setVisible(true);
@@ -808,6 +879,9 @@ public class Paaohjelma extends Application {
             primaryStage.setScene(muokkaausvalikko);
             alueMuokkauscb.setValue(null);
             alueennimitf.clear();
+            aluePuuttuuTietojalb.setVisible(false);
+            valitseMuokattavaAluelb.setVisible(false);
+            valitsePoistettavaAluelb.setVisible(false);
             if (alueMuokkauscb.isVisible()) {
                 alueMuokkauscb.setVisible(false);
                 lisaaAluebt.setVisible(true);
@@ -826,6 +900,9 @@ public class Paaohjelma extends Application {
             asiakaanSahkopostitf.clear();
             asiakaanPuhelinnrotf.clear();
             asiakkaanMuokkauscb.setValue(null);
+            asiakasPuuttuuTietojalb.setVisible(false);
+            valitseMuokattavaAsiakaslb.setVisible(false);
+            valitsePoistettavaAsiakaslb.setVisible(false);
             if (asiakkaanMuokkauscb.isVisible()) {
                 asiakkaanMuokkauscb.setVisible(false);
                 lisaaAsiakasbt.setVisible(true);
@@ -843,6 +920,9 @@ public class Paaohjelma extends Application {
             palvelunIDtf.clear();
             muokkaaPalveluitacb.setValue(null);
             palvelunAlueencb.setValue(null);
+            palveluPuuttuuTietojalb.setVisible(false);
+            valitseMuokattavaPalvelulb.setVisible(false);
+            valitsePoistettavaPalvelulb.setVisible(false);
             if (muokkaaPalveluitacb.isVisible()) {
                 muokkaaPalveluitacb.setVisible(false);
                 lisaaPalvelubt.setVisible(true);
@@ -855,6 +935,8 @@ public class Paaohjelma extends Application {
         alueMuokkauscb.setOnAction(e -> {
             Object selectedItem = alueMuokkauscb.getSelectionModel().getSelectedItem();
             if (selectedItem != null) {
+                valitseMuokattavaAluelb.setVisible(false);
+                valitsePoistettavaAluelb.setVisible(false);
                 String data = selectedItem.toString();
                 alueennimitf.setText(data);
             }
@@ -865,28 +947,30 @@ public class Paaohjelma extends Application {
                 if (!alueennimitf.getText().isEmpty()) {
                     komennot.updateQuery("update alue set nimi ='" + alueennimitf.getText() + "' where nimi = '" +
                             alueMuokkauscb.getValue() + "'");
+                    primaryStage.setScene(muokkaausvalikko);
+                    alueennimitf.clear();
+                    alueMuokkauscb.setValue(null);
+                    alueMuokkauscb.setVisible(false);
+                    lisaaAluebt.setVisible(true);
+                    muokkaabt.setVisible(false);
+                    poistabt.setVisible(false);
+                    aluemuokkausohje.setVisible(false);
+                }else{
+                    valitsePoistettavaAluelb.setVisible(false);
+                    valitseMuokattavaAluelb.setVisible(true);
                 }
 
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
-            primaryStage.setScene(muokkaausvalikko);
-            alueennimitf.clear();
-            alueMuokkauscb.setValue(null);
-            alueMuokkauscb.setVisible(false);
-            lisaaAluebt.setVisible(true);
-            muokkaabt.setVisible(false);
-            poistabt.setVisible(false);
-            aluemuokkausohje.setVisible(false);
+
         });
-
-
-
-
 
         muokkaaPalveluitacb.setOnAction(e -> {
             Object selectedItem = muokkaaPalveluitacb.getSelectionModel().getSelectedItem();
             if (selectedItem != null) {
+                valitseMuokattavaPalvelulb.setVisible(false);
+                valitsePoistettavaPalvelulb.setVisible(false);
                 String data = selectedItem.toString();
                 int id = SqlKomennot.fetchPalveluId(data);
                 palvelunIDmuokkaukseen = id;
@@ -907,6 +991,8 @@ public class Paaohjelma extends Application {
                 if (palvelunnimitf.getText().isEmpty() || palvelunkuvaustf.getText().isEmpty() || palvelunhintatf.getText().isEmpty() ||
                         palvelunAlvtf.getText().isEmpty() || palvelunIDtf.getText().isEmpty() || palvelunAlueencb.getValue() == null) {
                     //Tietoja puuttuu
+                    valitsePoistettavaPalvelulb.setVisible(false);
+                    valitseMuokattavaPalvelulb.setVisible(true);
                 } else {
                     String alueid = String.valueOf(komennot.haeAlueenID(String.valueOf(palvelunAlueencb.getValue())));
                     alueid = alueid.replaceAll("[\\[\\](){}]", "");
@@ -919,13 +1005,13 @@ public class Paaohjelma extends Application {
                     palvelunIDtf.clear();
                     palvelunAlueencb.setValue(null);
                     primaryStage.setScene(muokkaausvalikko);
+                    muokkaaPalveluitacb.setValue(null);
+                    muokkaaPalveluitacb.setVisible(false);
+                    lisaaPalvelubt.setVisible(true);
+                    palveluMuokkaabt.setVisible(false);
+                    palveluPoistabt.setVisible(false);
+                    palvelunmuokkausohje.setVisible(false);
                 }
-                muokkaaPalveluitacb.setValue(null);
-                muokkaaPalveluitacb.setVisible(false);
-                lisaaPalvelubt.setVisible(true);
-                palveluMuokkaabt.setVisible(false);
-                palveluPoistabt.setVisible(false);
-                palvelunmuokkausohje.setVisible(false);
 
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
@@ -937,6 +1023,8 @@ public class Paaohjelma extends Application {
         asiakkaanMuokkauscb.setOnAction(e -> {
             Object selectedItem = asiakkaanMuokkauscb.getSelectionModel().getSelectedItem();
             if (selectedItem != null) {
+                valitseMuokattavaAsiakaslb.setVisible(false);
+                valitsePoistettavaAsiakaslb.setVisible(false);
                 String data = selectedItem.toString();
                 asiakkaanIDmuokkaukseen = data;
                 SqlKomennot.Asiakas asiakas = SqlKomennot.fetchAsiakas(Integer.parseInt(data));
@@ -958,6 +1046,8 @@ public class Paaohjelma extends Application {
                 if (asiakaanNimitf.getText().isEmpty() || asiakaanSukunimitf.getText().isEmpty() || asiakaanOsoitetf.getText().isEmpty() ||
                         asiakaanPostinumerotf.getText().isEmpty() || asiakkaanPostitoimipaikkatf.getText().isEmpty() || asiakaanSahkopostitf.getText().isEmpty() || asiakaanPuhelinnrotf.getText().isEmpty()) {
                     //Tietoja puuttuu
+                    valitsePoistettavaAsiakaslb.setVisible(false);
+                    valitseMuokattavaAsiakaslb.setVisible(true);
                 } else {
                     if (komennot.haePostriNrot().contains(Integer.valueOf(asiakaanPostinumerotf.getText()))) {
                         komennot.updateQuery("update asiakas set postinro = '" + asiakaanPostinumerotf.getText()
@@ -973,6 +1063,11 @@ public class Paaohjelma extends Application {
                         asiakaanPuhelinnrotf.clear();
                         asiakkaanMuokkauscb.setValue(null);
                         primaryStage.setScene(muokkaausvalikko);
+                        asiakkaanMuokkauscb.setVisible(false);
+                        lisaaAsiakasbt.setVisible(true);
+                        asiakasMuokkaabt.setVisible(false);
+                        asiakasPoistabt.setVisible(false);
+                        asiakkaanmuokkausohje.setVisible(false);
                     } else {
                         komennot.updateQuery("insert into posti (postinro, toimipaikka) values ('" + Integer.valueOf(asiakaanPostinumerotf.getText()) + "','" + asiakkaanPostitoimipaikkatf.getText() + "')");
                         komennot.updateQuery("update asiakas set postinro = '" + asiakaanPostinumerotf.getText()
@@ -988,13 +1083,13 @@ public class Paaohjelma extends Application {
                         asiakaanPuhelinnrotf.clear();
                         asiakkaanMuokkauscb.setValue(null);
                         primaryStage.setScene(muokkaausvalikko);
+                        asiakkaanMuokkauscb.setVisible(false);
+                        lisaaAsiakasbt.setVisible(true);
+                        asiakasMuokkaabt.setVisible(false);
+                        asiakasPoistabt.setVisible(false);
+                        asiakkaanmuokkausohje.setVisible(false);
                     }
                 }
-                asiakkaanMuokkauscb.setVisible(false);
-                lisaaAsiakasbt.setVisible(true);
-                asiakasMuokkaabt.setVisible(false);
-                asiakasPoistabt.setVisible(false);
-                asiakkaanmuokkausohje.setVisible(false);
 
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
@@ -1006,6 +1101,8 @@ public class Paaohjelma extends Application {
         mokkienMuokkauscb.setOnAction(e -> {
             Object selectedItem = mokkienMuokkauscb.getSelectionModel().getSelectedItem();
             if (selectedItem != null) {
+                valitseMuokattavaMokkilb.setVisible(false);
+                valitsePoistetavaMokkilb.setVisible(false);
                 String data = selectedItem.toString();
                 mokinNimimuokkaukseen = data;
                 int id = SqlKomennot.fetchMokkiId(data);
@@ -1031,7 +1128,8 @@ public class Paaohjelma extends Application {
                 if (mokinNimitf.getText().isEmpty() || mokinOsoitetf.getText().isEmpty() || mokinHintatf.getText().isEmpty() || mokinKuvaustf.getText().isEmpty() ||
                         mokinHenkilomaaratf.getText().isEmpty() || mokinVaruselutf.getText().isEmpty() || mokinPostinrotf.getText().isEmpty() || mokinalueetcb.getValue() == null) {
                     //tietoja puuttuu, vois vaikka virhetekstin pistää
-
+                    valitsePoistetavaMokkilb.setVisible(false);
+                    valitseMuokattavaMokkilb.setVisible(true);
                 } else {
                     String id = String.valueOf(komennot.haeAlueenID(String.valueOf(mokinalueetcb.getValue())));
                     id = id.replaceAll("[\\[\\](){}]", "");
@@ -1051,6 +1149,12 @@ public class Paaohjelma extends Application {
                         mokinalueetcb.setValue(null);
                         mokkienMuokkauscb.setValue(null);
                         primaryStage.setScene(muokkaausvalikko);
+                        valitseMuokattavaMokkilb.setVisible(false);
+                        mokkienMuokkauscb.setVisible(false);
+                        lisaaMokkibt.setVisible(true);
+                        mokkiMuokkaabt.setVisible(false);
+                        mokkiPoistabt.setVisible(false);
+                        mokkienmuokkausohje.setVisible(false);
                     } else {
                         komennot.updateQuery("insert into posti (postinro, toimipaikka) values ('" + Integer.valueOf(mokinPostinrotf.getText()) + "','" + mokinalueetcb.getValue() + "')");
 
@@ -1069,13 +1173,15 @@ public class Paaohjelma extends Application {
                         mokinalueetcb.setValue(null);
                         mokkienMuokkauscb.setValue(null);
                         primaryStage.setScene(muokkaausvalikko);
+                        valitseMuokattavaMokkilb.setVisible(false);
+                        mokkienMuokkauscb.setVisible(false);
+                        lisaaMokkibt.setVisible(true);
+                        mokkiMuokkaabt.setVisible(false);
+                        mokkiPoistabt.setVisible(false);
+                        mokkienmuokkausohje.setVisible(false);
                     }
                 }
-                mokkienMuokkauscb.setVisible(false);
-                lisaaMokkibt.setVisible(true);
-                mokkiMuokkaabt.setVisible(false);
-                mokkiPoistabt.setVisible(false);
-                mokkienmuokkausohje.setVisible(false);
+
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
@@ -1087,12 +1193,16 @@ public class Paaohjelma extends Application {
                     komennot.updateQuery("insert into alue (nimi) values ('" + alueennimitf.getText() + "')");
                     listaAlueista = komennot.valitseKaikkiAlueet();
                     alueMuokkauscb.setItems(FXCollections.observableArrayList(listaAlueista));
+                    primaryStage.setScene(muokkaausvalikko);
+                    alueennimitf.clear();
+                    aluePuuttuuTietojalb.setVisible(false);
+                }else{
+                    aluePuuttuuTietojalb.setVisible(true);
                 }
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
-            primaryStage.setScene(muokkaausvalikko);
-            alueennimitf.clear();
+
         });
 
         lisaaMokkibt.setOnAction(e -> {
@@ -1100,7 +1210,7 @@ public class Paaohjelma extends Application {
                 if (mokinNimitf.getText().isEmpty() || mokinOsoitetf.getText().isEmpty() || mokinHintatf.getText().isEmpty() || mokinKuvaustf.getText().isEmpty() ||
                         mokinHenkilomaaratf.getText().isEmpty() || mokinVaruselutf.getText().isEmpty() || mokinPostinrotf.getText().isEmpty() || mokinalueetcb.getValue() == null) {
                     //tietoja puuttuu, vois vaikka virhetekstin pistää
-
+                    mokkiPuuttuuTietojalb.setVisible(true);
                 } else {
                     String id = String.valueOf(komennot.haeAlueenID(String.valueOf(mokinalueetcb.getValue())));
                     id = id.replaceAll("[\\[\\](){}]", "");
@@ -1117,6 +1227,7 @@ public class Paaohjelma extends Application {
                         mokinPostinrotf.clear();
                         mokinalueetcb.setValue(null);
                         primaryStage.setScene(muokkaausvalikko);
+                        mokkiPuuttuuTietojalb.setVisible(false);
                     } else {
                         komennot.updateQuery("insert into posti (postinro, toimipaikka) values ('" + Integer.valueOf(mokinPostinrotf.getText()) + "','" + mokinalueetcb.getValue() + "')");
                         komennot.updateQuery("insert into mokki (alue_id, postinro, mokkinimi, katuosoite, hinta, kuvaus, henkilomaara, varustelu) " +
@@ -1131,6 +1242,7 @@ public class Paaohjelma extends Application {
                         mokinPostinrotf.clear();
                         mokinalueetcb.setValue(null);
                         primaryStage.setScene(muokkaausvalikko);
+                        mokkiPuuttuuTietojalb.setVisible(false);
                     }
                 }
             } catch (SQLException ex) {
@@ -1143,6 +1255,7 @@ public class Paaohjelma extends Application {
                 if (palvelunnimitf.getText().isEmpty() || palvelunkuvaustf.getText().isEmpty() || palvelunhintatf.getText().isEmpty() ||
                         palvelunAlvtf.getText().isEmpty() || palvelunIDtf.getText().isEmpty() || palvelunAlueencb.getValue() == null) {
                     //Tietoja puuttuu
+                    palveluPuuttuuTietojalb.setVisible(true);
                 } else {
                     String alueid = String.valueOf(komennot.haeAlueenID(String.valueOf(palvelunAlueencb.getValue())));
                     alueid = alueid.replaceAll("[\\[\\](){}]", "");
@@ -1155,6 +1268,7 @@ public class Paaohjelma extends Application {
                     palvelunIDtf.clear();
                     palvelunAlueencb.setValue(null);
                     primaryStage.setScene(muokkaausvalikko);
+                    palveluPuuttuuTietojalb.setVisible(false);
                 }
 
             } catch (SQLException ex) {
@@ -1167,6 +1281,7 @@ public class Paaohjelma extends Application {
                 if (asiakaanNimitf.getText().isEmpty() || asiakaanSukunimitf.getText().isEmpty() || asiakaanOsoitetf.getText().isEmpty() ||
                         asiakaanPostinumerotf.getText().isEmpty() || asiakkaanPostitoimipaikkatf.getText().isEmpty() || asiakaanSahkopostitf.getText().isEmpty() || asiakaanPuhelinnrotf.getText().isEmpty()) {
                     //Tietoja puuttuu
+                    asiakasPuuttuuTietojalb.setVisible(true);
                 } else {
                     if (komennot.haePostriNrot().contains(Integer.valueOf(asiakaanPostinumerotf.getText()))) {
                         komennot.updateQuery("insert into asiakas (postinro, etunimi, sukunimi, lahiosoite, email, puhelinnro) values ('" + asiakaanPostinumerotf.getText()
@@ -1180,6 +1295,7 @@ public class Paaohjelma extends Application {
                         asiakaanSahkopostitf.clear();
                         asiakaanPuhelinnrotf.clear();
                         primaryStage.setScene(muokkaausvalikko);
+                        asiakasPuuttuuTietojalb.setVisible(false);
                     } else {
 
                         komennot.updateQuery("insert into posti (postinro, toimipaikka) values ('" + Integer.valueOf(asiakaanPostinumerotf.getText()) + "','" + asiakkaanPostitoimipaikkatf.getText() + "')");
@@ -1193,7 +1309,7 @@ public class Paaohjelma extends Application {
                         asiakkaanPostitoimipaikkatf.clear();
                         asiakaanSahkopostitf.clear();
                         asiakaanPuhelinnrotf.clear();
-
+                        asiakasPuuttuuTietojalb.setVisible(false);
                         primaryStage.setScene(muokkaausvalikko);
                         }
                     }if (varausvalikkoonPaasty == true){
@@ -1209,11 +1325,21 @@ public class Paaohjelma extends Application {
         // Tietojen poisto nappien toiminnallisuus
 
         poistabt.setOnAction(e -> {
-
             try {
                 if (!alueennimitf.getText().isEmpty()) {
                     komennot.updateQuery("delete from alue where nimi = '" +
                             alueMuokkauscb.getValue() + "'");
+                    primaryStage.setScene(muokkaausvalikko);
+                    alueennimitf.clear();
+                    alueMuokkauscb.setValue(null);
+                    alueMuokkauscb.setVisible(false);
+                    lisaaAluebt.setVisible(true);
+                    muokkaabt.setVisible(false);
+                    poistabt.setVisible(false);
+                    aluemuokkausohje.setVisible(false);
+                }else{
+                    valitseMuokattavaAluelb.setVisible(false);
+                    valitsePoistettavaAluelb.setVisible(true);
                 }
 
             } catch (SQLException ex) {
@@ -1221,14 +1347,7 @@ public class Paaohjelma extends Application {
                 throw new RuntimeException(ex);
             }
 
-            primaryStage.setScene(muokkaausvalikko);
-            alueennimitf.clear();
-            alueMuokkauscb.setValue(null);
-            alueMuokkauscb.setVisible(false);
-            lisaaAluebt.setVisible(true);
-            muokkaabt.setVisible(false);
-            poistabt.setVisible(false);
-            aluemuokkausohje.setVisible(false);
+
         });
 
         asiakasPoistabt.setOnAction(e -> {
@@ -1237,6 +1356,24 @@ public class Paaohjelma extends Application {
                 if (!asiakaanNimitf.getText().isEmpty()) {
                     komennot.updateQuery("delete from asiakas where asiakas_id = '" +
                             asiakkaanMuokkauscb.getValue() + "'");
+
+                    primaryStage.setScene(muokkaausvalikko);
+                    asiakaanNimitf.clear();
+                    asiakaanSukunimitf.clear();
+                    asiakaanPostinumerotf.clear();
+                    asiakaanPuhelinnrotf.clear();
+                    asiakaanOsoitetf.clear();
+                    asiakkaanPostitoimipaikkatf.clear();
+                    asiakaanSahkopostitf.clear();
+                    asiakkaanMuokkauscb.setValue(null);
+                    asiakkaanMuokkauscb.setVisible(false);
+                    lisaaAsiakasbt.setVisible(true);
+                    asiakasMuokkaabt.setVisible(false);
+                    asiakasPoistabt.setVisible(false);
+                    asiakkaanmuokkausohje.setVisible(false);
+                }else{
+                    valitseMuokattavaAsiakaslb.setVisible(false);
+                    valitsePoistettavaAsiakaslb.setVisible(true);
                 }
 
             } catch (SQLException ex) {
@@ -1244,20 +1381,6 @@ public class Paaohjelma extends Application {
                 throw new RuntimeException(ex);
             }
 
-            primaryStage.setScene(muokkaausvalikko);
-            asiakaanNimitf.clear();
-            asiakaanSukunimitf.clear();
-            asiakaanPostinumerotf.clear();
-            asiakaanPuhelinnrotf.clear();
-            asiakaanOsoitetf.clear();
-            asiakkaanPostitoimipaikkatf.clear();
-            asiakaanSahkopostitf.clear();
-            asiakkaanMuokkauscb.setValue(null);
-            asiakkaanMuokkauscb.setVisible(false);
-            lisaaAsiakasbt.setVisible(true);
-            asiakasMuokkaabt.setVisible(false);
-            asiakasPoistabt.setVisible(false);
-            asiakkaanmuokkausohje.setVisible(false);
         });
 
         palveluPoistabt.setOnAction(e -> {
@@ -1266,24 +1389,29 @@ public class Paaohjelma extends Application {
                 if (!palvelunnimitf.getText().isEmpty()) {
                     komennot.updateQuery("delete from palvelu where nimi = '" +
                             muokkaaPalveluitacb.getValue() + "'");
+
+                    primaryStage.setScene(muokkaausvalikko);
+                    palvelunnimitf.clear();
+                    palvelunkuvaustf.clear();
+                    palvelunhintatf.clear();
+                    palvelunAlvtf.clear();
+                    palvelunIDtf.clear();
+                    palvelunAlueencb.setValue(null);
+                    palvelunAlueencb.setVisible(false);
+                    lisaaPalvelubt.setVisible(true);
+                    palveluMuokkaabt.setVisible(false);
+                    palveluPoistabt.setVisible(false);
+                    palvelunmuokkausohje.setVisible(false);
+                }else{
+                    valitseMuokattavaPalvelulb.setVisible(false);
+                    valitsePoistettavaPalvelulb.setVisible(true);
                 }
 
             } catch (SQLException ex) {
-                showAlert(Alert.AlertType.ERROR, "Virhe", "palvelua ei voitu poistaa!");
+                showAlert(Alert.AlertType.ERROR, "Virhe", "Palvelua ei voitu poistaa!");
                 throw new RuntimeException(ex);
             }
 
-            primaryStage.setScene(muokkaausvalikko);
-            palvelunnimitf.clear();
-            palvelunkuvaustf.clear();
-            palvelunhintatf.clear();
-            palvelunAlvtf.clear();
-            palvelunAlueencb.setValue(null);
-            palvelunAlueencb.setVisible(false);
-            lisaaPalvelubt.setVisible(true);
-            palveluMuokkaabt.setVisible(false);
-            palveluPoistabt.setVisible(false);
-            palvelunmuokkausohje.setVisible(false);
         });
 
         mokkiPoistabt.setOnAction(e -> {
@@ -1292,27 +1420,31 @@ public class Paaohjelma extends Application {
                 if (!mokinNimitf.getText().isEmpty()) {
                     komennot.updateQuery("delete from mokki where mokkinimi = '" +
                             mokkienMuokkauscb.getValue() + "'");
+
+                    primaryStage.setScene(muokkaausvalikko);
+                    mokinNimitf.clear();
+                    mokinOsoitetf.clear();
+                    mokinHintatf.clear();
+                    mokinKuvaustf.clear();
+                    mokinHenkilomaaratf.clear();
+                    mokinPostinrotf.clear();
+                    mokinVaruselutf.clear();
+                    mokkienMuokkauscb.setValue(null);
+                    mokkienMuokkauscb.setVisible(false);
+                    lisaaMokkibt.setVisible(true);
+                    mokkiMuokkaabt.setVisible(false);
+                    mokkiPoistabt.setVisible(false);
+                    mokkienmuokkausohje.setVisible(false);
+                }else{
+                    valitseMuokattavaMokkilb.setVisible(false);
+                    valitsePoistetavaMokkilb.setVisible(true);
                 }
 
             } catch (SQLException ex) {
-                showAlert(Alert.AlertType.ERROR, "Virhe", "mökkiä ei voitu poistaa!");
+                showAlert(Alert.AlertType.ERROR, "Virhe", "Mökkiä ei voitu poistaa!");
                 throw new RuntimeException(ex);
             }
 
-            primaryStage.setScene(muokkaausvalikko);
-            mokinNimitf.clear();
-            mokinOsoitetf.clear();
-            mokinHintatf.clear();
-            mokinKuvaustf.clear();
-            mokinHenkilomaaratf.clear();
-            mokinPostinrotf.clear();
-            mokinVaruselutf.clear();
-            mokkienMuokkauscb.setValue(null);
-            mokkienMuokkauscb.setVisible(false);
-            lisaaMokkibt.setVisible(true);
-            mokkiMuokkaabt.setVisible(false);
-            mokkiPoistabt.setVisible(false);
-            mokkienmuokkausohje.setVisible(false);
         });
 
         ListView<String> laskuListView = komennot.haeLaskut();
