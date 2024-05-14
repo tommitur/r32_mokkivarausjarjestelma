@@ -7,6 +7,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.ListView;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -581,13 +582,17 @@ public class SqlKomennot {
         return -1;
     }
 
-    public static int fetchAsiakkaanVarausID(int asiakkaanID) {
-        String sql = "SELECT varaus_id FROM varaus WHERE asiakas_id = ?";
+    public static int fetchAsiakkaanVarausID(int asiakkaanID, LocalDate varaus, LocalDate vahvistus, LocalDate alkupvm, LocalDate loppupvm) {
+        String sql = "SELECT varaus_id FROM varaus WHERE asiakas_id = ? AND varattu_pvm = ? AND vahvistus_pvm = ? AND varattu_alkupvm = ? AND varattu_loppupvm = ?";
 
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, asiakkaanID);
+            statement.setDate(2, Date.valueOf(varaus));
+            statement.setDate(3, Date.valueOf(vahvistus));
+            statement.setDate(4, Date.valueOf(alkupvm));
+            statement.setDate(5, Date.valueOf(loppupvm));
             ResultSet rs = statement.executeQuery();
 
             if (rs.next()) {

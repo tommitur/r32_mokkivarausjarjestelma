@@ -245,7 +245,7 @@ public class Paaohjelma extends Application {
         Label palvelulb = new Label("Valitse halutessasi alueen palveluita:");
         Label palveluhintalb = new Label("Palveluiden hinta: ");
 
-        StringConverter<LocalDate> converter = new StringConverter<LocalDate>() {
+        StringConverter<LocalDate> converter = new StringConverter<>() {
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
             @Override
@@ -308,10 +308,11 @@ public class Paaohjelma extends Application {
                 try {
                     komennot.updateQuery("insert into varaus (asiakas_id, mokki_id, varattu_pvm, vahvistus_pvm, varattu_alkupvm, varattu_loppupvm) values ('" +
                             asiakkaanID + "','" + mokki_id + "','" + varattu_pvm + "','"+ vahvistus_pvm + "','" + alkupvm + "','" + loppupvm + "')");
+                    int varausID = SqlKomennot.fetchAsiakkaanVarausID(asiakkaanID, varattu_pvm, vahvistus_pvm, alkupvm, loppupvm);
                     for(int i = 0; i < palveluLV.getSelectionModel().getSelectedItems().size(); i++){
-                        System.out.println(palveluLV.getSelectionModel().getSelectedItems().get(i));
+                        int palveluID = SqlKomennot.fetchPalveluId((String) palveluLV.getSelectionModel().getSelectedItems().get(i));
+                        komennot.updateQuery("insert into varauksen_palvelut (varaus_id, palvelu_id, lkm) values ('" + varausID + "','" + palveluID + "','1')");
                     }
-                    System.out.println(SqlKomennot.fetchAsiakkaanVarausID(asiakkaanID));
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -324,6 +325,7 @@ public class Paaohjelma extends Application {
                 mokinhintalb.setText("Varauksen hinta: ");
                 palveluhintalb.setText("Palveluiden hinta: ");
                 varausvalikkoonPaasty = false;
+                primaryStage.setScene(paavalikko);
             }
         });
 
@@ -379,6 +381,15 @@ public class Paaohjelma extends Application {
 
         varauksestaPaavalikkoonbt.setOnAction(e -> {
             primaryStage.setScene(paavalikko);
+            varausvalikkoonPaasty = false;
+            sahkoposticb.setValue(null);
+            mokki_idtf.clear();
+            varausPvmDP.setValue(null);
+            vahvistusPvmDP.setValue(null);
+            varauksenalkuPvmDP.setValue(null);
+            varauksenloppuPvmDP.setValue(null);
+            mokinhintalb.setText("Varauksen hinta: ");
+            palveluhintalb.setText("Palveluiden hinta: ");
         });
 
         varauksenloppuPvmDP.setOnAction(e -> {
