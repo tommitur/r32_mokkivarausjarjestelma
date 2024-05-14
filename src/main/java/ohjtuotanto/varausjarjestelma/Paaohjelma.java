@@ -4,8 +4,6 @@ import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -325,6 +323,7 @@ public class Paaohjelma extends Application {
                 varauksenloppuPvmDP.setValue(null);
                 mokinhintalb.setText("Varauksen hinta: ");
                 palveluhintalb.setText("Palveluiden hinta: ");
+                varausvalikkoonPaasty = false;
             }
         });
 
@@ -765,6 +764,14 @@ public class Paaohjelma extends Application {
         kaikkiMuokattavat.setAlignment(Pos.CENTER);
 
         uusiAsiakasbt.setOnAction(e -> {
+            asiakaanNimitf.clear();
+            asiakaanSukunimitf.clear();
+            asiakaanOsoitetf.clear();
+            asiakaanPostinumerotf.clear();
+            asiakkaanPostitoimipaikkatf.clear();
+            asiakaanSahkopostitf.clear();
+            asiakaanPuhelinnrotf.clear();
+            asiakkaanMuokkauscb.setValue(null);
             primaryStage.setScene(asiakaanLisausValikko);
         });
 
@@ -905,7 +912,11 @@ public class Paaohjelma extends Application {
             }
         });
         takaisinAsiakas.setOnAction(e -> {
-            primaryStage.setScene(muokkaausvalikko);
+            if (varausvalikkoonPaasty){
+                primaryStage.setScene(varausvalikko);
+            }
+            else{
+                primaryStage.setScene(muokkaausvalikko);}
             asiakaanNimitf.clear();
             asiakaanSukunimitf.clear();
             asiakaanOsoitetf.clear();
