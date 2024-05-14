@@ -4,6 +4,8 @@ import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -289,6 +291,7 @@ public class Paaohjelma extends Application {
         Button uusiAsiakasbt = new Button("Uusi asiakas?");
         Button mokinVarausbt = new Button("Varaa mökki");
         Button takaisinpaavalikkoonbt = new Button("Takaisin päävalikkoon");
+        Button varauksestaPaavalikkoonbt = new Button("Takaisin päävalikkoon");
 
         takaisinpaavalikkoonbt.setOnAction(e->{
             primaryStage.setScene(paavalikko);
@@ -307,6 +310,10 @@ public class Paaohjelma extends Application {
                 try {
                     komennot.updateQuery("insert into varaus (asiakas_id, mokki_id, varattu_pvm, vahvistus_pvm, varattu_alkupvm, varattu_loppupvm) values ('" +
                             asiakkaanID + "','" + mokki_id + "','" + varattu_pvm + "','"+ vahvistus_pvm + "','" + alkupvm + "','" + loppupvm + "')");
+                    for(int i = 0; i < palveluLV.getSelectionModel().getSelectedItems().size(); i++){
+                        System.out.println(palveluLV.getSelectionModel().getSelectedItems().get(i));
+                    }
+                    System.out.println(SqlKomennot.fetchAsiakkaanVarausID(asiakkaanID));
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -316,6 +323,8 @@ public class Paaohjelma extends Application {
                 vahvistusPvmDP.setValue(null);
                 varauksenalkuPvmDP.setValue(null);
                 varauksenloppuPvmDP.setValue(null);
+                mokinhintalb.setText("Varauksen hinta: ");
+                palveluhintalb.setText("Palveluiden hinta: ");
             }
         });
 
@@ -343,7 +352,7 @@ public class Paaohjelma extends Application {
         varaustiedothbox.getChildren().add(varaustiedotGP);
         varaustiedothbox.setAlignment(Pos.CENTER);
         varaustiedotBP.setCenter(varaustiedothbox);
-        varaustiedotBP.setTop(takaisinpaavalikkoonbt);
+        varaustiedotBP.setTop(varauksestaPaavalikkoonbt);
 
         Scene varausvalikko = new Scene(varaustiedotBP, 650, 600);
 
@@ -369,6 +378,10 @@ public class Paaohjelma extends Application {
             }
         });
 
+        varauksestaPaavalikkoonbt.setOnAction(e -> {
+            primaryStage.setScene(paavalikko);
+        });
+
         varauksenloppuPvmDP.setOnAction(e -> {
             if (varauksenalkuPvmDP.getValue() != null) {
 
@@ -388,6 +401,7 @@ public class Paaohjelma extends Application {
         });
 
         palveluLV.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
         palveluLV.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             double yhteissumma = 0.0;
             ObservableList<String> valitutPalvelut = palveluLV.getSelectionModel().getSelectedItems();
