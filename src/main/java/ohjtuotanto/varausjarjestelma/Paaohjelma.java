@@ -418,6 +418,7 @@ public class Paaohjelma extends Application {
             if (sahkoposticb.getValue() == null || varattu_pvm == null || vahvistus_pvm == null || alkupvm == null || loppupvm == null || palvelutcb == null) {
                 System.out.println("Tietoja puuttuu");
             } else {
+                int laskuNumero = 0;
                 try {
                     komennot.updateQuery("insert into varaus (asiakas_id, mokki_id, varattu_pvm, vahvistus_pvm, varattu_alkupvm, varattu_loppupvm) values ('" +
                             asiakkaanID + "','" + mokki_id + "','" + varattu_pvm + "','" + vahvistus_pvm + "','" + alkupvm + "','" + loppupvm + "')");
@@ -427,10 +428,20 @@ public class Paaohjelma extends Application {
                         int lkm = palvelutcb.getValue();
                         komennot.updateQuery("insert into varauksen_palvelut (varaus_id, palvelu_id, lkm) values ('" + varausID + "','" + palveluID + "','" + lkm + "')");
                     }
+                    int k = 0;
+                    while(k < SqlKomennot.fetchLaskujenNumerot().size()){
+                        laskuNumero = new Random().nextInt(90000) + 10000;
+                        if(!SqlKomennot.fetchLaskujenNumerot().contains(laskuNumero)){
+                            komennot.updateQuery("insert into lasku (lasku_id, varaus_id, summa, alv) values ('" + laskuNumero + "','" + varausID +
+                                    "','" + (yhteissumma + yopymisenHinta) +  "','24')");
+                            break;
+                        }
+                    }
+
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
                 }
-                // laskunnNumeroValueLB.setText(); randomihomma jollla tehdään numero. Tarkistus sql???
+                laskunnNumeroValueLB.setText(String.valueOf(laskuNumero)); //randomihomma jollla tehdään numero. Tarkistus sql???
                 paivamaaraValueLB.setText(String.valueOf(varausPvmDP.getValue()));
                 erapaivavalueLB.setText(String.valueOf(varausPvmDP.getValue().plusDays(20)));
                 vastaanottajaPostitiedotValueLB.setText(SqlKomennot.fetchTiedotLaskuun(asiakkaanID));
