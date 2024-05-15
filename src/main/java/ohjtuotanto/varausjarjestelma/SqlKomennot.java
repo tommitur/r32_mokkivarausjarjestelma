@@ -603,4 +603,28 @@ public class SqlKomennot {
         }
         return -1;
     }
+
+    public static String fetchTiedotLaskuun(int varausID) {
+        String sql = "SELECT CONCAT(A.sukunimi, \" \", A.etunimi), A.lahiosoite, CONCAT(P.postinro, \" \", P.toimipaikka) " +
+                "                FROM asiakas A JOIN varaus V on A.asiakas_id = V.asiakas_id " +
+                "                JOIN posti P on P.postinro = A.postinro " +
+                "                where varaus_id = ?";
+
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setInt(1, varausID);
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                String nimi = rs.getString("CONCAT(A.sukunimi, \" \", A.etunimi)");
+                String osoite = rs.getString("lahiosoite");
+                String posti = rs.getString("CONCAT(P.postinro, \" \", P.toimipaikka)");
+                return nimi + "\n" + osoite + "\n" + posti;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
 }
