@@ -11,7 +11,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
@@ -25,7 +27,6 @@ import java.util.Random;
 
 @SuppressWarnings("unchecked")
 public class Paaohjelma extends Application {
-
 
 
     public static void main(String[] args) {
@@ -49,6 +50,8 @@ public class Paaohjelma extends Application {
     public boolean varausvalikkoonPaasty = false;
     public ObservableList<String> sahkopostilista = FXCollections.observableArrayList();
     public ComboBox sahkoposticb;
+    public double yhteissumma = 0.0;
+    double yopymisenHinta = 0;
 
 
     @Override
@@ -124,7 +127,7 @@ public class Paaohjelma extends Application {
 
         sliderhbox.getChildren().addAll(hinta0, hintahbox, hinta1000);
 
-        kaikkiHbox.getChildren().addAll(aluehbox, sliderhbox, vieraatcb, haebt, tyhjatilaR, muokkaajapoistabt,laskujenhallintabt);
+        kaikkiHbox.getChildren().addAll(aluehbox, sliderhbox, vieraatcb, haebt, tyhjatilaR, muokkaajapoistabt, laskujenhallintabt);
 
         HBox.setHgrow(tyhjatilaR, Priority.ALWAYS);
         HBox varaabtHbox = new HBox(5);
@@ -187,25 +190,25 @@ public class Paaohjelma extends Application {
         haebt.setOnAction(e -> {
             haettavatMokit.getColumns().clear();
             haettujenMokkienTiedot = FXCollections.observableArrayList();
-            if(haettujenMokkienTiedot != null){
+            if (haettujenMokkienTiedot != null) {
                 haettujenMokkienTiedot.clear();
             }
-            if(alueetcb.getValue() == null){
+            if (alueetcb.getValue() == null) {
                 //virhe, valitse alue
-            }else{
+            } else {
                 double mokinhinta = hinnansaato.getValue();
-                if(mokinhinta == 0){
+                if (mokinhinta == 0) {
                     mokinhinta = 1000;
                 }
 
-                if(vieraatcb.getValue() == null){
+                if (vieraatcb.getValue() == null) {
                     vieraat = 0;
-                }else{
+                } else {
                     vieraat = vieraatcb.getValue();
                 }
 
                 int alueenID = SqlKomennot.fetchAlueID(alueetcb.getValue().toString());
-                for(int i = 0; i < SqlKomennot.fetchMokkiAll(alueenID, mokinhinta, vieraat).size(); i++){
+                for (int i = 0; i < SqlKomennot.fetchMokkiAll(alueenID, mokinhinta, vieraat).size(); i++) {
                     int haetunMokinId = SqlKomennot.fetchMokkiAll(alueenID, mokinhinta, vieraat).get(i).getMokkiId();
                     int alueID = SqlKomennot.fetchMokkiAll(alueenID, mokinhinta, vieraat).get(i).getAlueId();
                     int postiNro = SqlKomennot.fetchMokkiAll(alueenID, mokinhinta, vieraat).get(i).getPostiNro();
@@ -269,6 +272,108 @@ public class Paaohjelma extends Application {
             }
         };
 
+        Label yritykseNimiLB = new Label("Village Newbies");
+        yritykseNimiLB.setFont(Font.font("Arial", FontWeight.BOLD, 16));
+
+        Label yritykseOsoiteLB = new Label("Oulu \n90100");
+        yritykseOsoiteLB.setFont(Font.font("Arial", 15));
+
+        Label laskunNumeroLB = new Label("Laskun numero: ");
+        laskunNumeroLB.setFont(Font.font("Arial", FontWeight.BOLD, 13));
+
+        Label laskunnNumeroValueLB = new Label("12345");
+
+        Label asiakkaanNumeroLB = new Label("Asiakkaannumero: ");
+        asiakkaanNumeroLB.setFont(Font.font("Arial", FontWeight.BOLD, 13));
+
+        Label asiakaanumeroValueLB = new Label();
+
+        Label paivamaaraLB = new Label("Päivämäärä: ");
+        Label paivamaaraValueLB = new Label();
+
+        Label erapaivaLB = new Label("Eräpäivä: ");
+        Label erapaivavalueLB = new Label();
+
+        Label vastaanottajaPostitiedotValueLB = new Label();
+        vastaanottajaPostitiedotValueLB.setFont(Font.font("Arial", 16));
+
+
+        VBox laskunPerustekstit = new VBox(5);
+        laskunPerustekstit.getChildren().addAll(
+                laskunNumeroLB, asiakkaanNumeroLB, paivamaaraLB, erapaivaLB, erapaivavalueLB);
+
+        VBox laskunArvojenVbox = new VBox(5);
+        laskunArvojenVbox.getChildren().addAll(laskunnNumeroValueLB, asiakaanumeroValueLB, paivamaaraValueLB, erapaivavalueLB);
+
+        HBox laskuninfotplusarvot = new HBox(5);
+        laskuninfotplusarvot.getChildren().addAll(laskunPerustekstit, laskunArvojenVbox);
+
+        laskuninfotplusarvot.setPadding(new Insets(20));
+        laskuninfotplusarvot.setStyle("-fx-border-color: Black; -fx-border-width: 2px;");
+
+        Label verotonhintaLB = new Label("Verotonhinta €              ");
+        verotonhintaLB.setFont(Font.font("Arial", FontWeight.BOLD, 13));
+        Label verotonhintaValueLB = new Label();
+        verotonhintaValueLB.setFont(Font.font("Arial", 13));
+
+        Label alvhintaLB = new Label("Alv %              ");
+        alvhintaLB.setFont(Font.font("Arial", FontWeight.BOLD, 13));
+        Label alvValueLB = new Label("24");
+        alvValueLB.setFont(Font.font("Arial", 13));
+
+        Label laskuyhteensaLB = new Label("Lasku yhteensä €              ");
+        laskuyhteensaLB.setFont(Font.font("Arial", FontWeight.BOLD, 13));
+        Label laskuvalueLB = new Label();
+        laskuvalueLB.setFont(Font.font("Arial", 13));
+
+        VBox hinta1 = new VBox(5);
+        hinta1.getChildren().addAll(verotonhintaLB, verotonhintaValueLB);
+        VBox hinta2 = new VBox(5);
+        hinta2.getChildren().addAll(alvhintaLB, alvValueLB);
+        VBox hinta3 = new VBox(5);
+        hinta3.getChildren().addAll(laskuyhteensaLB, laskuvalueLB);
+
+        HBox hintaTiedotHbox = new HBox(5);
+        hintaTiedotHbox.getChildren().addAll(hinta1, hinta2, hinta3);
+
+        hintaTiedotHbox.setPadding(new Insets(10));
+        hintaTiedotHbox.setStyle("-fx-border-color: Black; -fx-border-width: 2px;");
+        hintaTiedotHbox.setAlignment(Pos.CENTER_RIGHT);
+
+        Rectangle reuna = new Rectangle();
+        reuna.setFill(Color.TRANSPARENT);
+        reuna.setStroke(Color.BLACK);
+        reuna.setStrokeWidth(2);
+        reuna.setHeight(130);
+        reuna.setWidth(180);
+        reuna.setX(10);
+        reuna.setY(10);
+
+        VBox vastaanottajanInfot = new VBox(5);
+        vastaanottajanInfot.getChildren().addAll(vastaanottajaPostitiedotValueLB);
+
+        VBox yrityksenTiedotVbox = new VBox(5);
+        yrityksenTiedotVbox.setPadding(new Insets(10));
+        yrityksenTiedotVbox.getChildren().addAll(yritykseNimiLB, yritykseOsoiteLB);
+
+        VBox yritysplusvastaanottajaTiedotVbox = new VBox(50);
+        yritysplusvastaanottajaTiedotVbox.getChildren().addAll(yrityksenTiedotVbox, vastaanottajanInfot);
+
+
+        BorderPane borderPane = new BorderPane();
+        borderPane.getChildren().add(reuna);
+        borderPane.setLeft(yritysplusvastaanottajaTiedotVbox);
+        borderPane.setRight(laskuninfotplusarvot);
+        borderPane.setBottom(hintaTiedotHbox);
+        BorderPane.setMargin(hintaTiedotHbox, new Insets(0, 10, 10, 10));
+
+        BorderPane.setMargin(yritysplusvastaanottajaTiedotVbox, new Insets(25));
+        BorderPane.setMargin(laskuninfotplusarvot, new Insets(10, 10, 10, 0));
+
+        // Creating the scene
+        Scene lasku = new Scene(borderPane, 700, 500);
+
+
         DatePicker varausPvmDP = new DatePicker();
         varausPvmDP.setConverter(converter);
         varausPvmDP.setEditable(false);
@@ -299,7 +404,7 @@ public class Paaohjelma extends Application {
         Button takaisinpaavalikkoonbt = new Button("Takaisin päävalikkoon");
         Button varauksestaPaavalikkoonbt = new Button("Takaisin päävalikkoon");
 
-        takaisinpaavalikkoonbt.setOnAction(e->{
+        takaisinpaavalikkoonbt.setOnAction(e -> {
             primaryStage.setScene(paavalikko);
         });
 
@@ -310,14 +415,14 @@ public class Paaohjelma extends Application {
             LocalDate vahvistus_pvm = vahvistusPvmDP.getValue();
             LocalDate alkupvm = varauksenalkuPvmDP.getValue();
             LocalDate loppupvm = varauksenloppuPvmDP.getValue();
-            if(sahkoposticb.getValue() == null || varattu_pvm == null || vahvistus_pvm == null|| alkupvm == null || loppupvm == null || palvelutcb == null){
+            if (sahkoposticb.getValue() == null || varattu_pvm == null || vahvistus_pvm == null || alkupvm == null || loppupvm == null || palvelutcb == null) {
                 System.out.println("Tietoja puuttuu");
-            }else{
+            } else {
                 try {
                     komennot.updateQuery("insert into varaus (asiakas_id, mokki_id, varattu_pvm, vahvistus_pvm, varattu_alkupvm, varattu_loppupvm) values ('" +
-                            asiakkaanID + "','" + mokki_id + "','" + varattu_pvm + "','"+ vahvistus_pvm + "','" + alkupvm + "','" + loppupvm + "')");
+                            asiakkaanID + "','" + mokki_id + "','" + varattu_pvm + "','" + vahvistus_pvm + "','" + alkupvm + "','" + loppupvm + "')");
                     int varausID = SqlKomennot.fetchAsiakkaanVarausID(asiakkaanID, varattu_pvm, vahvistus_pvm, alkupvm, loppupvm);
-                    for(int i = 0; i < palveluLV.getSelectionModel().getSelectedItems().size(); i++){
+                    for (int i = 0; i < palveluLV.getSelectionModel().getSelectedItems().size(); i++) {
                         int palveluID = SqlKomennot.fetchPalveluId((String) palveluLV.getSelectionModel().getSelectedItems().get(i));
                         int lkm = palvelutcb.getValue();
                         komennot.updateQuery("insert into varauksen_palvelut (varaus_id, palvelu_id, lkm) values ('" + varausID + "','" + palveluID + "','" + lkm + "')");
@@ -325,6 +430,15 @@ public class Paaohjelma extends Application {
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
                 }
+                // laskunnNumeroValueLB.setText(); randomihomma jollla tehdään numero. Tarkistus sql???
+                paivamaaraValueLB.setText(String.valueOf(varausPvmDP.getValue()));
+                erapaivavalueLB.setText(String.valueOf(varausPvmDP.getValue().plusDays(20)));
+                vastaanottajaPostitiedotValueLB.setText(SqlKomennot.fetchTiedotLaskuun(asiakkaanID));
+                asiakaanumeroValueLB.setText(String.valueOf(asiakkaanID));
+                laskuvalueLB.setText(String.valueOf(yhteissumma + yopymisenHinta));
+                verotonhintaValueLB.setText(String.valueOf((double) Math.round(yhteissumma / 1.24 + yopymisenHinta / 1.24)));
+
+
                 sahkoposticb.setValue(null);
                 mokki_idtf.clear();
                 varausPvmDP.setValue(null);
@@ -334,32 +448,32 @@ public class Paaohjelma extends Application {
                 mokinhintalb.setText("Varauksen hinta: ");
                 palveluhintalb.setText("Palveluiden hinta: ");
                 varausvalikkoonPaasty = false;
-                primaryStage.setScene(paavalikko);
+                primaryStage.setScene(lasku);
                 palvelutcb.setValue(null);
             }
         });
 
-        varaustiedotGP.add(sahkopostilb,0,1);
-        varaustiedotGP.add(mokkiIdlb,0,2);
-        varaustiedotGP.add(varausPvmlb,0,3);
-        varaustiedotGP.add(vahvistusPvmlb,0,4);
-        varaustiedotGP.add(varauksenalkuPvmlb,0,5);
-        varaustiedotGP.add(varauksenloppuPvmlb,0,6);
-        varaustiedotGP.add(palvelulb,0,7);
+        varaustiedotGP.add(sahkopostilb, 0, 1);
+        varaustiedotGP.add(mokkiIdlb, 0, 2);
+        varaustiedotGP.add(varausPvmlb, 0, 3);
+        varaustiedotGP.add(vahvistusPvmlb, 0, 4);
+        varaustiedotGP.add(varauksenalkuPvmlb, 0, 5);
+        varaustiedotGP.add(varauksenloppuPvmlb, 0, 6);
+        varaustiedotGP.add(palvelulb, 0, 7);
 
-        varaustiedotGP.add(sahkoposticb,1,1);
-        varaustiedotGP.add(mokki_idtf,1,2);
-        varaustiedotGP.add(varausPvmDP,1,3);
-        varaustiedotGP.add(vahvistusPvmDP,1,4);
-        varaustiedotGP.add(varauksenalkuPvmDP,1,5);
-        varaustiedotGP.add(varauksenloppuPvmDP,1,6);
-        varaustiedotGP.add(palveluLV,1,7);
+        varaustiedotGP.add(sahkoposticb, 1, 1);
+        varaustiedotGP.add(mokki_idtf, 1, 2);
+        varaustiedotGP.add(varausPvmDP, 1, 3);
+        varaustiedotGP.add(vahvistusPvmDP, 1, 4);
+        varaustiedotGP.add(varauksenalkuPvmDP, 1, 5);
+        varaustiedotGP.add(varauksenloppuPvmDP, 1, 6);
+        varaustiedotGP.add(palveluLV, 1, 7);
         varaustiedotGP.add(palvelutcb, 1, 8);
 
-        varaustiedotGP.add(uusiAsiakasbt,2,1);
-        varaustiedotGP.add(mokinhintalb,2,6);
-        varaustiedotGP.add(palveluhintalb,2,7);
-        varaustiedotGP.add(mokinVarausbt,2,8);
+        varaustiedotGP.add(uusiAsiakasbt, 2, 1);
+        varaustiedotGP.add(mokinhintalb, 2, 6);
+        varaustiedotGP.add(palveluhintalb, 2, 7);
+        varaustiedotGP.add(mokinVarausbt, 2, 8);
 
         varaustiedothbox.getChildren().add(varaustiedotGP);
         varaustiedothbox.setAlignment(Pos.CENTER);
@@ -414,7 +528,7 @@ public class Paaohjelma extends Application {
 
                 if (tuloPVM != null && lahtoPVM != null) {
                     long erotus = ChronoUnit.DAYS.between(tuloPVM, lahtoPVM);
-                    double yopymisenHinta = erotus * valitunMokinHinta.getHinta();
+                    yopymisenHinta = erotus * valitunMokinHinta.getHinta();
                     mokinhintalb.setText("Varauksen hinta:\n" + yopymisenHinta + "€");
                 } else {
                     mokinhintalb.setText("Valitse tulo-\nja lähtöpvm");
@@ -425,7 +539,7 @@ public class Paaohjelma extends Application {
         palveluLV.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
         palveluLV.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            double yhteissumma = 0.0;
+            yhteissumma = 0.0;
             ObservableList<String> valitutPalvelut = palveluLV.getSelectionModel().getSelectedItems();
 
             for (String palveluNimi : valitutPalvelut) {
@@ -798,15 +912,14 @@ public class Paaohjelma extends Application {
             primaryStage.setScene(asiakaanLisausValikko);
         });
 
-        takaisinPaavalikkoonbt.setOnAction(e->{
+        takaisinPaavalikkoonbt.setOnAction(e -> {
             primaryStage.setScene(paavalikko);
         });
 
         Scene muokkaausvalikko = new Scene(pane, 800, 600);
 
 
-
-        muokkaajapoistabt.setOnAction(e->{
+        muokkaajapoistabt.setOnAction(e -> {
             primaryStage.setScene(muokkaausvalikko);
         });
 
@@ -935,11 +1048,11 @@ public class Paaohjelma extends Application {
             }
         });
         takaisinAsiakas.setOnAction(e -> {
-            if (varausvalikkoonPaasty){
+            if (varausvalikkoonPaasty) {
                 primaryStage.setScene(varausvalikko);
+            } else {
+                primaryStage.setScene(muokkaausvalikko);
             }
-            else{
-                primaryStage.setScene(muokkaausvalikko);}
             asiakaanNimitf.clear();
             asiakaanSukunimitf.clear();
             asiakaanOsoitetf.clear();
@@ -1003,7 +1116,7 @@ public class Paaohjelma extends Application {
                     muokkaabt.setVisible(false);
                     poistabt.setVisible(false);
                     aluemuokkausohje.setVisible(false);
-                }else{
+                } else {
                     valitsePoistettavaAluelb.setVisible(false);
                     valitseMuokattavaAluelb.setVisible(true);
                 }
@@ -1034,8 +1147,8 @@ public class Paaohjelma extends Application {
             }
         });
 
-        palveluMuokkaabt.setOnAction(e ->{
-            try{
+        palveluMuokkaabt.setOnAction(e -> {
+            try {
                 if (palvelunnimitf.getText().isEmpty() || palvelunkuvaustf.getText().isEmpty() || palvelunhintatf.getText().isEmpty() ||
                         palvelunAlvtf.getText().isEmpty() || palvelunIDtf.getText().isEmpty() || palvelunAlueencb.getValue() == null) {
                     //Tietoja puuttuu
@@ -1089,8 +1202,8 @@ public class Paaohjelma extends Application {
             }
         });
 
-        asiakasMuokkaabt.setOnAction(e ->{
-            try{
+        asiakasMuokkaabt.setOnAction(e -> {
+            try {
                 if (asiakaanNimitf.getText().isEmpty() || asiakaanSukunimitf.getText().isEmpty() || asiakaanOsoitetf.getText().isEmpty() ||
                         asiakaanPostinumerotf.getText().isEmpty() || asiakkaanPostitoimipaikkatf.getText().isEmpty() || asiakaanSahkopostitf.getText().isEmpty() || asiakaanPuhelinnrotf.getText().isEmpty()) {
                     //Tietoja puuttuu
@@ -1244,7 +1357,7 @@ public class Paaohjelma extends Application {
                     primaryStage.setScene(muokkaausvalikko);
                     alueennimitf.clear();
                     aluePuuttuuTietojalb.setVisible(false);
-                }else{
+                } else {
                     aluePuuttuuTietojalb.setVisible(true);
                 }
             } catch (SQLException ex) {
@@ -1359,11 +1472,12 @@ public class Paaohjelma extends Application {
                         asiakaanPuhelinnrotf.clear();
                         asiakasPuuttuuTietojalb.setVisible(false);
                         primaryStage.setScene(muokkaausvalikko);
-                        }
-                    }if (varausvalikkoonPaasty == true){
-                        sahkopostilista = komennot.valitseKaikkiSahkopostit();
-                        sahkoposticb.setItems(FXCollections.observableArrayList(sahkopostilista));
-                        primaryStage.setScene(varausvalikko);
+                    }
+                }
+                if (varausvalikkoonPaasty == true) {
+                    sahkopostilista = komennot.valitseKaikkiSahkopostit();
+                    sahkoposticb.setItems(FXCollections.observableArrayList(sahkopostilista));
+                    primaryStage.setScene(varausvalikko);
                 }
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
@@ -1385,7 +1499,7 @@ public class Paaohjelma extends Application {
                     muokkaabt.setVisible(false);
                     poistabt.setVisible(false);
                     aluemuokkausohje.setVisible(false);
-                }else{
+                } else {
                     valitseMuokattavaAluelb.setVisible(false);
                     valitsePoistettavaAluelb.setVisible(true);
                 }
@@ -1419,7 +1533,7 @@ public class Paaohjelma extends Application {
                     asiakasMuokkaabt.setVisible(false);
                     asiakasPoistabt.setVisible(false);
                     asiakkaanmuokkausohje.setVisible(false);
-                }else{
+                } else {
                     valitseMuokattavaAsiakaslb.setVisible(false);
                     valitsePoistettavaAsiakaslb.setVisible(true);
                 }
@@ -1450,7 +1564,7 @@ public class Paaohjelma extends Application {
                     palveluMuokkaabt.setVisible(false);
                     palveluPoistabt.setVisible(false);
                     palvelunmuokkausohje.setVisible(false);
-                }else{
+                } else {
                     valitseMuokattavaPalvelulb.setVisible(false);
                     valitsePoistettavaPalvelulb.setVisible(true);
                 }
@@ -1483,7 +1597,7 @@ public class Paaohjelma extends Application {
                     mokkiMuokkaabt.setVisible(false);
                     mokkiPoistabt.setVisible(false);
                     mokkienmuokkausohje.setVisible(false);
-                }else{
+                } else {
                     valitseMuokattavaMokkilb.setVisible(false);
                     valitsePoistetavaMokkilb.setVisible(true);
                 }
@@ -1543,14 +1657,14 @@ public class Paaohjelma extends Application {
             }
         });
 
-        VBox layout = new VBox(takaisinpaavalikkoonbt,laskuListView, showDetailsButton, tyhjatilaR);
+        VBox layout = new VBox(takaisinpaavalikkoonbt, laskuListView, showDetailsButton, tyhjatilaR);
         layout.setAlignment(Pos.TOP_LEFT);
         BorderPane laskut = new BorderPane();
         laskut.setTop(layout);
 
-        Scene laskutus = new Scene(laskut, 500,500);
+        Scene laskutus = new Scene(laskut, 500, 500);
 
-        laskujenhallintabt.setOnAction(e->{
+        laskujenhallintabt.setOnAction(e -> {
             primaryStage.setScene(laskutus);
         });
 
