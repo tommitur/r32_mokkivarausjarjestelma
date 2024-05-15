@@ -10,6 +10,7 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 
 public class SqlKomennot {
@@ -603,17 +604,15 @@ public class SqlKomennot {
         }
         return -1;
     }
-
-    public static String fetchTiedotLaskuun(int varausID) {
+    public static String fetchTiedotLaskuun(int asiakasID) {
         String sql = "SELECT CONCAT(A.sukunimi, \" \", A.etunimi), A.lahiosoite, CONCAT(P.postinro, \" \", P.toimipaikka) " +
-                "                FROM asiakas A JOIN varaus V on A.asiakas_id = V.asiakas_id " +
-                "                JOIN posti P on P.postinro = A.postinro " +
-                "                where varaus_id = ?";
+                "                FROM asiakas A JOIN posti P on A.postinro = P.postinro " +
+                "                where asiakas_id = ?";
 
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
-            statement.setInt(1, varausID);
+            statement.setInt(1, asiakasID);
             ResultSet rs = statement.executeQuery();
 
             if (rs.next()) {
@@ -627,4 +626,24 @@ public class SqlKomennot {
         }
         return "";
     }
+
+    public static List fetchLaskujenNumerot() {
+        List lista = new ArrayList();
+        String sql = "SELECT lasku_id FROM lasku";
+
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                lista.add(rs.getInt("lasku_id"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return lista;
+    }
+
 }

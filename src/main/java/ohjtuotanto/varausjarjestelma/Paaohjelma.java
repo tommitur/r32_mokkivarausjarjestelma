@@ -20,6 +20,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Random;
 
 
 @SuppressWarnings("unchecked")
@@ -95,6 +96,7 @@ public class Paaohjelma extends Application {
             int newHinta = newValue.intValue();
             rahanArvo.setText("0-" + newHinta + "€");
         });
+
 
 
         ComboBox<Integer> vieraatcb = new ComboBox<>();
