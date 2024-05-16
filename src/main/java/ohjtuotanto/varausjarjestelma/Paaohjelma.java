@@ -7,6 +7,7 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
+import javafx.print.PrinterJob;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -15,6 +16,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
@@ -281,7 +283,7 @@ public class Paaohjelma extends Application {
         Label laskunNumeroLB = new Label("Laskun numero: ");
         laskunNumeroLB.setFont(Font.font("Arial", FontWeight.BOLD, 13));
 
-        Label laskunnNumeroValueLB = new Label("12345");
+        Label laskunnNumeroValueLB = new Label();
 
         Label asiakkaanNumeroLB = new Label("Asiakkaannumero: ");
         asiakkaanNumeroLB.setFont(Font.font("Arial", FontWeight.BOLD, 13));
@@ -359,20 +361,53 @@ public class Paaohjelma extends Application {
         VBox yritysplusvastaanottajaTiedotVbox = new VBox(50);
         yritysplusvastaanottajaTiedotVbox.getChildren().addAll(yrityksenTiedotVbox, vastaanottajanInfot);
 
+        Button tulostabt = new Button("Tulosta");
+        Button takaisinPaavalikkoon = new Button("Takaisin Paavikkoon");
+
+        takaisinPaavalikkoon.setOnAction(e->{
+            primaryStage.setScene(paavalikko);
+        });
+
+        VBox tulostajatakaisinbt = new VBox(5);
+        tulostajatakaisinbt.getChildren().addAll(tulostabt,takaisinPaavalikkoon);
+        tulostajatakaisinbt.setAlignment(Pos.CENTER);
+
 
         BorderPane borderPane = new BorderPane();
         borderPane.getChildren().add(reuna);
         borderPane.setLeft(yritysplusvastaanottajaTiedotVbox);
         borderPane.setRight(laskuninfotplusarvot);
+        borderPane.setCenter(tulostajatakaisinbt);
         borderPane.setBottom(hintaTiedotHbox);
         BorderPane.setMargin(hintaTiedotHbox, new Insets(0, 10, 10, 10));
 
         BorderPane.setMargin(yritysplusvastaanottajaTiedotVbox, new Insets(25));
         BorderPane.setMargin(laskuninfotplusarvot, new Insets(10, 10, 10, 0));
 
-        // Creating the scene
-        Scene lasku = new Scene(borderPane, 700, 500);
 
+        // Creating the scene
+        Scene lasku = new Scene(borderPane, 900, 600);
+
+        tulostabt.setOnAction(e->{
+            PrinterJob job = PrinterJob.createPrinterJob();
+            javafx.print.PageLayout pageLayout = job.getJobSettings().getPageLayout();
+            double scale = Math.min(pageLayout.getPrintableWidth() / borderPane.getBoundsInParent().getWidth(), pageLayout.getPrintableHeight() / borderPane.getBoundsInParent().getHeight());
+            borderPane.getTransforms().add(new Scale(scale, scale));
+
+            if(job!=null){
+                tulostabt.setVisible(false);
+                takaisinPaavalikkoon.setVisible(false);
+                job.showPrintDialog(primaryStage);
+                job.printPage(borderPane);
+                job.endJob();
+
+            }
+            borderPane.getTransforms().clear();
+            tulostabt.setVisible(true);
+            takaisinPaavalikkoon.setVisible(true);
+            primaryStage.setScene(paavalikko);
+
+        });
 
         DatePicker varausPvmDP = new DatePicker();
         varausPvmDP.setConverter(converter);
@@ -431,6 +466,7 @@ public class Paaohjelma extends Application {
                     int k = 0;
                     while(k < SqlKomennot.fetchLaskujenNumerot().size()){
                         laskuNumero = new Random().nextInt(90000) + 10000;
+                        System.out.println(laskuNumero);
                         if(!SqlKomennot.fetchLaskujenNumerot().contains(laskuNumero)){
                             komennot.updateQuery("insert into lasku (lasku_id, varaus_id, summa, alv) values ('" + laskuNumero + "','" + varausID +
                                     "','" + (yhteissumma + yopymisenHinta) +  "','24')");
@@ -1683,7 +1719,7 @@ public class Paaohjelma extends Application {
 
                 laskunTiedotLayout.getChildren().addAll(maksettuButton, peruutaButton);
 
-                Scene laskunTiedotScene = new Scene(laskunTiedotLayout, 400, 300);
+                Scene laskunTiedotScene = new Scene(laskunTiedotLayout, 800, 600);
 
                 Stage laskunTiedotStage = new Stage();
                 laskunTiedotStage.setTitle("Laskun tiedot");
@@ -1697,7 +1733,7 @@ public class Paaohjelma extends Application {
         BorderPane laskut = new BorderPane();
         laskut.setTop(layout);
 
-        Scene laskutus = new Scene(laskut, 500, 500);
+        Scene laskutus = new Scene(laskut, 700, 500);
 
         laskujenhallintabt.setOnAction(e -> {
             primaryStage.setScene(laskutus);
