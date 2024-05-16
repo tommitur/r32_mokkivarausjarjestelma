@@ -1077,6 +1077,7 @@ public class Paaohjelma extends Application {
         });
 
         //Takaisin napit
+
         varausTakaisinbt.setOnAction(e -> {
             primaryStage.setScene(muokkaausvalikko);
         });
