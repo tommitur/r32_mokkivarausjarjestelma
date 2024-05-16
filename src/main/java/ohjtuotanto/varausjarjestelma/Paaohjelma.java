@@ -620,6 +620,7 @@ public class Paaohjelma extends Application {
         Button muokkaaMokki = new Button("Muokkaa/poista\n     mökkejä");
         Button muokkaaPalvelu = new Button("Muokkaa/poista\n     palveluita");
         Button muokkaaAsiakas = new Button("Muokkaa/poista\n    asiakastietoja");
+        Button muokkaaVaraus = new Button("Muokkaa/poista\n    varaustietoja");
 
         lisaaAsiakas.setStyle("-fx-border-color: Green");
         lisaaMokki.setStyle("-fx-border-color: Green");
@@ -630,6 +631,7 @@ public class Paaohjelma extends Application {
         muokkaaMokki.setStyle("-fx-border-color: Blue");
         muokkaaAsiakas.setStyle("-fx-border-color: Blue");
         muokkaaPalvelu.setStyle("-fx-border-color: Blue");
+        muokkaaVaraus.setStyle("-fx-border-color: Blue");
 
         lisaaAlue.setPrefSize(170, 130);
         lisaaMokki.setPrefSize(170, 130);
@@ -639,6 +641,7 @@ public class Paaohjelma extends Application {
         muokkaaMokki.setPrefSize(170, 130);
         muokkaaPalvelu.setPrefSize(170, 130);
         muokkaaAsiakas.setPrefSize(170, 130);
+        muokkaaVaraus.setPrefSize(170, 130);
 
         GridPane kaikkiMuokattavat = new GridPane(15, 15);
 
@@ -651,6 +654,16 @@ public class Paaohjelma extends Application {
         kaikkiMuokattavat.add(muokkaaMokki, 1, 1);
         kaikkiMuokattavat.add(muokkaaPalvelu, 2, 1);
         kaikkiMuokattavat.add(muokkaaAsiakas, 3, 1);
+        kaikkiMuokattavat.add(muokkaaVaraus, 0, 2);
+
+        //Varauksen muokkaus
+
+        BorderPane varausBP = new BorderPane();
+        Button varausMuokkaabt = new Button("Muokkaa");
+        Button varausPoistabt = new Button("Poista");
+        Button varausTakaisinbt = new Button("Takaisin");
+        GridPane varausGP = new GridPane(15, 15);
+        varausBP.setTop(varausTakaisinbt);
 
         // Alueen lisäys
         Label alueennimilb = new Label("Alueen nimi");
@@ -923,6 +936,9 @@ public class Paaohjelma extends Application {
         mokkiBP.setCenter(mokintiedotGP);
         mokkiBP.setTop(mokkiHBox2);
 
+        Scene varausMuokkausValikko = new Scene(varausBP, 500, 500);
+        varausGP.setAlignment(Pos.CENTER);
+
         Scene mokinLisausValikko = new Scene(mokkiBP, 550, 600);
         mokintiedotGP.setAlignment(Pos.CENTER);
 
@@ -1056,7 +1072,15 @@ public class Paaohjelma extends Application {
             asiakkaanmuokkausohje.setVisible(true);
         });
 
+        muokkaaVaraus.setOnAction(e -> {
+            primaryStage.setScene(varausMuokkausValikko);
+        });
+
         //Takaisin napit
+        varausTakaisinbt.setOnAction(e -> {
+            primaryStage.setScene(muokkaausvalikko);
+        });
+
         takaisinMokki.setOnAction(e -> {
             primaryStage.setScene(muokkaausvalikko);
             mokinNimitf.clear();
