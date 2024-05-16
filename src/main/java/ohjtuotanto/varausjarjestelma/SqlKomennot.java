@@ -16,15 +16,15 @@ public class SqlKomennot {
     Statement statement;
     Connection connection;
 
-    private static final String URL = "jdbc:mysql://127.0.0.1:3306/vn";
+    private static final String URL = "jdbc:mysql://127.0.0.1:3307/vn";
     private static final String USER = "root";
-    private static final String PASSWORD = "Yksitoista123";
+    private static final String PASSWORD = "root";
 
     public SqlKomennot() throws SQLException {
         connection = DriverManager.getConnection(
-                "jdbc:mysql://127.0.0.1:3306/vn",
+                "jdbc:mysql://127.0.0.1:3307/vn",
                 "root",
-                "Yksitoista123"
+                "root"
 
         );
         statement = connection.createStatement();
