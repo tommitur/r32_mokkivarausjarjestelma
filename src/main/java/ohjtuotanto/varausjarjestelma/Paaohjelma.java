@@ -364,7 +364,7 @@ public class Paaohjelma extends Application {
         yritysplusvastaanottajaTiedotVbox.getChildren().addAll(yrityksenTiedotVbox, vastaanottajanInfot);
 
         Button tulostabt = new Button("Tulosta");
-        Button takaisinPaavalikkoon = new Button("Takaisin Paavikkoon");
+        Button takaisinPaavalikkoon = new Button("Takaisin päävalikkoon");
 
         takaisinPaavalikkoon.setOnAction(e -> {
             primaryStage.setScene(paavalikko);
@@ -469,13 +469,19 @@ public class Paaohjelma extends Application {
                         int lkm = palvelutcb.getValue();
                         komennot.updateQuery("insert into varauksen_palvelut (varaus_id, palvelu_id, lkm) values ('" + varausID + "','" + palveluID + "','" + lkm + "')");
                     }
-                    int k = 0;
-                    while (k < SqlKomennot.fetchLaskujenNumerot().size()) {
+                    if(SqlKomennot.fetchLaskujenNumerot().isEmpty()){
                         laskuNumero = new Random().nextInt(90000) + 10000;
-                        if (!SqlKomennot.fetchLaskujenNumerot().contains(laskuNumero)) {
-                            komennot.updateQuery("insert into lasku (lasku_id, varaus_id, summa, alv) values ('" + laskuNumero + "','" + varausID +
-                                    "','" + (yhteissumma + yopymisenHinta) + "','24')");
-                            break;
+                        komennot.updateQuery("insert into lasku (lasku_id, varaus_id, summa, alv) values ('" + laskuNumero + "','" + varausID +
+                                "','" + (yhteissumma + yopymisenHinta) + "','24')");
+                    }else{
+                        int k = 0;
+                        while (k < SqlKomennot.fetchLaskujenNumerot().size()) {
+                            laskuNumero = new Random().nextInt(90000) + 10000;
+                            if (!SqlKomennot.fetchLaskujenNumerot().contains(laskuNumero)) {
+                                komennot.updateQuery("insert into lasku (lasku_id, varaus_id, summa, alv) values ('" + laskuNumero + "','" + varausID +
+                                        "','" + (yhteissumma + yopymisenHinta) + "','24')");
+                                break;
+                            }
                         }
                     }
 
