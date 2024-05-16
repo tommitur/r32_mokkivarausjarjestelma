@@ -42,6 +42,8 @@ public class Paaohjelma extends Application {
     public ObservableList<String> listaAlueistaPalveluille;
     public ObservableList<String> palvelutlista;
     public ObservableList<String> kaikkiVaraukset;
+    public ObservableList<String> alueidenlista;
+    public ListView<String> laskuListView;
 
     ObservableList<Integer> asiakkaanID;
     public ComboBox alueMuokkauscb;
@@ -77,7 +79,6 @@ public class Paaohjelma extends Application {
 
         Text paikkakuntatxt = new Text("Paikkakunta:");
 
-        ObservableList<String> alueidenlista = FXCollections.observableArrayList();
         alueidenlista = komennot.valitseKaikkiAlueet();
         ComboBox alueetcb = new ComboBox(FXCollections.observableArrayList(alueidenlista));
         alueetcb.setPromptText("Valitse");
@@ -474,6 +475,7 @@ public class Paaohjelma extends Application {
                         komennot.updateQuery("insert into lasku (lasku_id, varaus_id, summa, alv) values ('" + laskuNumero + "','" + varausID +
                                 "','" + (yhteissumma + yopymisenHinta) + "','24')");
                     }else{
+
                         int k = 0;
                         while (k < SqlKomennot.fetchLaskujenNumerot().size()) {
                             laskuNumero = new Random().nextInt(90000) + 10000;
@@ -484,6 +486,8 @@ public class Paaohjelma extends Application {
                             }
                         }
                     }
+                    laskuListView.getItems().clear();
+                    laskuListView.getItems().addAll(komennot.haeLaskut().getItems());
 
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
@@ -1586,6 +1590,9 @@ public class Paaohjelma extends Application {
                 } else {
                     aluePuuttuuTietojalb.setVisible(true);
                 }
+                alueidenlista = komennot.valitseKaikkiAlueet();
+                alueetcb.setItems(alueidenlista);
+
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
@@ -1836,7 +1843,7 @@ public class Paaohjelma extends Application {
         });
 
         //laskutus toiminallisuus
-        ListView<String> laskuListView = new ListView<>();
+        laskuListView = new ListView<>();
         try {
             laskuListView.setItems(komennot.haeLaskut().getItems());
         } catch (SQLException ex) {
