@@ -7,6 +7,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.ListView;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,15 +16,15 @@ public class SqlKomennot {
     Statement statement;
     Connection connection;
 
-    private static final String URL = "jdbc:mysql://127.0.0.1:3307/vn";
+    private static final String URL = "jdbc:mysql://127.0.0.1:3306/vn";
     private static final String USER = "root";
-    private static final String PASSWORD = "root";
+    private static final String PASSWORD = "Yksitoista123";
 
     public SqlKomennot() throws SQLException {
         connection = DriverManager.getConnection(
-                "jdbc:mysql://127.0.0.1:3307/vn",
+                "jdbc:mysql://127.0.0.1:3306/vn",
                 "root",
-                "root"
+                "Yksitoista123"
 
         );
         statement = connection.createStatement();
@@ -580,4 +581,68 @@ public class SqlKomennot {
         }
         return -1;
     }
+
+    public static int fetchAsiakkaanVarausID(int asiakkaanID, LocalDate varaus, LocalDate vahvistus, LocalDate alkupvm, LocalDate loppupvm) {
+        String sql = "SELECT varaus_id FROM varaus WHERE asiakas_id = ? AND varattu_pvm = ? AND vahvistus_pvm = ? AND varattu_alkupvm = ? AND varattu_loppupvm = ?";
+
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setInt(1, asiakkaanID);
+            statement.setDate(2, Date.valueOf(varaus));
+            statement.setDate(3, Date.valueOf(vahvistus));
+            statement.setDate(4, Date.valueOf(alkupvm));
+            statement.setDate(5, Date.valueOf(loppupvm));
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("varaus_id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+    public static String fetchTiedotLaskuun(int asiakasID) {
+        String sql = "SELECT CONCAT(A.sukunimi, \" \", A.etunimi), A.lahiosoite, CONCAT(P.postinro, \" \", P.toimipaikka) " +
+                "                FROM asiakas A JOIN posti P on A.postinro = P.postinro " +
+                "                where asiakas_id = ?";
+
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setInt(1, asiakasID);
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                String nimi = rs.getString("CONCAT(A.sukunimi, \" \", A.etunimi)");
+                String osoite = rs.getString("lahiosoite");
+                String posti = rs.getString("CONCAT(P.postinro, \" \", P.toimipaikka)");
+                return nimi + "\n" + osoite + "\n" + posti;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    public static List fetchLaskujenNumerot() {
+        List lista = new ArrayList();
+        String sql = "SELECT lasku_id FROM lasku";
+
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                lista.add(rs.getInt("lasku_id"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return lista;
+    }
+
 }
