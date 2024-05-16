@@ -16,15 +16,15 @@ public class SqlKomennot {
     Statement statement;
     Connection connection;
 
-    private static final String URL = "jdbc:mysql://127.0.0.1:3306/vn";
+    private static final String URL = "jdbc:mysql://127.0.0.1:3307/vn";
     private static final String USER = "root";
-    private static final String PASSWORD = "salis123";
+    private static final String PASSWORD = "root";
 
     public SqlKomennot() throws SQLException {
         connection = DriverManager.getConnection(
-                "jdbc:mysql://127.0.0.1:3306/vn",
+                "jdbc:mysql://127.0.0.1:3307/vn",
                 "root",
-                "salis123"
+                "root"
 
         );
         statement = connection.createStatement();
@@ -581,38 +581,48 @@ public class SqlKomennot {
 
     public ListView<String> haeLaskut() throws SQLException {
         ObservableList<String> laskuList = FXCollections.observableArrayList();
-
-        String query = "SELECT L.*, A.Etunimi, A.Sukunimi " +
+        String query = "SELECT L.*,A.asiakas_id, A.Etunimi, A.Sukunimi, A.Email, A.Lahiosoite, P.Postinro, P.Toimipaikka, V.Vahvistus_pvm, DATE_ADD(V.Vahvistus_pvm, INTERVAL 20 DAY) AS Eräpäivä " +
                 "FROM Lasku L " +
                 "INNER JOIN Varaus V ON L.Varaus_id = V.Varaus_id " +
-                "INNER JOIN Asiakas A ON V.Asiakas_id = A.Asiakas_id";
-
+                "INNER JOIN Asiakas A ON V.Asiakas_id = A.Asiakas_id " +
+                "INNER JOIN Posti P ON A.Postinro = P.Postinro";
         ResultSet resultSet = statement.executeQuery(query);
         try {
             while (resultSet.next()) {
                 int laskuId = resultSet.getInt("Lasku_id");
                 int varausId = resultSet.getInt("Varaus_id");
+                int asiakasId = resultSet.getInt("asiakas_id");
                 double summa = resultSet.getDouble("Summa");
                 double alv = resultSet.getDouble("Alv");
                 int maksettu = resultSet.getInt("Maksettu");
                 String etunimi = resultSet.getString("Etunimi");
                 String sukunimi = resultSet.getString("Sukunimi");
+                String email = resultSet.getString("Email");
+                String lahiosoite = resultSet.getString("Lahiosoite");
+                String postinumero = resultSet.getString("Postinro");
+                String toimipaikka = resultSet.getString("Toimipaikka");
+                String vahvistuspvm = resultSet.getString("Vahvistus_pvm");
+                String erapvm = resultSet.getString("Eräpäivä");
 
                 String maksettuStr = (maksettu == 1) ? "kyllä" : "ei";
-                laskuList.add("Lasku ID: " + laskuId + ", Varaus ID: " + varausId +
-                        ", Summa: " + summa + ", Alv: " + alv +
-                        ", Asiakas: " + etunimi + " " + sukunimi +
-                        ", Maksettu: " + maksettuStr);
+                laskuList.add("Lasku ID: " + laskuId + "\t, Varaus ID: " + varausId +
+                        "\t, Summa: " + summa + ", Alv: " + alv +
+                        "\t, Asiakasnumero: "+ asiakasId +
+                        "\t, Asiakas: " + etunimi + " " + sukunimi +
+                        "\t, Maksettu: " + maksettuStr +
+                        "\t, Email: " + email + "\t, Osoite: " + lahiosoite +
+                        "\t, Vahvistuspäivä: " + vahvistuspvm.split(" ")[0] +
+                        "\t, Eräpäivä: " + erapvm.split(" ")[0]);
             }
         } finally {
             if (resultSet != null) {
                 resultSet.close();
             }
         }
-
         ListView<String> laskuListView = new ListView<>(laskuList);
         return laskuListView;
     }
+
 
     public void merkitseLaskuMaksetuksi(int laskuId) throws SQLException {
         String query = "UPDATE Lasku SET Maksettu = 1 WHERE Lasku_id = ?";

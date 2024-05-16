@@ -1828,64 +1828,197 @@ public class Paaohjelma extends Application {
 
         });
 
-        ListView<String> laskuListView = komennot.haeLaskut();
+        //laskutus toiminallisuus
+        ListView<String> laskuListView = new ListView<>();
+        try {
+            laskuListView.setItems(komennot.haeLaskut().getItems());
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return;
+        }
+
         Button showDetailsButton = new Button("Näytä tiedot");
         showDetailsButton.setOnAction(e -> {
             String selectedLasku = laskuListView.getSelectionModel().getSelectedItem();
             if (selectedLasku != null) {
+                // Laskun tiedot
+                Label laskunNumeroLabel = new Label("laskun numero: ");
+                laskunNumeroLabel.setFont(Font.font("Arial", 15));
+                Label asiakasnroLabel =  new Label("Asiakasnumero: ");
+                asiakasnroLabel.setFont(Font.font("Arial", 15));
+                Label vahvistuspvmLabel = new Label("Vahvistuspäivä: ");
+                vahvistuspvmLabel.setFont(Font.font("Arial", 15));
+                Label erapvmLabel = new Label("Eräpäivä: ");
+                erapvmLabel.setFont(Font.font("Arial", 15));
+                Label lyritykseNimiLB = new Label("Village Newbies");
+                lyritykseNimiLB.setFont(Font.font("Arial", FontWeight.BOLD, 16));
+                Label lyritykseOsoiteLB = new Label("Oulu \n90100");
+                lyritykseOsoiteLB.setFont(Font.font("Arial", 15));
 
-                VBox laskunTiedotLayout = new VBox(10);
-                laskunTiedotLayout.setAlignment(Pos.CENTER);
-                laskunTiedotLayout.setPadding(new Insets(10));
+                String[] tiedot = selectedLasku.split(", ");
+                String laskunNumeroArvo = tiedot[0].split(": ")[1];
+                String varausNumeroArvo = tiedot[1].split(": ")[1];
+                String summaArvo = tiedot[2].split(": ")[1];
+                String alvArvo = tiedot[3].split(": ")[1];
+                String asiakasnroArvo = tiedot[4].split(": ")[1];
+                String asiakasArvo = tiedot[5].split(": ")[1];
+                String maksettuArvo = tiedot[6].split(": ")[1];
+                String emailArvo = tiedot[7].split(": ")[1];
+                String osoiteArvo = tiedot[8].split(": ")[1];
+                String vahvistuspvmArvo = tiedot[9].split(": ")[1];
+                String erapvmArvo = tiedot[10].split(": ")[1];
 
-                TextArea laskunTiedotTextArea = new TextArea(selectedLasku);
-                laskunTiedotTextArea.setEditable(false);
-                laskunTiedotLayout.getChildren().add(laskunTiedotTextArea);
+                float summa = Float.parseFloat(summaArvo);
+                double alv = Float.parseFloat(alvArvo) / 100.0;
+                double verotonHinta = summa / (1 + alv);
+                String formattedVerotonHinta = String.format("%.2f", verotonHinta);
+
+
+
+                VBox laskunTiedotVbox = new VBox(5);
+                laskunTiedotVbox.getChildren().addAll(
+                        laskunNumeroLabel, asiakasnroLabel ,vahvistuspvmLabel, erapvmLabel);
+
+                VBox laskunArvojenVbox1 = new VBox(5);
+                laskunArvojenVbox1.getChildren().addAll(
+                        new Label(laskunNumeroArvo), new Label(asiakasnroArvo),  new Label(vahvistuspvmArvo), new Label(erapvmArvo));
+
+                HBox laskuninfotplusarvot1 = new HBox(5);
+                laskuninfotplusarvot1.getChildren().addAll(laskunTiedotVbox, laskunArvojenVbox1);
+
+                laskuninfotplusarvot1.setPadding(new Insets(20));
+                laskuninfotplusarvot1.setStyle("-fx-border-color: Black; -fx-border-width: 2px;");
+
+                Label verotonhintaLabel = new Label("Verotonhinta €              ");
+                verotonhintaLabel.setFont(Font.font("Arial", FontWeight.BOLD, 13));
+                Label verotonhintaValueLabel = new Label();
+                verotonhintaValueLabel.setText(formattedVerotonHinta);
+                verotonhintaValueLabel.setFont(Font.font("Arial", 13));
+
+                Label alvhintaLabel = new Label("Alv %              ");
+                alvhintaLabel.setFont(Font.font("Arial", FontWeight.BOLD, 13));
+
+
+                Label laskuyhteensaLabel = new Label("Lasku yhteensä €              ");
+                laskuyhteensaLabel.setFont(Font.font("Arial", FontWeight.BOLD, 13));
+
+
+                VBox lhinta1 = new VBox(5);
+                lhinta1.getChildren().addAll(verotonhintaLabel,verotonhintaValueLabel);
+                VBox lhinta2 = new VBox(5);
+                lhinta2.getChildren().addAll(alvhintaLabel, new Label(alvArvo));
+                VBox lhinta3 = new VBox(5);
+                lhinta3.getChildren().addAll(laskuyhteensaLabel, new Label(summaArvo) );
+
+                HBox hintaTiedotHbox1 = new HBox(5);
+                hintaTiedotHbox1.getChildren().addAll(lhinta1, lhinta2, lhinta3);
+                hintaTiedotHbox1.setPadding(new Insets(10));
+                hintaTiedotHbox1.setStyle("-fx-border-color: Black; -fx-border-width: 2px;");
+                hintaTiedotHbox1.setAlignment(Pos.CENTER_RIGHT);
+
+                Rectangle reuna1 = new Rectangle();
+                reuna1.setFill(Color.TRANSPARENT);
+                reuna1.setStroke(Color.BLACK);
+                reuna1.setStrokeWidth(2);
+                reuna1.setHeight(130);
+                reuna1.setWidth(180);
+                reuna1.setX(10);
+                reuna1.setY(10);
+
+                VBox vastaanottajanInfot1 = new VBox(5);
+                vastaanottajanInfot1.getChildren().addAll(new Label(asiakasArvo), new Label(osoiteArvo), new Label(emailArvo));
+
+                VBox yrityksenTiedotVbox1 = new VBox(5);
+                yrityksenTiedotVbox1.setPadding(new Insets(10));
+                yrityksenTiedotVbox1.getChildren().addAll(lyritykseNimiLB, lyritykseOsoiteLB);
+
+                VBox yritysplusvastaanottajaTiedotVbox1 = new VBox(50);
+                yritysplusvastaanottajaTiedotVbox1.getChildren().addAll(yrityksenTiedotVbox1, vastaanottajanInfot1);
 
                 Button maksettuButton = new Button("Maksettu");
                 Button peruutaButton = new Button("Takaisin");
+                Button tulostabutton = new Button("Tulosta");
+
+                HBox Laskutusnapit = new HBox(10);
+                Laskutusnapit.setPadding(new Insets(10));
+                Laskutusnapit.getChildren().addAll(peruutaButton,tulostabutton,maksettuButton);
+
+                BorderPane laskut = new BorderPane();
+                laskut.getChildren().add(reuna1);
+                laskut.setLeft(yritysplusvastaanottajaTiedotVbox1);
+                laskut.setRight(laskuninfotplusarvot1);
+                laskut.setBottom(hintaTiedotHbox1);
+                laskut.setCenter(Laskutusnapit);
+
+                laskut.setMargin(hintaTiedotHbox1, new Insets(0, 10, 10, 10));
+                laskut.setMargin(yritysplusvastaanottajaTiedotVbox1, new Insets(25));
+                laskut.setMargin(laskuninfotplusarvot1, new Insets(10, 10, 10, 0));
+
+                tulostabutton.setOnAction(event ->{
+                    PrinterJob job = PrinterJob.createPrinterJob();
+                    javafx.print.PageLayout pageLayout = job.getJobSettings().getPageLayout();
+                    double scale = Math.min(pageLayout.getPrintableWidth() / laskut.getBoundsInParent().getWidth(), pageLayout.getPrintableHeight() / laskut.getBoundsInParent().getHeight());
+                    laskut.getTransforms().add(new Scale(scale, scale));
+
+                    if(job!=null){
+                        tulostabutton.setVisible(false);
+                        peruutaButton.setVisible(false);
+                        maksettuButton.setVisible(false);
+                        job.showPrintDialog(primaryStage);
+                        job.printPage(laskut);
+                        job.endJob();
+                    }
+                    tulostabutton.setVisible(true);
+                    peruutaButton.setVisible(true);
+                    maksettuButton.setVisible(true);
+                });
+
+                Scene laskunTiedotScene = new Scene(laskut, 900, 600);
+
+                Stage laskunTiedotStage = new Stage();
+                laskunTiedotStage.setTitle("Laskun tiedot");
+                laskunTiedotStage.setScene(laskunTiedotScene);
+                laskunTiedotStage.show();
 
                 maksettuButton.setOnAction(event -> {
                     try {
-                        String[] tiedot = selectedLasku.split(", ");
-                        int laskuId = Integer.parseInt(tiedot[0].split(": ")[1]);
-                        int varausId = Integer.parseInt(tiedot[1].split(": ")[1]);
+                        int laskuId = Integer.parseInt(tiedot[0].split(": ")[1].trim());
+                        int varausId = Integer.parseInt(tiedot[1].split(": ")[1].trim());
 
                         komennot.merkitseLaskuMaksetuksi(laskuId);
-
                         laskuListView.getItems().clear();
                         laskuListView.getItems().addAll(komennot.haeLaskut().getItems());
+                        laskunTiedotStage.close();
+                    } catch (NumberFormatException ex) {
+                        System.err.println("Virhe muunnettaessa kokonaislukuja: " + ex.getMessage());
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
                 });
 
                 peruutaButton.setOnAction(event -> {
-                    Stage stage = (Stage) laskunTiedotLayout.getScene().getWindow();
-                    stage.close(); // Sulje ikkuna
+                    laskunTiedotStage.close();
                 });
 
-                laskunTiedotLayout.getChildren().addAll(maksettuButton, peruutaButton);
 
-                Scene laskunTiedotScene = new Scene(laskunTiedotLayout, 800, 600);
-
-                Stage laskunTiedotStage = new Stage();
-                laskunTiedotStage.setTitle("Laskun tiedot");
-                laskunTiedotStage.setScene(laskunTiedotScene);
-                laskunTiedotStage.show();
             }
         });
 
-        VBox layout = new VBox(takaisinpaavalikkoonbt, laskuListView, showDetailsButton, tyhjatilaR);
+        VBox layout = new VBox(takaisinpaavalikkoonbt,laskuListView, showDetailsButton);
         layout.setAlignment(Pos.TOP_LEFT);
-        BorderPane laskut = new BorderPane();
-        laskut.setTop(layout);
 
-        Scene laskutus = new Scene(laskut, 700, 500);
+        BorderPane laskut1 = new BorderPane();
+        laskut1.setTop(layout);
+
+        Scene laskutus = new Scene(laskut1, 1100, 500);
 
         laskujenhallintabt.setOnAction(e -> {
             primaryStage.setScene(laskutus);
         });
+
+
+
+
 
         primaryStage.setTitle("Mökkivarausjärjestelmä");
         primaryStage.setScene(paavalikko);
