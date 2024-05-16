@@ -1842,11 +1842,11 @@ public class Paaohjelma extends Application {
 
                         komennot.merkitseLaskuMaksetuksi(laskuId);
 
-                        // Päivitä laskutusnäkymä uusilla tiedoilla
+
                         laskuListView.getItems().clear();
                         laskuListView.getItems().addAll(komennot.haeLaskut().getItems());
 
-                        // Sulje nykyinen ikkuna
+                        
                         laskunTiedotStage.close();
                     } catch (NumberFormatException ex) {
                         System.err.println("Virhe muunnettaessa kokonaislukuja: " + ex.getMessage());
