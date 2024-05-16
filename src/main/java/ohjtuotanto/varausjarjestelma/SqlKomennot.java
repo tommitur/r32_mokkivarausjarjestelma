@@ -90,6 +90,10 @@ public class SqlKomennot {
         return executeQuery("SELECT nimi FROM palvelu");
     }
 
+    public ObservableList<String> valitseKaikkiVaraukset() throws SQLException {
+        return executeQuery("SELECT varaus_id FROM varaus");
+    }
+
     public ObservableList<String> valitseKaikkiSahkopostit() throws SQLException {
         return executeQuery("SELECT email FROM asiakas");
     }
@@ -97,9 +101,6 @@ public class SqlKomennot {
     public void yksittainenKysely(String kysely) throws SQLException {
         System.out.println(executeQuery(kysely).getLast());
     }
-    /*public ObservableList<String> yksittainenKysely(String kysely) throws SQLException {
-        return executeQuery(kysely);
-    }*/
 
     public ObservableList<String> haeAlueenID(String alue) throws SQLException {
         return executeQuery("SELECT alue_id FROM alue WHERE nimi = '" + alue + "'");
@@ -117,13 +118,10 @@ public class SqlKomennot {
         return executeQuery("SELECT nimi FROM palvelu WHERE alue_id = '" + alueid + "'");
     }
 
-    public ObservableList<Integer> haePostriNrot() throws SQLException {
-        return executeQueryINT("SELECT postinro FROM posti");
+    public ObservableList<String> haePostriNrot() throws SQLException {
+        return executeQuery("SELECT postinro FROM posti");
     }
 
-    public void mokinArvo() throws SQLException {
-        ResultSet set = statement.executeQuery("SELECT hinta FROM mokki");
-    }
 
 
     static class Palvelu {
@@ -197,9 +195,9 @@ public class SqlKomennot {
         String sukunimi;
         String lahiosoite;
         String email;
-        int puhelinumero;
+        String puhelinumero;
 
-        public Asiakas(int asiakasId, int postiNro, String etunimi, String sukunimi, String lahiosoite, String email, int puhelinumero) {
+        public Asiakas(int asiakasId, int postiNro, String etunimi, String sukunimi, String lahiosoite, String email, String puhelinumero) {
             this.asiakasId = asiakasId;
             this.postiNro = postiNro;
             this.etunimi = etunimi;
@@ -225,7 +223,7 @@ public class SqlKomennot {
                 String sukunimi = rs.getString("sukunimi");
                 String lahiosoite = rs.getString("lahiosoite");
                 String email = rs.getString("email");
-                int puhelinumero = rs.getInt("puhelinnro");
+                String puhelinumero = rs.getString("puhelinnro");
 
 
                 asiakas = new Asiakas(asiakasId, postiNro, etunimi, sukunimi, lahiosoite, email, puhelinumero);
@@ -272,6 +270,70 @@ public class SqlKomennot {
         }
         return -1;
     }
+
+    static class Varaus{
+        int varausId;
+        int asiakasId;
+        int mokki_id;
+        Date varattuPvm;
+        Date vahvistusPvm;
+        Date tuloPvm;
+        Date lahtoPvm;
+
+        public Varaus(int varausId, int asiakasId, int mokki_id, Date varattuPvm, Date vahvistusPvm, Date tuloPvm, Date lahtoPvm) {
+            this.varausId = varausId;
+            this.asiakasId = asiakasId;
+            this.mokki_id = mokki_id;
+            this.varattuPvm = varattuPvm;
+            this.vahvistusPvm = vahvistusPvm;
+            this.tuloPvm = tuloPvm;
+            this.lahtoPvm = lahtoPvm;
+        }
+    }
+    public static Varaus fetchVaraus(int varausId) {
+        Varaus varaus = null;
+        String sql = "SELECT * FROM varaus WHERE varaus_id = ?";
+
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setInt(1, varausId);
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                int asiakasId = rs.getInt("asiakas_id");
+                int mokki_id = rs.getInt("mokki_id");
+                Date varattuPvm = rs.getDate("varattu_pvm");
+                Date vahvistusPvm = rs.getDate("vahvistus_pvm");
+                Date tuloPvm = rs.getDate("varattu_alkupvm");
+                Date lahtoPvm = rs.getDate("varattu_loppupvm");
+
+
+                varaus = new Varaus(varausId, asiakasId, mokki_id, varattuPvm, vahvistusPvm, tuloPvm, lahtoPvm);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return varaus;
+
+    }
+    public static String fetchAsiakaanSahkoposti(int id) {
+        String sql = "SELECT email FROM asiakas WHERE asiakas_id = ?";
+
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setInt(1, id);
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                return rs.getString("email");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
 
 
     static class Mokki {
@@ -497,6 +559,24 @@ public class SqlKomennot {
             e.printStackTrace();
         }
         return -1;
+    }
+
+    public static boolean fetchLaskuMaksettu(int id) {
+        String sql = "SELECT maksettu FROM lasku WHERE varaus_id = ?";
+
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setInt(1, id);
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                return rs.getBoolean("maksettu");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     public ListView<String> haeLaskut() throws SQLException {
