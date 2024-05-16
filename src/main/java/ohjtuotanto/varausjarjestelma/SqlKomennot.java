@@ -501,13 +501,11 @@ public class SqlKomennot {
 
     public ListView<String> haeLaskut() throws SQLException {
         ObservableList<String> laskuList = FXCollections.observableArrayList();
-
         String query = "SELECT L.*,A.asiakas_id, A.Etunimi, A.Sukunimi, A.Email, A.Lahiosoite, P.Postinro, P.Toimipaikka, V.Vahvistus_pvm, DATE_ADD(V.Vahvistus_pvm, INTERVAL 20 DAY) AS Eräpäivä " +
                 "FROM Lasku L " +
                 "INNER JOIN Varaus V ON L.Varaus_id = V.Varaus_id " +
                 "INNER JOIN Asiakas A ON V.Asiakas_id = A.Asiakas_id " +
                 "INNER JOIN Posti P ON A.Postinro = P.Postinro";
-
         ResultSet resultSet = statement.executeQuery(query);
         try {
             while (resultSet.next()) {
@@ -541,7 +539,6 @@ public class SqlKomennot {
                 resultSet.close();
             }
         }
-
         ListView<String> laskuListView = new ListView<>(laskuList);
         return laskuListView;
     }

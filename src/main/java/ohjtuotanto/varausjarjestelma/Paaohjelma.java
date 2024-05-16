@@ -1825,11 +1825,8 @@ public class Paaohjelma extends Application {
                     maksettuButton.setVisible(true);
                 });
 
-                // Luo scene
                 Scene laskunTiedotScene = new Scene(laskut, 900, 600);
 
-
-                // Luo uusi ikkuna ja asettaa scene
                 Stage laskunTiedotStage = new Stage();
                 laskunTiedotStage.setTitle("Laskun tiedot");
                 laskunTiedotStage.setScene(laskunTiedotScene);
@@ -1841,12 +1838,8 @@ public class Paaohjelma extends Application {
                         int varausId = Integer.parseInt(tiedot[1].split(": ")[1].trim());
 
                         komennot.merkitseLaskuMaksetuksi(laskuId);
-
-
                         laskuListView.getItems().clear();
                         laskuListView.getItems().addAll(komennot.haeLaskut().getItems());
-
-                        
                         laskunTiedotStage.close();
                     } catch (NumberFormatException ex) {
                         System.err.println("Virhe muunnettaessa kokonaislukuja: " + ex.getMessage());
@@ -1856,8 +1849,7 @@ public class Paaohjelma extends Application {
                 });
 
                 peruutaButton.setOnAction(event -> {
-                    // Sulkee nykyisen ikkunan ja palaa laskutusvalikkoon
-                    laskunTiedotStage.close(); // Sulkee nykyisen ikkunan
+                    laskunTiedotStage.close();
                 });
 
 
@@ -1867,14 +1859,10 @@ public class Paaohjelma extends Application {
         VBox layout = new VBox(takaisinpaavalikkoonbt,laskuListView, showDetailsButton);
         layout.setAlignment(Pos.TOP_LEFT);
 
-
         BorderPane laskut1 = new BorderPane();
         laskut1.setTop(layout);
 
-
         Scene laskutus = new Scene(laskut1, 1100, 500);
-
-
 
         laskujenhallintabt.setOnAction(e -> {
             primaryStage.setScene(laskutus);
