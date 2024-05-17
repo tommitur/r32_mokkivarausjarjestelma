@@ -1706,6 +1706,8 @@ public class Paaohjelma extends Application {
                         asiakasPuuttuuTietojalb.setVisible(false);
                         primaryStage.setScene(muokkaausvalikko);
                     }
+                    sahkopostilista = komennot.valitseKaikkiSahkopostit();
+                    sahkoposticb.setItems(sahkopostilista);
                 }
                 if (varausvalikkoonPaasty == true) {
                     sahkopostilista = komennot.valitseKaikkiSahkopostit();
